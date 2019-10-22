@@ -1,0 +1,11 @@
+{
+  "name": "final-project",
+  "version": "1.0.0",
+  "description": "Care reporting system for St Ronans nursing and residential care home",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Joseph Snowden",
+  "license": "ISC"
+}
