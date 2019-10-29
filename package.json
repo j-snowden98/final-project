@@ -4,11 +4,14 @@
   "description": "Care reporting system for St Ronans nursing and residential care home",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ./server/server.js",
+    "initsql": "mysql -u root -p < server/db/init.sql"
   },
   "author": "Joseph Snowden",
   "license": "ISC",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "express": "^4.17.1",
     "mysql2": "^1.7.0"
   }
