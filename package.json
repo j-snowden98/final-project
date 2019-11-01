@@ -2,7 +2,7 @@
   "name": "final-project",
   "version": "1.0.0",
   "description": "Care reporting system for St Ronans nursing and residential care home",
-  "main": "index.js",
+  "main": "./server/server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node ./server/server.js",
@@ -12,7 +12,9 @@
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "body-parser": "^1.19.0",
     "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
     "mysql2": "^1.7.0"
   }
 }
