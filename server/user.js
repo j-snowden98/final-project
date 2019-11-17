@@ -10,21 +10,32 @@ router.use(bodyParser.urlencoded({ extended: false }));
 router.use(bodyParser.json());
 
 router.post('/register', async (req, res) => {
-  //username, password, role
-  bcrypt.genSalt(10, function(err, salt) {
-      bcrypt.hash(password, salt, function(err, hash) {
-          if(!err) {
-            console.log(hash);
-            data.addUser(username, hash, role)
-          }
+  const username = req.body.username;
+  const password = req.body.password;
+  const role = req.body.role;
+
+  try {
+    bcrypt.genSalt(10, function(err, salt) {
+      bcrypt.hash(password, salt, async function(err, hash) {
+        if(!err) {
+          console.log(hash);
+          await data.addUser(username, hash, role);
+          res.status(200).send({ 'user': username });
+        }
       });
-  });
+    });
+  }
+  catch (e) {
+    console.log(e);
+    return res.status(500).send('Server error!');
+  }
+
 });
 
 router.post('/login', async (req, res) => {
   const username = req.body.username;
   const password = req.body.password;
-  
+
   try {
     const user = await data.getHash(username);
     let hash = await user.password;
