@@ -58,16 +58,6 @@ router.post('/login', async (req, res) => {
     console.log(e);
     return res.status(500).send('Server error!');
   }
-
-  /*login.attemptLogin(username, password, (err, userID)=>{
-    if (err) return res.status(500).send('Server error!');
-    if (!userID) return res.status(404).send('User not found!');
-    const expiresIn = 24 * 60 * 60;
-    const accessToken = jwt.sign({ id: userID }, SECRET_KEY, {
-    expiresIn: expiresIn
-    });
-    res.status(200).send({ "user": userID, "access_token": accessToken, "expires_in": expiresIn});
-  });*/
 });
 
 module.exports = router;
