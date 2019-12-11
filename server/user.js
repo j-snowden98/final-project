@@ -38,20 +38,34 @@ router.post('/login', async (req, res) => {
 
   try {
     const user = await data.getHash(username);
-    let hash = await user.password;
-    let userID = await user.id;
-    console.log(hash);
-    console.log(userID);
-    const result = bcrypt.compareSync(password, hash);
-    if (result) {
-      const expiresIn = 24 * 60 * 60;
-      const accessToken = jwt.sign({ id: userID }, SECRET_KEY, {
-      expiresIn: expiresIn
-      });
-      res.status(200).send({ "user": userID, "access_token": accessToken, "expires_in": expiresIn});
+    if(user) {
+      //if username mstches one in the database, do the following
+      let hash = await user.password;
+      let userID = await user.id;
+      console.log(hash);
+      console.log(userID);
+      const result = bcrypt.compareSync(password, hash);
+      if (result) {
+        //if password validates, send jwt token back to user
+        const expiresIn = 2 * 60 * 60;
+        const accessToken = jwt.sign({ id: userID }, SECRET_KEY, {
+        expiresIn: expiresIn
+        });
+
+
+        const cookieOptions = {
+          httpOnly: true
+        }
+        res.status(200).cookie('accessToken', accessToken, { httpOnly: true, maxAge: expiresIn * 1000 }).send({ "user": userID, "access_token": accessToken, "expires_in": expiresIn});
+      }
+      else {
+        //if password fails, do not log them in
+        return res.status(401).send('Incorrect username and/or password!');
+      }
     }
     else {
-      return res.status(404).send('User not found!');
+      //username could not be found in database
+      return res.status(401).send('Incorrect username and/or password!');
     }
   }
   catch (e) {

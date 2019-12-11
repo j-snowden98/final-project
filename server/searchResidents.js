@@ -3,12 +3,10 @@ const bodyParser = require('body-parser');
 const data = require('./db/model_mysql.js');
 
 const router = express.Router();
-router.use(bodyParser.urlencoded({ extended: false }));
-router.use(bodyParser.json());
 
 router.get('/', async (req, res) => {
-  const userID = req.body.userID;
-  const filter = req.body.filter;
+  const userID = req.query.userID;
+  const filter = req.query.filter;
 
   try {
     const residents = await data.getResidents(filter);
