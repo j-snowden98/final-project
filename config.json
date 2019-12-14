@@ -1,8 +1,8 @@
 {
   "mysql": {
     "host": "localhost",
-    "user": "",
-    "password": "",
-    "database": "st-ronans-care"
+    "user": "st-ronans",
+    "password": "strCare2019",
+    "database": "st_ronans_care"
   }
 }

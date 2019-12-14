@@ -1,17 +1,16 @@
 'use strict';
-const url = 'http://localhost:8080';
+const url = 'http://192.168.0.5:8080';
 let userID = '';
 
 window.onload = function() {
-  getResidents();
-}
+  init();
+};
+
 document.addEventListener("keydown", event => {
   if (event.keyCode === 13) {
     event.preventDefault();
   }
 });
-
-document.getElementById('btnLogin').addEventListener('click', loginServer);
 
 async function loginServer() {
   let usr = document.getElementById('inputUser').value;
@@ -31,7 +30,7 @@ async function loginServer() {
     });
     const json = await response.json();
     userID = json.userID;
-    getResidents();
+    init();
   } catch (error) {
     console.error('Error:', error);
   }
@@ -40,8 +39,51 @@ async function loginServer() {
 }
 
 async function getResidents() {
+  let json = await searchResidents();
+  if(json.success) {
+    document.body.insertAdjacentHTML('beforeend', `
+      <form class="form-inline my-2 my-lg-0">
+        <input id="searchbar" class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+      </form>
+      <table class="table table-striped table-dark">
+        <thead>
+          <tr>
+            <th scope="col">Room</th>
+            <th scope="col">Forename</th>
+            <th scope="col">Surname</th>
+          </tr>
+        </thead>
+        <tbody id="resTblBody">
+        </tbody>
+      </table>`);
+
+    updateResTbl(json.residents);
+
+    document.getElementById('searchbar').addEventListener('input', (event) => {
+      searchChange();
+    });
+    return true;
+  }
+  else {
+    return false;
+  }
+}
+
+function updateResTbl(residents) {
+  document.getElementById('resTblBody').innerHTML = '';
+  for(let r of residents) {
+    document.getElementById('resTblBody').insertAdjacentHTML('beforeend', `
+      <tr>
+        <th scope="row">${r.roomName}</th>
+        <td>${r.forename}</td>
+        <td>${r.surname}</td>
+      </tr>`);
+  }
+}
+
+async function searchResidents(filter = '') {
   try {
-    const response = await fetch(url + `/api/resident/search?userID=${userID}&filter=${''}`, {
+    const response = await fetch(url + `/api/resident/search?userID=${userID}&filter=${filter}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json'
@@ -49,35 +91,50 @@ async function getResidents() {
       credentials: 'same-origin'
     });
     const json = await response.json();
-    console.log(JSON.stringify(json));
-    if(json) {
-      document.body.insertAdjacentHTML('beforeend', `
-        <table class="table table-striped table-dark">
-          <thead>
-            <tr>
-              <th scope="col">Room</th>
-              <th scope="col">Forename</th>
-              <th scope="col">Surname</th>
-            </tr>
-          </thead>
-          <tbody id="resTblBody">
-          </tbody>
-        </table>`);
+    return json;
 
-      for(let r of json) {
-        document.getElementById('resTblBody').insertAdjacentHTML('beforeend', `
-          <tr>
-            <th scope="row">${r.roomName}</th>
-            <td>${r.forename}</td>
-            <td>${r.surname}</td>
-          </tr>`);
-      }
-    }
   } catch (error) {
     console.error('Error:', error);
   }
+}
 
+function forceLogin(loadingSite) {
+  const loginPg = `
+    <form class="form-signin">
+      <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
+      <div class="form-group">
+        <input type="text" id="inputUser" class="form-control" placeholder="Username" required="" autofocus="">
+        <input type="password" id="inputPassword" class="form-control" placeholder="Password">
+      </div>
+      <button id="btnLogin" type="button" class="btn btn-lg btn-primary btn-block">Sign in</button>
+    </form>`;
 
+  if (loadingSite) {
+    document.body.insertAdjacentHTML('beforeend', loginPg);
+    document.getElementById('btnLogin').addEventListener('click', loginServer);
+  }
+  else {
+    return;
+  }
+}
+
+async function init() {
+  document.body.innerHTML = '';
+  let hasCookie = await getResidents();
+  console.log(hasCookie);
+  if (!hasCookie)
+    forceLogin(true);
+  else
+    document.body.insertAdjacentHTML('afterBegin', navbar);
+}
+
+let timeout;
+function searchChange() {
+  clearTimeout(timeout);
+  timeout = setTimeout(async function () {
+    let results = await searchResidents(document.getElementById('searchbar').value)
+    updateResTbl(results.residents);
+  }, 500);
 }
 
 let navbar = `<nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -109,9 +166,41 @@ let navbar = `<nav class="navbar navbar-expand-lg navbar-light bg-light">
         <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
       </li>
     </ul>
-    <form class="form-inline my-2 my-lg-0">
-      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-    </form>
   </div>
 </nav>`;
+
+class ResTable {
+  constructor() {
+
+  }
+}
+
+class Resident {
+  constructor() {
+
+  }
+}
+
+class Contact {
+  constructor() {
+
+  }
+}
+
+class AddContact {
+  constructor() {
+
+  }
+}
+
+class FoodFluid {
+  constructor() {
+
+  }
+}
+
+class AddFoodFluid {
+  constructor() {
+
+  }
+}

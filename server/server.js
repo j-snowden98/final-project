@@ -19,7 +19,7 @@ protectedApp.use((req, res, next) => {
     console.log(token);
     jwt.verify(token, SECRET_KEY, (err, decoded) =>{
       if (err) {
-        return res.status(401).json({ message: 'invalid token' });
+        return res.status(401).json({ success: false, message: 'invalid token' });
       }
       else {
         req.decoded = decoded;
@@ -30,6 +30,7 @@ protectedApp.use((req, res, next) => {
 
   else {
     res.status(401).json({
+        success: false,
         message: 'No token provided. Access denied'
     });
   }

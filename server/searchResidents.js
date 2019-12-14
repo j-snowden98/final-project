@@ -10,11 +10,11 @@ router.get('/', async (req, res) => {
 
   try {
     const residents = await data.getResidents(filter);
-    res.status(200).send(residents);
+    res.status(200).json({ success: true, residents: residents });
   }
   catch (e) {
     console.log(e);
-    return res.status(500).send('Server error!');
+    return res.status(500).json({ success: false, message: 'Server error!' });
   }
 });
 
