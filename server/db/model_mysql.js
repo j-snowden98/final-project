@@ -58,7 +58,7 @@ async function getResidents(search) {
 
 async function searchContact(resID) {
   const sql = await init();
-  const query = sql.format('SELECT U.username, C.contactDate, C.contactTime, C.callBell, C.drinkGiven, C.description FROM Contact C LEFT JOIN User U ON U.id = C.userID WHERE C.resID = ? AND C.contactDate >= CURDATE() - INTERVAL 1 DAY ORDER BY C.contactDate, C.contactTime DESC', [resID]);
+  const query = sql.format('SELECT U.username, DATE_FORMAT(DATE(C.contactDate), "%d/%m/%Y") as contactDate, DATE_FORMAT(TIME(C.contactDate), "%H:%i") as contactTime, C.callBell, C.drinkGiven, C.description FROM Contact C LEFT JOIN User U ON U.id = C.userID WHERE C.resID = ? AND C.contactDate >= NOW() - INTERVAL 1 DAY ORDER BY C.contactDate DESC', [resID]);
   const [rows] = await sql.query(query);
   return (rows);
 }
