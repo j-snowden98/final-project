@@ -8,9 +8,9 @@ router.use(bodyParser.urlencoded({ extended: false }));
 router.use(bodyParser.json());
 
 router.post('/add', async (req, res) => {
-  const userID = req.body.userID;
+  const userID = req.decoded.id;
   try {
-    const auth = await data.getAuthorised(userID, 3);
+    const auth = await data.isAuthorised(userID, 3);
     if(auth) {
       try {
         const resID = req.body.resID;
@@ -26,11 +26,34 @@ router.post('/add', async (req, res) => {
       }
     }
     else {
-      //not authorised code
+      return res.status(403).send('You do not have permission to perform this action');
     }
   }
   catch (e) {
     return res.status(500).send('Server error!');
+  }
+});
+
+router.get('/load', async (req, res) => {
+  const userID = req.decoded.id;
+  const resID = req.query.resID;
+  try {
+    const auth = await data.isAuthorised(userID, 1);
+    if(auth) {
+      try {
+        let resContact = await data.searchContact(resID);
+        return res.status(200).json({ contact: resContact });
+      }
+      catch (e) {
+        return res.status(500).send('Server error!' + '\n' + e);
+      }
+    }
+    else {
+      return res.status(403).send('You do not have permission to perform this action');
+    }
+  }
+  catch (e) {
+    return res.status(500).send('Server error!' + '\n' + e);
   }
 });
 

@@ -13,10 +13,8 @@ app.use('/user', user);
 const protectedApp = express.Router();
 protectedApp.use(cookieParser());
 protectedApp.use((req, res, next) => {
-  console.log(req.cookies.accessToken);
   const token = req.cookies.accessToken;
   if (token) {
-    console.log(token);
     jwt.verify(token, SECRET_KEY, (err, decoded) =>{
       if (err) {
         return res.status(401).json({ success: false, message: 'invalid token' });

@@ -47,6 +47,8 @@ router.post('/login', async (req, res) => {
       const result = bcrypt.compareSync(password, hash);
       if (result) {
         //if password validates, send jwt token back to user
+        let reportAccess = await data.isAuthorised(userID, '');
+        let adminAccess = await data.isAuthorised(userID, '')
         const expiresIn = 2 * 60 * 60;
         const accessToken = jwt.sign({ id: userID }, SECRET_KEY, {
         expiresIn: expiresIn
@@ -56,7 +58,7 @@ router.post('/login', async (req, res) => {
         const cookieOptions = {
           httpOnly: true
         }
-        res.status(200).cookie('accessToken', accessToken, { httpOnly: true, maxAge: expiresIn * 1000 }).send({ "user": userID, "access_token": accessToken, "expires_in": expiresIn});
+        res.status(200).cookie('accessToken', accessToken, { httpOnly: true, maxAge: expiresIn * 1000 }).send({ "user": userID, "report": reportAccess, "admin": adminAccess });
       }
       else {
         //if password fails, do not log them in

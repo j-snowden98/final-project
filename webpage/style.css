@@ -4,3 +4,16 @@
   padding: 15px;
   margin: auto;
 }
+
+.table-str > tbody > tr {
+  cursor: pointer;
+}
+
+.container {
+  max-width: none !important;
+  padding: 0 !important;
+}
+
+.str-component {
+  margin-top: 0.2rem !important;
+}

@@ -5,7 +5,7 @@ const data = require('./db/model_mysql.js');
 const router = express.Router();
 
 router.get('/', async (req, res) => {
-  const userID = req.query.userID;
+  const userID = req.decoded.id;
   const filter = req.query.filter;
 
   try {

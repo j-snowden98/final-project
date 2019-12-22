@@ -50,9 +50,16 @@ async function getHash(username) {
 async function getResidents(search) {
   const filter = '%' + search + '%';
   const sql = await init();
-  const query = sql.format('SELECT X.id, X.forename, X.surname, X.dietReq, X.allergies, X.thickener, Z.roomName FROM Resident X JOIN ResidentRoom Y ON X.id = Y.resID JOIN Room Z ON Y.roomID = Z.id WHERE X.forename LIKE ? OR X.surname LIKE ? OR Z.roomName LIKE ?', [filter, filter, filter]);
+  const query = sql.format('SELECT X.id, X.forename, X.surname, X.dietReq, X.allergies, X.thickener, CONCAT(Z.roomPrefix, Z.roomNumber) AS roomName FROM Resident X JOIN ResidentRoom Y ON X.id = Y.resID JOIN Room Z ON Y.roomID = Z.id WHERE X.forename LIKE ? OR X.surname LIKE ? OR Z.roomNumber LIKE ? OR Z.roomPrefix LIKE ? ORDER BY Z.roomPrefix, Z.roomNumber ASC', [filter, filter, filter, filter]);
   const [rows] = await sql.query(query);
   console.log(rows);
+  return (rows);
+}
+
+async function searchContact(resID) {
+  const sql = await init();
+  const query = sql.format('SELECT U.username, C.contactDate, C.contactTime, C.callBell, C.drinkGiven, C.description FROM Contact C LEFT JOIN User U ON U.id = C.userID WHERE C.resID = ? AND C.contactDate >= CURDATE() - INTERVAL 1 DAY ORDER BY C.contactDate, C.contactTime DESC', [resID]);
+  const [rows] = await sql.query(query);
   return (rows);
 }
 
@@ -77,6 +84,7 @@ module.exports = {
   addUser: addUser,
   getHash: getHash,
   getResidents: getResidents,
+  searchContact: searchContact,
   insertContact: insertContact,
   isAuthorised: isAuthorised
 };
