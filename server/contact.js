@@ -19,10 +19,12 @@ router.post('/add', async (req, res) => {
         const description = req.body.description;
         const result = await data.insertContact(resID, userID, callBell, drinkGiven, description);
         console.log(result);
-        return res.status(200).send({ "success":true });
+        let newEntry = await data.getNewContact(resID);
+        return res.status(200).json({ success: true, new: newEntry });
       }
       catch (e) {
         return res.status(500).send('Server error!');
+        console.log(e);
       }
     }
     else {
@@ -31,6 +33,7 @@ router.post('/add', async (req, res) => {
   }
   catch (e) {
     return res.status(500).send('Server error!');
+    console.log(e);
   }
 });
 

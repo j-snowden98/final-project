@@ -63,6 +63,14 @@ async function searchContact(resID) {
   return (rows);
 }
 
+async function getNewContact(resID) {
+  const sql = await init();
+  const query = sql.format('SELECT U.username, DATE_FORMAT(DATE(C.contactDate), "%d/%m/%Y") as contactDate, DATE_FORMAT(TIME(C.contactDate), "%H:%i") as contactTime, C.callBell, C.drinkGiven, C.description FROM Contact C LEFT JOIN User U ON U.id = C.userID WHERE C.resID = ? ORDER BY C.contactDate DESC LIMIT 1', [resID]);
+  const [rows] = await sql.query(query);
+  console.log(rows);
+  return (rows)[0];
+}
+
 async function insertContact(resID, userID, callBell, drinkGiven, description) {
   const sql = await init();
   const query = sql.format('INSERT INTO Contact (resID, userID, contactDate, callBell, drinkGiven, description) VALUES (?, ?, NOW(), ?, ?, ?)', [resID, userID, callBell, drinkGiven, description]);
@@ -85,6 +93,7 @@ module.exports = {
   getHash: getHash,
   getResidents: getResidents,
   searchContact: searchContact,
+  getNewContact: getNewContact,
   insertContact: insertContact,
   isAuthorised: isAuthorised
 };

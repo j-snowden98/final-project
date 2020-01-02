@@ -241,24 +241,6 @@ class Resident {
   }
 }
 
-class Table {
-  constructor() {
-
-  }
-
-  update() {
-
-  }
-
-  show() {
-
-  }
-
-  hide() {
-
-  }
-}
-
 class ContactTable {
   constructor(resID, goBack) {
       this.resID = resID;
@@ -330,13 +312,13 @@ class ContactTable {
           <td>${r.username}</td>
         </tr>`);
       document.getElementById('contactTblBody').appendChild(row);
-      //row.addEventListener('click', newContact.display.bind(newRes));
+      //row.addEventListener('click', newContact.display.bind(newContact));
     }
   }
 
   openAdd() {
     this.hide();
-    let add = new AddContact(this.resID, this.show.bind(this));
+    let add = new AddContact(this.resID, this.show.bind(this), this.showNew.bind(this));
   }
 
   remove() {
@@ -351,6 +333,22 @@ class ContactTable {
   show() {
     this.tbl.setAttribute('style', 'display: block');
   }
+
+  async showNew(newEntry) {
+    this.show();
+    let newContact = new Contact(newEntry);
+    let row = document.createElement('tr');
+    row.insertAdjacentHTML('beforeend', `
+      <tr>
+        <td>${newEntry.contactDate}</td>
+        <td>${newEntry.contactTime}</td>
+        <td>${newEntry.drinkGiven}</td>
+        <td>${newEntry.description}</td>
+        <td>${newEntry.username}</td>
+      </tr>`);
+    document.getElementById('contactTblBody').prepend(row);
+    //row.addEventListener('click', newContact.display.bind(newContact));
+  }
 }
 
 class Contact {
@@ -359,9 +357,10 @@ class Contact {
 }
 
 class AddContact {
-  constructor(resID, goBack) {
+  constructor(resID, onCancel, added) {
     this.resID = resID;
-    this.goBack = goBack;
+    this.onCancel = onCancel;
+    this.added = added
     document.body.insertAdjacentHTML('beforeend', `
       <div id="addContact" class="card str-component ml-1 mr-1" style="max-width: 30rem;">
         <div class="card-body">
@@ -396,13 +395,13 @@ class AddContact {
     this.drinkGiven = document.getElementById('drinkGiven');
     this.desc = document.getElementById('desc');
 
-    document.getElementById('btnCancel').addEventListener('click', this.remove.bind(this));
+    document.getElementById('btnCancel').addEventListener('click', function() { this.remove(this.onCancel); }.bind(this));
     document.getElementById('btnAccept').addEventListener('click', this.save.bind(this));
   }
 
-  remove() {
+  remove(callback, json) {
     this.container.outerHTML = '';
-    this.goBack();
+    callback(json);
   }
 
   async save() {
@@ -421,6 +420,10 @@ class AddContact {
         }
       });
       const json = await response.json();
+      console.log(json);
+      if (json.success) {
+        this.remove(this.added, json.new);
+      }
     } catch (error) {
       console.log(error);
     }
