@@ -5,8 +5,25 @@
   margin: auto;
 }
 
+.table-str > thead > tr > th {
+  white-space: nowrap;
+  overflow: hidden;
+}
+
 .table-str > tbody > tr {
   cursor: pointer;
+}
+
+
+
+.table-str > tbody > tr > td {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.table-str {
+  table-layout: fixed;
 }
 
 .container {
