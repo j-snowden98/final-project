@@ -109,11 +109,11 @@ class ResTable {
     let json = await this.searchResidents();
     if(json.success) {
       document.body.insertAdjacentHTML('beforeend', `
-        <div id="residents" class="ml-1 str-component">
+        <div id="residents" class="ml-1 mr-1 str-component">
           <form class="form-inline my-2 my-lg-0">
             <input id="searchbar" class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
           </form>
-          <table class="table table-str table-striped table-dark str-component">
+          <table class="table table-str table-striped table-dark str-component rounded">
             <thead>
               <tr>
                 <th scope="col">Room</th>
@@ -206,8 +206,8 @@ class Resident {
     resTbl.hide();
     console.log(this.id);
     document.body.insertAdjacentHTML('beforeend', `
-      <div id="resOptions" class="ml-1">
-        <button id="backBtn" type="button" class="btn btn-outline-secondary">&#8249;</button>
+      <div id="resOptions" class="ml-1 mr-1">
+        <button id="backBtn" type="button" class="btn btn-lg btn-outline-secondary">&#8249;</button>
         <div class="card str-component" style="max-width: 30rem;">
           <div class="card-body">
             <h5 class="card-title">${this.forename + ' ' + this.surname}</h5>
@@ -272,9 +272,10 @@ class ContactTable {
       let contact = result.contact;
       console.log(contact);
       document.body.insertAdjacentHTML('beforeend', `
-        <div id="contact" class="ml-1">
-          <button id="backBtn" type="button" class="btn btn-outline-secondary">&#8249;</button>
-          <table class="table table-str table-striped table-dark str-component">
+        <div id="contact" class="ml-1 mr-1">
+          <button id="backBtn" type="button" class="btn btn-lg btn-outline-secondary">&#8249;</button>
+          <button id="addBtn" type="button" class="btn btn-lg btn-outline-primary">&#43;</button>
+          <table class="table table-str table-striped table-dark str-component rounded">
             <thead>
               <tr>
                 <th scope="col">Date</th>
@@ -289,10 +290,12 @@ class ContactTable {
           </table>
         </div>`);
       document.getElementById('backBtn').addEventListener('click', this.remove.bind(this));
+      document.getElementById('addBtn').addEventListener('click', this.openAdd.bind(this));
       this.tbl = document.getElementById('contact');
       this.update(contact);
-    } catch (e) {
 
+    } catch (e) {
+      forceLogin();
     }
 
   }
@@ -331,9 +334,22 @@ class ContactTable {
     }
   }
 
+  openAdd() {
+    this.hide();
+    let add = new AddContact(this.resID, this.show.bind(this));
+  }
+
   remove() {
     this.tbl.outerHTML = '';
     this.goBack();
+  }
+
+  hide() {
+    this.tbl.setAttribute('style', 'display: none');
+  }
+
+  show() {
+    this.tbl.setAttribute('style', 'display: block');
   }
 }
 
@@ -343,8 +359,37 @@ class Contact {
 }
 
 class AddContact {
-  constructor() {
-
+  constructor(resID, goBack) {
+    this.resID = resID;
+    this.goBack = goBack;
+    document.body.insertAdjacentHTML('beforeend', `
+      <div class="card str-component ml-1 mr-1" style="max-width: 30rem;">
+        <div class="card-body">
+          <form>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="" id="callBell">
+              <label class="form-check-label" for="callBell">
+                Call Bell
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="" id="drinkGiven">
+              <label class="form-check-label" for="drinkGiven">
+                Drink Given
+              </label>
+            </div>
+            <div class="form-group">
+              <label for="desc">Care And Contact</label>
+              <textarea class="form-control" id="desc" rows="3"></textarea>
+            </div>
+          </form>
+          <div class="str-btn">
+            <button id="btnCancel" type="button" class="btn btn-danger btn">Cancel</button>
+            <button id="btnAccept" type="button" class="btn btn-success btn">Accept</button>
+          </div>
+        </div>
+      </div>
+    `);
   }
 }
 
