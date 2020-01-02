@@ -65,7 +65,7 @@ async function searchContact(resID) {
 
 async function insertContact(resID, userID, callBell, drinkGiven, description) {
   const sql = await init();
-  const query = sql.format('INSERT INTO Contact (resID, userID, contactDate, contactTime, callBell, drinkGiven, description) VALUES (?, ?, DATE(NOW()), TIME(NOW()), ?, ?, ?)', [resID, userID, callBell, drinkGiven, description]);
+  const query = sql.format('INSERT INTO Contact (resID, userID, contactDate, callBell, drinkGiven, description) VALUES (?, ?, NOW(), ?, ?, ?)', [resID, userID, callBell, drinkGiven, description]);
   return (await sql.query(query));
 }
 
