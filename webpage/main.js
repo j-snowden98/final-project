@@ -301,7 +301,7 @@ class ContactTable {
 
   update(rows) {
     for(let r of rows) {
-      let newContact = new Contact(r);
+      let newContact = new Contact(r, this.show.bind(this));
       let row = document.createElement('tr');
       row.insertAdjacentHTML('beforeend', `
         <tr>
@@ -312,7 +312,10 @@ class ContactTable {
           <td>${r.username}</td>
         </tr>`);
       document.getElementById('contactTblBody').appendChild(row);
-      //row.addEventListener('click', newContact.display.bind(newContact));
+      row.addEventListener('click', function() {
+        this.hide();
+        newContact.display.bind(newContact)();
+      }.bind(this));
     }
   }
 
@@ -334,9 +337,9 @@ class ContactTable {
     this.tbl.setAttribute('style', 'display: block');
   }
 
-  async showNew(newEntry) {
+  showNew(newEntry) {
     this.show();
-    let newContact = new Contact(newEntry);
+    let newContact = new Contact(newEntry, this.show.bind(this));
     let row = document.createElement('tr');
     row.insertAdjacentHTML('beforeend', `
       <tr>
@@ -347,12 +350,59 @@ class ContactTable {
         <td>${newEntry.username}</td>
       </tr>`);
     document.getElementById('contactTblBody').prepend(row);
-    //row.addEventListener('click', newContact.display.bind(newContact));
+    row.addEventListener('click', function() {
+      this.hide();
+      newContact.display.bind(newContact)();
+    }.bind(this));
   }
 }
 
 class Contact {
-  constructor() {
+  constructor(object, goBack) {
+    this.contactDate = object.contactDate;
+    this.contactTime = object.contactTime;
+    this.drinkGiven = object.drinkGiven;
+    this.description = object.description;
+    this.username = object.username;
+    this.goBack = goBack;
+  }
+
+  display() {
+    console.log('display');
+    document.body.insertAdjacentHTML('beforeend', `
+      <div id="dispContact" class="ml-1 mr-1">
+        <button id="closeContact" type="button" class="btn btn-lg btn-outline-secondary">&#8249;</button>
+        <div class="card str-component" style="max-width: 30rem;">
+          <div class="card-body">
+            <form>
+              <label>Time entered: ${this.contactDate + ' ' + this.contactTime}</label>
+              <label>Entered by: ${this.username}</label>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" checked="${this.callBell}" id="callBell" disabled>
+                <label class="form-check-label" for="callBell">Call Bell</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" checked="${this.drinkGiven}" id="drinkGiven" disabled>
+                <label class="form-check-label" for="drinkGiven">
+                  Drink Given
+                </label>
+              </div>
+              <div class="form-group">
+                <label for="desc">Care And Contact</label>
+                <textarea class="form-control" id="desc" rows="6" readonly>${this.description}</textarea>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    `);
+    this.container = document.getElementById('dispContact');
+    document.getElementById('closeContact').addEventListener('click', this.close.bind(this));
+  }
+
+  close() {
+    this.container.outerHTML = '';
+    this.goBack();
   }
 }
 
@@ -379,7 +429,7 @@ class AddContact {
             </div>
             <div class="form-group">
               <label for="desc">Care And Contact</label>
-              <textarea class="form-control" id="desc" rows="3"></textarea>
+              <textarea class="form-control" id="desc" rows="6"></textarea>
             </div>
           </form>
           <div class="str-btn">
