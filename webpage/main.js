@@ -363,7 +363,7 @@ class AddContact {
     this.resID = resID;
     this.goBack = goBack;
     document.body.insertAdjacentHTML('beforeend', `
-      <div class="card str-component ml-1 mr-1" style="max-width: 30rem;">
+      <div id="addContact" class="card str-component ml-1 mr-1" style="max-width: 30rem;">
         <div class="card-body">
           <form>
             <div class="form-check">
@@ -390,6 +390,40 @@ class AddContact {
         </div>
       </div>
     `);
+    this.container = document.getElementById('addContact');
+
+    this.callBell = document.getElementById('callBell');
+    this.drinkGiven = document.getElementById('drinkGiven');
+    this.desc = document.getElementById('desc');
+
+    document.getElementById('btnCancel').addEventListener('click', this.remove.bind(this));
+    document.getElementById('btnAccept').addEventListener('click', this.save.bind(this));
+  }
+
+  remove() {
+    this.container.outerHTML = '';
+    this.goBack();
+  }
+
+  async save() {
+    try {
+      let data = {
+        resID: this.resID,
+        callBell: this.callBell.checked,
+        drinkGiven: this.drinkGiven.checked,
+        description: this.desc.value
+      }
+      const response = await fetch(url + '/api/resident/contact/add', {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      const json = await response.json();
+    } catch (error) {
+      console.log(error);
+    }
   }
 }
 
@@ -398,6 +432,7 @@ class FoodFluidTable {
 
   }
 }
+
 class FoodFluid {
   constructor() {
 
