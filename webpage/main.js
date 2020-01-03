@@ -340,7 +340,7 @@ class ContactTable {
         <tr>
           <td>${r.contactDate}</td>
           <td>${r.contactTime}</td>
-          <td>${r.drinkGiven}</td>
+          <td>${Boolean(r.drinkGiven)? 'Yes' : 'No'}</td>
           <td>${r.description}</td>
           <td>${r.username}</td>
         </tr>`);
