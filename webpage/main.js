@@ -1,5 +1,5 @@
 'use strict';
-const url = 'http://192.168.0.4:8080';
+const url = 'http://192.168.0.7:8080';
 let navbar = false;
 let resTbl;
 
@@ -56,7 +56,7 @@ async function loginServer() {
       addNavbar();
 
     //(this) is the resident table. Retries initiating the table after authenticating user
-    this.init.bind(this)();
+    this.retry.bind(this)();
   } catch (error) {
     console.error('Error:', error);
   }
@@ -102,11 +102,14 @@ function addNavbar() {
 class ResTable {
   constructor() {
     this.timeout;
+    this.hidden = false;
     this.init();
   }
 
   async init() {
-    let json = await this.searchResidents();
+    //Get response from search funciton making request to server. Sends empty filter to retrieve all residents
+    const response = await this.searchResidents();
+    const json = await response.json();
     if(json.success) {
       document.body.insertAdjacentHTML('beforeend', `
         <div id="residents" class="ml-1 mr-1 str-component">
@@ -135,17 +138,44 @@ class ResTable {
         addNavbar();
     }
     else {
-      //Binding this, to retry initiating the resident table when user is logged in.
-      forceLogin.bind(this)();
+      //Request is not successful. Inspect status code to determine whether token has expired or there is an error with the server instead.
+      const status = response.status;
+      console.log(status);
+      if (status === 401) {
+        //Forcelogin uses retry from 'this' upon successful login.
+        this.retry = this.init.bind(this);
+        forceLogin.bind(this)();
+      }
     }
   }
 
   searchChange() {
     clearTimeout(this.timeout);
-    this.timeout = setTimeout(async function () {
-      let results = await this.searchResidents(document.getElementById('searchbar').value);
-      this.update(results.residents);
-    }.bind(this), 500);
+    this.timeout = setTimeout(this.doneTyping.bind(this), 500);
+  }
+
+  async doneTyping() {
+    //If hidden (implying the user was forced to login on the last attempt) will show table again.
+    if (this.hidden) {
+      this.show();
+    }
+    //Get response from search funciton making request to server
+    const response = await this.searchResidents(document.getElementById('searchbar').value);
+    const json = await response.json();
+    if (json.success){
+      this.update(json.residents);
+    }
+    else {
+      //Request is not successful. Inspect status code to determine whether token has expired or there is an error with the server instead.
+      const status = response.status;
+      if (status === 401) {
+        //Must hide table before displaying login form
+        this.hide();
+        //Forcelogin uses retry from 'this' upon successful login.
+        this.retry = this.doneTyping.bind(this);
+        forceLogin.bind(this)();
+      }
+    }
   }
 
   async searchResidents(filter = '') {
@@ -157,8 +187,7 @@ class ResTable {
         },
         credentials: 'same-origin'
       });
-      const json = await response.json();
-      return json;
+      return response;
 
     } catch (error) {
       console.error('Error:', error);
@@ -183,10 +212,12 @@ class ResTable {
 
   hide() {
     this.resDiv.setAttribute('style', 'display: none');
+    this.hidden = true;
   }
 
   show() {
     this.resDiv.setAttribute('style', 'display: block');
+    this.hidden = false;
   }
 }
 
@@ -250,8 +281,28 @@ class ContactTable {
 
   async init() {
     try {
-      let result = await this.searchContact();
-      let contact = result.contact;
+      const response = await fetch(url + `/api/resident/contact/load?resID=${this.resID}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'same-origin'
+      });
+      const status = await response.status;
+      console.log(status);
+      //Inspect status code to determine whether token has expired, which would return a 401
+      if (status === 401) {
+        //Forcelogin uses retry from 'this' upon successful login.
+        this.retry = this.init.bind(this);
+        forceLogin.bind(this)();
+        //return to avoid executing the rest of the function in this case
+        return;
+      }
+      //else not permitted
+      //else server error
+      const json = await response.json();
+      const contact = json.contact;
+
       console.log(contact);
       document.body.insertAdjacentHTML('beforeend', `
         <div id="contact" class="ml-1 mr-1">
@@ -275,24 +326,6 @@ class ContactTable {
       document.getElementById('addBtn').addEventListener('click', this.openAdd.bind(this));
       this.tbl = document.getElementById('contact');
       this.update(contact);
-
-    } catch (e) {
-      forceLogin();
-    }
-
-  }
-
-  async searchContact() {
-    try {
-      const response = await fetch(url + `/api/resident/contact/load?resID=${this.resID}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        credentials: 'same-origin'
-      });
-      const json = await response.json();
-      return json;
 
     } catch (error) {
       console.error('Error:', error);
@@ -454,6 +487,10 @@ class AddContact {
     callback(json);
   }
 
+  hide() {
+    this.container.setAttribute('style', 'display: none');
+  }
+
   async save() {
     try {
       let data = {
@@ -470,12 +507,24 @@ class AddContact {
         }
       });
       const json = await response.json();
+
       console.log(json);
       if (json.success) {
         this.remove(this.added, json.new);
       }
+      else {
+        //Request is not successful. Inspect status code to determine whether token has expired or there is an error with the server instead.
+        const status = response.status;
+        if (status === 401) {
+          //Hide form before showing login form
+          this.hide();
+          //Forcelogin uses retry from 'this' upon successful login.
+          this.retry = this.save.bind(this);
+          forceLogin.bind(this)();
+        }
+      }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   }
 }
