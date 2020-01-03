@@ -9,7 +9,7 @@ window.onload = function() {
 };
 
 document.addEventListener("keydown", event => {
-  if (event.keyCode === 13) {
+  if(event.keyCode === 13) {
     event.preventDefault();
   }
 });
@@ -57,7 +57,7 @@ async function loginServer() {
 
     //(this) is the resident table. Retries initiating the table after authenticating user
     this.retry.bind(this)();
-  } catch (error) {
+  } catch(error) {
     console.error('Error:', error);
   }
 }
@@ -134,14 +134,14 @@ class ResTable {
       document.getElementById('searchbar').addEventListener('input', (event) => {
         this.searchChange();
       });
-      if (!navbar)
+      if(!navbar)
         addNavbar();
     }
     else {
       //Request is not successful. Inspect status code to determine whether token has expired or there is an error with the server instead.
       const status = response.status;
       console.log(status);
-      if (status === 401) {
+      if(status === 401) {
         //Forcelogin uses retry from 'this' upon successful login.
         this.retry = this.init.bind(this);
         forceLogin.bind(this)();
@@ -156,19 +156,19 @@ class ResTable {
 
   async doneTyping() {
     //If hidden (implying the user was forced to login on the last attempt) will show table again.
-    if (this.hidden) {
+    if(this.hidden) {
       this.show();
     }
     //Get response from search funciton making request to server
     const response = await this.searchResidents(document.getElementById('searchbar').value);
     const json = await response.json();
-    if (json.success){
+    if(json.success){
       this.update(json.residents);
     }
     else {
       //Request is not successful. Inspect status code to determine whether token has expired or there is an error with the server instead.
       const status = response.status;
-      if (status === 401) {
+      if(status === 401) {
         //Must hide table before displaying login form
         this.hide();
         //Forcelogin uses retry from 'this' upon successful login.
@@ -189,7 +189,7 @@ class ResTable {
       });
       return response;
 
-    } catch (error) {
+    } catch(error) {
       console.error('Error:', error);
     }
   }
@@ -291,11 +291,16 @@ class ContactTable {
       const status = await response.status;
       console.log(status);
       //Inspect status code to determine whether token has expired, which would return a 401
-      if (status === 401) {
+      if(status === 401) {
         //Forcelogin uses retry from 'this' upon successful login.
         this.retry = this.init.bind(this);
         forceLogin.bind(this)();
         //return to avoid executing the rest of the function in this case
+        return;
+      }
+      else if(status === 403) {
+        window.alert(await response.text());
+        this.goBack();
         return;
       }
       //else not permitted
@@ -327,7 +332,7 @@ class ContactTable {
       this.tbl = document.getElementById('contact');
       this.update(contact);
 
-    } catch (error) {
+    } catch(error) {
       console.error('Error:', error);
     }
   }
@@ -510,21 +515,26 @@ class AddContact {
       const json = await response.json();
 
       console.log(json);
-      if (json.success) {
+      if(json.success) {
         this.remove(this.added, json.new);
       }
       else {
         //Request is not successful. Inspect status code to determine whether token has expired or there is an error with the server instead.
         const status = response.status;
-        if (status === 401) {
+        if(status === 401) {
           //Hide form before showing login form
           this.hide();
           //Forcelogin uses retry from 'this' upon successful login.
           this.retry = this.save.bind(this);
           forceLogin.bind(this)();
         }
+        else if(status === 403) {
+          window.alert(await response.text());
+          this.onCancel();
+          return;
+        }
       }
-    } catch (error) {
+    } catch(error) {
       console.error(error);
     }
   }
