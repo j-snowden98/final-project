@@ -529,7 +529,7 @@ class AddContact {
           forceLogin.bind(this)();
         }
         else if(status === 403) {
-          window.alert(await response.text());
+          window.alert(json.message);
           this.onCancel();
           return;
         }
