@@ -13,7 +13,7 @@ router.post('/add', async (req, res) => {
     const auth = await data.isAuthorised(userID, 3);
     if(auth) {
       try {
-        const resID = req.body.resID;
+        //const resID = req.body.resID;
         const callBell = req.body.callBell;
         const drinkGiven = req.body.drinkGiven;
         const description = req.body.description;
@@ -23,7 +23,7 @@ router.post('/add', async (req, res) => {
         return res.status(200).json({ success: true, new: newEntry });
       }
       catch (e) {
-        return res.status(500).send('Server error!');
+        return res.status(500).json({success: false, message: 'Server error!'});
         console.log(e);
       }
     }
@@ -32,7 +32,7 @@ router.post('/add', async (req, res) => {
     }
   }
   catch (e) {
-    return res.status(500).send('Server error!');
+    return res.status(500).json({success: false, message: 'Server error!'});
     console.log(e);
   }
 });
