@@ -48,21 +48,32 @@ async function loginServer() {
         'Content-Type': 'application/json'
       }
     });
-    const json = await response.json();
+    const status = await response.status;
+    if(status === 401) {
+      document.getElementById('signin').insertAdjacentHTML('afterBegin', `
+      <div class="alert alert-danger" role="alert">
+        ${await response.text()}
+      </div>`);
+    }
+    else {
+      const json = await response.json();
 
-    //Get report and admin permissions add to navbar!
+      //Get report and admin permissions add to navbar!
 
-    document.getElementById('signin').outerHTML = '';
+      document.getElementById('signin').outerHTML = '';
 
-    //Adds the navbar if it's not already there; user is now authorised
-    //passes username from response to the navbar
-    if(!navbar)
-      addNavbar(json.username);
+      //Adds the navbar if it's not already there; user is now authorised
+      //passes username from response to the navbar
+      if(!navbar)
+        addNavbar(json.username);
 
-    //Calls retry function of class bound to this.
-    //Allows user to pick up where they left off after logging in again.
-    this.retry.bind(this)();
-  } catch(error) {
+      //Calls retry function of class bound to this.
+      //Allows user to pick up where they left off after logging in again.
+      this.retry.bind(this)();
+    }
+  }
+
+  catch(error) {
     console.error('Error:', error);
   }
 }
