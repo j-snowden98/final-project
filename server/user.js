@@ -15,10 +15,12 @@ router.post('/register', async (req, res) => {
   const role = req.body.role;
 
   try {
+    //Creates hashed password to be stored in DB
     bcrypt.genSalt(10, function(err, salt) {
       bcrypt.hash(password, salt, async function(err, hash) {
         if(!err) {
           console.log(hash);
+          //Uses DB model to save user with credentials and role to DB
           await data.addUser(username, hash, role);
           res.status(200).send({ 'user': username });
         }
@@ -50,15 +52,15 @@ router.post('/login', async (req, res) => {
         let reportAccess = await data.isAuthorised(userID, '');
         let adminAccess = await data.isAuthorised(userID, '')
         const expiresIn = 2 * 60 * 60;
-        const accessToken = jwt.sign({ id: userID }, SECRET_KEY, {
-        expiresIn: expiresIn
-        });
 
+        //Set userID and username in the JWT token, allowing them to be used for authentication of requests
+        const accessToken = jwt.sign({ id: userID, username: username }, SECRET_KEY, { expiresIn: expiresIn });
 
-        const cookieOptions = {
-          httpOnly: true
-        }
-        res.status(200).cookie('accessToken', accessToken, { httpOnly: true, maxAge: expiresIn * 1000 }).send({ "user": userID, "report": reportAccess, "admin": adminAccess });
+        //Set access token as a cookie in the client's browser.
+        //HTTPonly so it cannot be accessed by client side scripts
+        res.status(200).cookie('accessToken', accessToken, { httpOnly: true, maxAge: expiresIn * 1000 }).json({ username: username, report: reportAccess, admin: adminAccess });
+        //Username is sent back to user so it can be added to navbar.
+        //Uses the username from the request, which has been verified at this point
       }
       else {
         //if password fails, do not log them in
@@ -74,6 +76,11 @@ router.post('/login', async (req, res) => {
     console.log(e);
     return res.status(500).send('Server error!');
   }
+});
+
+router.post('/logout', (req, res) => {
+  //Just needs to clear access cookie.
+  res.status(200).clearCookie('accessToken').send('Logged out successfully!');
 });
 
 module.exports = router;

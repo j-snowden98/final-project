@@ -34,6 +34,7 @@ function forceLogin() {
 }
 
 async function loginServer() {
+  //This function will send a login request to the server with entered credentials
   let usr = document.getElementById('inputUser').value;
   let pass = document.getElementById('inputPassword').value;
 
@@ -48,23 +49,44 @@ async function loginServer() {
       }
     });
     const json = await response.json();
+
     //Get report and admin permissions add to navbar!
 
     document.getElementById('signin').outerHTML = '';
-    //Adds the navbar if it's not already there; user is now authorised
-    if(!navbar)
-      addNavbar();
 
-    //(this) is the resident table. Retries initiating the table after authenticating user
+    //Adds the navbar if it's not already there; user is now authorised
+    //passes username from response to the navbar
+    if(!navbar)
+      addNavbar(json.username);
+
+    //Calls retry function of class bound to this.
+    //Allows user to pick up where they left off after logging in again.
     this.retry.bind(this)();
   } catch(error) {
     console.error('Error:', error);
   }
 }
 
-function addNavbar() {
+async function logout() {
+  try {
+    //Tell server to clear access cookie
+    const response = await fetch(url + '/user/logout', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    //Now reload page to initial login
+    location.reload();
+  } catch(error) {
+    console.error('Error:', error);
+  }
+}
+
+function addNavbar(username) {
+  //Creates navbar which displays username and has a logout button
   const html = `<nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="#">Navbar</a>
+    <a class="navbar-brand" href="#">FastTrack</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -72,29 +94,16 @@ function addNavbar() {
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav mr-auto">
         <li class="nav-item active">
-          <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">Link</a>
-        </li>
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Dropdown
-          </a>
-          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <a class="dropdown-item" href="#">Action</a>
-            <a class="dropdown-item" href="#">Another action</a>
-            <div class="dropdown-divider"></div>
-            <a class="dropdown-item" href="#">Something else here</a>
-          </div>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+          <a class="nav-link" href="">Home <span class="sr-only">(current)</span></a>
         </li>
       </ul>
+      <span class="navbar-text mr-1">${username}</span>
+      <button id="logout" class="btn btn-outline-secondary my-2 my-sm-0" type="btn">Logout</button>
     </div>
   </nav>`;
   document.body.insertAdjacentHTML('afterBegin', html);
+  document.getElementById('logout').addEventListener('click', logout);
+  //Sets global navbar to true to ensure it is not added again.
   navbar = true;
 }
 
@@ -134,8 +143,10 @@ class ResTable {
       document.getElementById('searchbar').addEventListener('input', (event) => {
         this.searchChange();
       });
+
+      //Passes username from response to navbar
       if(!navbar)
-        addNavbar();
+        addNavbar(json.username);
     }
     else {
       //Request is not successful. Inspect status code to determine whether token has expired or there is an error with the server instead.
