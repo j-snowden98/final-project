@@ -5,7 +5,7 @@ const data = require('./db/model_mysql.js');
 const router = express.Router();
 
 router.get('/', async (req, res) => {
-  const userID = req.decoded.id;
+  //Take username from decoded JWT access token
   const username = req.decoded.username;
   const filter = req.query.filter;
 
@@ -16,6 +16,7 @@ router.get('/', async (req, res) => {
     res.status(200).json({ success: true, residents: residents, username: username });
   }
   catch (e) {
+    //Send response with error to client.
     console.log(e);
     return res.status(500).json({ success: false, message: 'Server error!' });
   }
