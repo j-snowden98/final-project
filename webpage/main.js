@@ -52,11 +52,18 @@ async function loginServer() {
         'Content-Type': 'application/json'
       }
     });
+    //Check status of response to determine what to do next
     const status = await response.status;
     if(status === 401) {
+      //Alert the user that the credentials they entered were incorrect
       document.getElementById('signin').insertAdjacentHTML('afterBegin', `
       <div class="alert alert-danger" role="alert">
         ${await response.text()}
+      </div>`);
+    }
+    else if (status === 500) {
+      //Alert user of an error with the server
+      document.getElementById('signin').insertAdjacentHTML('afterBegin', `<div class="alert alert-warning" role="alert">There was an error. Please try again later.
       </div>`);
     }
     else {
@@ -357,7 +364,6 @@ class ContactTable {
         this.goBack();
         return;
       }
-
       else if(status === 500) {
         //Notify the user that there has been an error
         document.body.insertAdjacentHTML('beforeend', `<div id="reqFailedAlert" class="alert alert-warning" role="alert">There was an error. Please try again later.
