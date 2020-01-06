@@ -63,7 +63,8 @@ async function loginServer() {
     }
     else if (status === 500) {
       //Alert user of an error with the server
-      document.getElementById('signin').insertAdjacentHTML('afterBegin', `<div class="alert alert-warning" role="alert">There was an error. Please try again later.
+      clearError();
+      document.getElementById('signin').insertAdjacentHTML('afterBegin', `<div id="errorAlert" class="alert alert-warning" role="alert">There was an error. Please try again later.
       </div>`);
     }
     else {
@@ -129,6 +130,14 @@ function addNavbar(username) {
   navbar = true;
 }
 
+function clearError() {
+  //If there is an error alert box, removes it.
+  //This is to avoid multiple error alerts being added when the user retries.
+  if (document.getElementById('errorAlert') !== null) {
+    document.getElementById('errorAlert').outerHTML = '';
+  }
+}
+
 
 class ResTable {
   constructor() {
@@ -180,6 +189,7 @@ class ResTable {
         forceLogin.bind(this)();
       }
       if(status === 500) {
+        clearError();
         //Notify the user that there has been an error.
         document.body.insertAdjacentHTML('afterBegin', `<div class="alert alert-warning" role="alert">There was an error. Please try again later.
         </div>`);
@@ -217,6 +227,7 @@ class ResTable {
       }
 
       if(status === 500) {
+        clearError();
         //Notify the user that there has been an error
         this.resDiv.insertAdjacentHTML('afterBegin', `<div class="alert alert-warning" role="alert">There was an error. Please try again later.
         </div>`);
@@ -627,6 +638,7 @@ class AddContact {
           return;
         }
         else if(status === 500) {
+          clearError();
           //Notify user there has been an error. Leaves the form as it is in case they want to try again and keep the data.
           //User can also click cancel at this point
           this.container.insertAdjacentHTML('afterBegin', `<div id="reqFailedAlert" class="alert alert-warning" role="alert">There was an error. Please try again later.
