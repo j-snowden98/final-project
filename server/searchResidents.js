@@ -13,12 +13,12 @@ router.get('/', async (req, res) => {
     const residents = await data.getResidents(filter);
     //Sends array of residents with info. Also sends username back to be added to navbar (when user is already logged in but refreshes the page).
     //Sends success which can be checked by client.
-    res.status(200).json({ success: true, residents: residents, username: username });
+    res.status(200).json({ residents: residents, username: username });
   }
   catch (e) {
     //Send response with error to client.
     console.log(e);
-    return res.status(500).json({ success: false, message: 'Server error!' });
+    return res.status(500).send('Server error!');
   }
 });
 

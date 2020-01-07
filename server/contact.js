@@ -25,22 +25,22 @@ router.post('/add', async (req, res) => {
         //Retrieve the newly added contact entry to be sent back to user
         //Gives feedback to show the user that they have successfully added an entry
         let newEntry = await data.getNewContact(resID);
-        return res.status(200).json({ success: true, new: newEntry });
+        return res.status(200).json({ new: newEntry });
       }
       catch (e) {
         //Notifies user of an error with the server
-        return res.status(500).json({success: false, message: 'Server error!'});
+        return res.status(500).send('Server error!');
         console.log(e);
       }
     }
     else {
       //Notifies user that they do not have permission to add a contact sheet.
-      return res.status(403).json({success: false, message: 'You do not have permission to perform this action'});
+      return res.status(403).send('You do not have permission to perform this action');
     }
   }
   catch (e) {
     //Notifies user of an error with the server
-    return res.status(500).json({success: false, message: 'Server error!'});
+    return res.status(500).send('Server error!');
     console.log(e);
   }
 });

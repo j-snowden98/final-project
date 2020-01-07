@@ -147,10 +147,12 @@ class ResTable {
   }
 
   async init() {
-    //Get response from search funciton making request to server. Sends empty filter to retrieve all residents
+    //Get response from search function making request to server. Sends empty filter parameter to retrieve all residents
     const response = await this.searchResidents();
-    const json = await response.json();
-    if(json.success) {
+    const status = await response.status;
+    console.log(status);
+    if(status === 200) {
+      const json = await response.json();
       document.body.insertAdjacentHTML('beforeend', `
         <div id="residents" class="ml-1 mr-1 str-component">
           <form class="form-inline my-2 my-lg-0">
@@ -179,21 +181,16 @@ class ResTable {
       if(!navbar)
         addNavbar(json.username);
     }
-    else {
-      //Request is not successful. Inspect status code to determine whether token has expired or there is an error with the server instead.
-      const status = response.status;
-      console.log(status);
-      if(status === 401) {
-        //Forcelogin uses retry from 'this' upon successful login.
-        this.retry = this.init.bind(this);
-        forceLogin.bind(this)();
-      }
-      if(status === 500) {
-        clearError();
-        //Notify the user that there has been an error.
-        document.body.insertAdjacentHTML('afterBegin', `<div class="alert alert-warning" role="alert">There was an error. Please try again later.
-        </div>`);
-      }
+    else if(status === 401) {
+      //Forcelogin uses retry from 'this' upon successful login.
+      this.retry = this.init.bind(this);
+      forceLogin.bind(this)();
+    }
+    else if (status === 500) {
+      clearError();
+      //Notify the user that there has been an error.
+      document.body.insertAdjacentHTML('beforeend', `<div class="alert alert-warning" role="alert">There was an error. Please try again later.
+      </div>`);
     }
   }
 
@@ -211,27 +208,23 @@ class ResTable {
     }
     //Get response from search funciton making request to server
     const response = await this.searchResidents(document.getElementById('searchbar').value);
-    const json = await response.json();
-    if(json.success){
+    const status = await response.status;
+
+    if(status === 200) {
+      const json = await response.json();
       this.update(json.residents);
     }
-    else {
-      //Request is not successful. Inspect status code to determine whether token has expired or there is an error with the server instead.
-      const status = response.status;
-      if(status === 401) {
-        //Must hide table before displaying login form
-        this.hide();
-        //Forcelogin uses retry from 'this' upon successful login.
-        this.retry = this.doneTyping.bind(this);
-        forceLogin.bind(this)();
-      }
-
-      if(status === 500) {
-        clearError();
-        //Notify the user that there has been an error
-        this.resDiv.insertAdjacentHTML('afterBegin', `<div class="alert alert-warning" role="alert">There was an error. Please try again later.
-        </div>`);
-      }
+    else if(status === 401) {
+      //Forcelogin uses retry from 'this' upon successful login.
+      this.hide();
+      this.retry = this.doneTyping.bind(this);
+      forceLogin.bind(this)();
+    }
+    else if (status === 500) {
+      clearError();
+      //Notify the user that there has been an error
+      this.resDiv.insertAdjacentHTML('afterBegin', `<div class="alert alert-warning" role="alert">There was an error. Please try again later.
+      </div>`);
     }
   }
 
@@ -377,11 +370,11 @@ class ContactTable {
       }
       else if(status === 500) {
         //Notify the user that there has been an error
-        document.body.insertAdjacentHTML('beforeend', `<div id="reqFailedAlert" class="alert alert-warning" role="alert">There was an error. Please try again later.
+        document.body.insertAdjacentHTML('beforeend', `<div id="errorAlert" class="alert alert-warning" role="alert">There was an error. Please try again later.
         </div>`);
         //Waits 1 second to notify user then returns to previous screen
         setTimeout(function(){
-          document.getElementById('reqFailedAlert').outerHTML = '';
+          clearError();
           this.goBack();
         }.bind(this), 1000);
         return;
@@ -598,6 +591,10 @@ class AddContact {
     this.container.setAttribute('style', 'display: none');
   }
 
+  show() {
+    this.container.setAttribute('style', 'display: flex');
+  }
+
   async save() {
     try {
       //Attempt to save the new entry to the server
@@ -614,38 +611,35 @@ class AddContact {
           'Content-Type': 'application/json'
         }
       });
-      const json = await response.json();
+      const status = await response.status;
 
-      console.log(json);
-      if(json.success) {
-        //Show new entry in contact table if successfully saved
+      if(status === 200) {
+        const json = await response.json();
         this.remove(this.added, json.new);
       }
-      else {
-        //Request is not successful. Inspect status code to determine whether token has expired or there is an error with the server instead.
-        const status = response.status;
-        if(status === 401) {
-          //Hide form before showing login form
-          this.hide();
-          //Forcelogin uses retry from 'this' upon successful login.
-          this.retry = this.save.bind(this);
-          forceLogin.bind(this)();
-        }
-        else if(status === 403) {
-          //notify user that they are not authorised. Go back to last state
-          window.alert(json.message);
-          this.onCancel();
-          return;
-        }
-        else if(status === 500) {
-          clearError();
-          //Notify user there has been an error. Leaves the form as it is in case they want to try again and keep the data.
-          //User can also click cancel at this point
-          this.container.insertAdjacentHTML('afterBegin', `<div id="reqFailedAlert" class="alert alert-warning" role="alert">There was an error. Please try again later.
-          </div>`);
-        }
+      else if(status === 401) {
+        //Hide form before showing login form
+        this.hide();
+        //Forcelogin uses retry from 'this' upon successful login.
+        this.retry = this.save.bind(this);
+        forceLogin.bind(this)();
       }
-    } catch(error) {
+      else if(status === 403) {
+        //Notify the user that they are not authorised. Go back to previous state
+        window.alert(await response.text());
+        this.onCancel();
+        return;
+      }
+      else if (status === 500) {
+        clearError();
+        this.show();
+        //Notify user there has been an error. Leaves the form as it is in case they want to try again and keep the data.
+        //User can also click cancel at this point
+        this.container.insertAdjacentHTML('afterBegin', `<div id="errorAlert" class="alert alert-warning" role="alert">There was an error. Please try again later.
+        </div>`);
+      }
+    }
+    catch(error) {
       console.error(error);
     }
   }
