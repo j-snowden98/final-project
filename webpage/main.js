@@ -52,6 +52,7 @@ async function loginServer() {
         'Content-Type': 'application/json'
       }
     });
+
     //Check status of response to determine what to do next
     const status = await response.status;
     if(status === 401) {
@@ -99,6 +100,7 @@ async function logout() {
         'Content-Type': 'application/json'
       }
     });
+
     //Now reload page to initial login
     location.reload();
   } catch(error) {
@@ -126,6 +128,7 @@ function addNavbar(username) {
   </nav>`;
   document.body.insertAdjacentHTML('afterBegin', html);
   document.getElementById('logout').addEventListener('click', logout);
+
   //Sets global navbar to true to ensure it is not added again.
   navbar = true;
 }
@@ -279,7 +282,6 @@ class ResTable {
 
 class Resident {
   constructor(resObject) {
-    console.log(resObject);
     //Setting its properties to that of resObject (which has been retrieved from DB)
     this.id = resObject.id;
     this.forename = resObject.forename;
@@ -359,6 +361,7 @@ class ContactTable {
         //Forcelogin uses retry from 'this' upon successful login.
         this.retry = this.init.bind(this);
         forceLogin.bind(this)();
+
         //return to avoid executing the rest of the function in this case
         return;
       }
@@ -431,6 +434,7 @@ class ContactTable {
           <td>${r.description}</td>
           <td>${r.username}</td>
         </tr>`);
+
       //Display information for this contact sheet entry when its respective row is clicked
       document.getElementById('contactTblBody').appendChild(row);
       row.addEventListener('click', function() {
@@ -473,6 +477,7 @@ class ContactTable {
         <td>${newEntry.description}</td>
         <td>${newEntry.username}</td>
       </tr>`);
+
     //Allows new row to be clicked to view information in more detail
     document.getElementById('contactTblBody').prepend(row);
     row.addEventListener('click', function() {
@@ -524,6 +529,7 @@ class Contact {
       </div>`
     document.body.insertAdjacentHTML('beforeend', html);
     this.container = document.getElementById('dispContact');
+
     //Back button goes back to contact table
     document.getElementById('closeContact').addEventListener('click', this.close.bind(this));
   }
@@ -620,6 +626,7 @@ class AddContact {
       else if(status === 401) {
         //Hide form before showing login form
         this.hide();
+        
         //Forcelogin uses retry from 'this' upon successful login.
         this.retry = this.save.bind(this);
         forceLogin.bind(this)();
@@ -628,11 +635,12 @@ class AddContact {
         //Notify the user that they are not authorised. Go back to previous state
         window.alert(await response.text());
         this.onCancel();
-        return;
       }
       else if (status === 500) {
         clearError();
+        //Need to show form in case the user was forced to log in again which would have hidden it.
         this.show();
+
         //Notify user there has been an error. Leaves the form as it is in case they want to try again and keep the data.
         //User can also click cancel at this point
         this.container.insertAdjacentHTML('afterBegin', `<div id="errorAlert" class="alert alert-warning" role="alert">There was an error. Please try again later.

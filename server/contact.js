@@ -1,7 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const data = require('./db/model_mysql.js');
-const jwt = require('jsonwebtoken');
 
 const router = express.Router();
 router.use(bodyParser.urlencoded({ extended: false }));
@@ -19,6 +18,7 @@ router.post('/add', async (req, res) => {
         const callBell = req.body.callBell;
         const drinkGiven = req.body.drinkGiven;
         const description = req.body.description;
+        
         //Use db model to save new record into database
         const result = await data.insertContact(resID, userID, callBell, drinkGiven, description);
 

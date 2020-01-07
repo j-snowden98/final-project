@@ -13,7 +13,8 @@ async function init() {
 async function newConnection() {
   //creates a new connection to the database using credentials in config file
   const sql = await mysql.createConnection(config.mysql);
-  //sql will terminate on error and report it to the console
+
+  //sql connection will terminate on error and report it to the console
   sql.on('error', (err) => {
     console.error(err);
     sql.end();
@@ -42,7 +43,6 @@ async function getHash(username) {
   const sql = await init();
   const query = sql.format('SELECT id, password FROM User WHERE username = ?', [username]);
   const [rows] = await sql.query(query);
-  console.log(rows);
   return (rows)[0];
 }
 
@@ -52,10 +52,10 @@ async function getResidents(search) {
   const sql = await init();
   const query = sql.format('SELECT X.id, X.forename, X.surname, X.dietReq, X.allergies, X.thickener, CONCAT(Z.roomPrefix, Z.roomNumber) AS roomName FROM Resident X JOIN ResidentRoom Y ON X.id = Y.resID JOIN Room Z ON Y.roomID = Z.id WHERE X.forename LIKE ? OR X.surname LIKE ? OR Z.roomNumber LIKE ? OR Z.roomPrefix LIKE ? ORDER BY Z.roomPrefix, Z.roomNumber ASC', [filter, filter, filter, filter]);
   const [rows] = await sql.query(query);
-  console.log(rows);
   return (rows);
 }
 
+//Retrieves all contact sheet entries from the last 24hrs for a given resident.
 async function searchContact(resID) {
   const sql = await init();
   const query = sql.format('SELECT U.username, DATE_FORMAT(DATE(C.contactDate), "%d/%m/%Y") as contactDate, DATE_FORMAT(TIME(C.contactDate), "%H:%i") as contactTime, C.callBell, C.drinkGiven, C.description FROM Contact C LEFT JOIN User U ON U.id = C.userID WHERE C.resID = ? AND C.contactDate >= NOW() - INTERVAL 1 DAY ORDER BY C.contactDate DESC', [resID]);
@@ -63,6 +63,7 @@ async function searchContact(resID) {
   return (rows);
 }
 
+//Retrieves the newest contact sheet entry to show the user that they have saved it
 async function getNewContact(resID) {
   const sql = await init();
   const query = sql.format('SELECT U.username, DATE_FORMAT(DATE(C.contactDate), "%d/%m/%Y") as contactDate, DATE_FORMAT(TIME(C.contactDate), "%H:%i") as contactTime, C.callBell, C.drinkGiven, C.description FROM Contact C LEFT JOIN User U ON U.id = C.userID WHERE C.resID = ? ORDER BY C.contactDate DESC LIMIT 1', [resID]);
@@ -71,8 +72,11 @@ async function getNewContact(resID) {
   return (rows)[0];
 }
 
+//Saves a new contact sheet entry
 async function insertContact(resID, userID, callBell, drinkGiven, description) {
   const sql = await init();
+
+  //Uses NOW for contactDate instead of user entered information to avoid fabricated times/entries
   const query = sql.format('INSERT INTO Contact (resID, userID, contactDate, callBell, drinkGiven, description) VALUES (?, ?, NOW(), ?, ?, ?)', [resID, userID, callBell, drinkGiven, description]);
   return (await sql.query(query));
 }
