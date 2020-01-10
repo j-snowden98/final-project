@@ -58,7 +58,7 @@ async function getResidents(search) {
 //Retrieves all contact sheet entries from the last 24hrs for a given resident.
 async function searchContact(resID) {
   const sql = await init();
-  const query = sql.format('SELECT U.username, DATE_FORMAT(DATE(C.contactDate), "%d/%m/%Y") as contactDate, DATE_FORMAT(TIME(C.contactDate), "%H:%i") as contactTime, C.callBell, C.drinkGiven, C.description FROM Contact C LEFT JOIN User U ON U.id = C.userID WHERE C.resID = ? AND C.contactDate >= NOW() - INTERVAL 1 DAY ORDER BY C.contactDate DESC', [resID]);
+  const query = sql.format('SELECT U.username, DATE_FORMAT(DATE(C.contactDate), "%d/%m/%Y") as contactDate, DATE_FORMAT(TIME(C.contactDate), "%H:%i") as contactTime, C.callBell, C.drinkGiven, C.description, C.mood FROM Contact C LEFT JOIN User U ON U.id = C.userID WHERE C.resID = ? AND C.contactDate >= NOW() - INTERVAL 1 DAY ORDER BY C.contactDate DESC', [resID]);
   const [rows] = await sql.query(query);
   return (rows);
 }
@@ -66,18 +66,18 @@ async function searchContact(resID) {
 //Retrieves the newest contact sheet entry to show the user that they have saved it
 async function getNewContact(resID) {
   const sql = await init();
-  const query = sql.format('SELECT U.username, DATE_FORMAT(DATE(C.contactDate), "%d/%m/%Y") as contactDate, DATE_FORMAT(TIME(C.contactDate), "%H:%i") as contactTime, C.callBell, C.drinkGiven, C.description FROM Contact C LEFT JOIN User U ON U.id = C.userID WHERE C.resID = ? ORDER BY C.contactDate DESC LIMIT 1', [resID]);
+  const query = sql.format('SELECT U.username, DATE_FORMAT(DATE(C.contactDate), "%d/%m/%Y") as contactDate, DATE_FORMAT(TIME(C.contactDate), "%H:%i") as contactTime, C.callBell, C.drinkGiven, C.description, C.mood FROM Contact C LEFT JOIN User U ON U.id = C.userID WHERE C.resID = ? ORDER BY C.contactDate DESC LIMIT 1', [resID]);
   const [rows] = await sql.query(query);
   console.log(rows);
   return (rows)[0];
 }
 
 //Saves a new contact sheet entry
-async function insertContact(resID, userID, callBell, drinkGiven, description) {
+async function insertContact(resID, userID, callBell, drinkGiven, description, mood) {
   const sql = await init();
 
   //Uses NOW for contactDate instead of user entered information to avoid fabricated times/entries
-  const query = sql.format('INSERT INTO Contact (resID, userID, contactDate, callBell, drinkGiven, description) VALUES (?, ?, NOW(), ?, ?, ?)', [resID, userID, callBell, drinkGiven, description]);
+  const query = sql.format('INSERT INTO Contact (resID, userID, contactDate, callBell, drinkGiven, description, mood) VALUES (?, ?, NOW(), ?, ?, ?, ?)', [resID, userID, callBell, drinkGiven, description, mood]);
   return (await sql.query(query));
 }
 

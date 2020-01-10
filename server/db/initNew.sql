@@ -1,4 +1,4 @@
-create database if not exists st_ronans_care;
+CREATE DATABASE IF NOT EXISTS st_ronans_care;
 
 CREATE TABLE IF NOT EXISTS st_ronans_care.User (
   id INT PRIMARY KEY AUTO_INCREMENT,
@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS st_ronans_care.User (
   role VARCHAR(100)
 );
 
-CREATE TABLE st_ronans_care.Permissions (
+CREATE TABLE IF NOT EXISTS st_ronans_care.Permissions (
   id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
   name VARCHAR(100) NOT NULL,
   type INT NOT NULL
@@ -51,11 +51,8 @@ CREATE TABLE IF NOT EXISTS st_ronans_care.Contact (
   contactDate DATETIME NOT NULL,
   callBell BOOLEAN NOT NULL,
   drinkGiven BOOLEAN NOT NULL,
-  description TEXT,
+  description TEXT NOT NULL,
+  mood TEXT NOT NULL,
   FOREIGN KEY (resID) REFERENCES Resident(id),
   FOREIGN KEY (userID) REFERENCES User(id)
 );
-
-INSERT INTO st_ronans_care.User (username, password, role)
-VALUES
-    ('j-snowden', '$2a$10$cz4RgHPRI2xfd4jqn2vXFeJfThfcHqtITtLWKkgeSLPn4WjGUU5eG', 'Administrator');

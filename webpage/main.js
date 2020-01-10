@@ -499,6 +499,7 @@ class Contact {
     this.callBell = object.callBell;
     this.drinkGiven = object.drinkGiven;
     this.description = object.description;
+    this.mood = object.mood;
     this.username = object.username;
     this.goBack = goBack;
   }
@@ -526,6 +527,10 @@ class Contact {
               <div class="form-group">
                 <label for="desc">Care And Contact</label>
                 <textarea class="form-control" id="desc" rows="6" readonly>${this.description}</textarea>
+              </div>
+              <div class="form-group">
+                <label for="mood">Mood</label>
+                <textarea class="form-control" id="mood" rows="3" readonly>${this.mood}</textarea>
               </div>
             </form>
           </div>
@@ -571,7 +576,11 @@ class AddContact {
             </div>
             <div class="form-group">
               <label for="desc">Care And Contact</label>
-              <textarea class="form-control" id="desc" rows="6"></textarea>
+              <textarea class="form-control" id="desc" rows="6" spellcheck="true"></textarea>
+            </div>
+            <div class="form-group">
+              <label for="mood">Mood</label>
+              <textarea class="form-control" id="mood" rows="3" spellcheck="true"></textarea>
             </div>
           </form>
           <div class="str-btn">
@@ -586,6 +595,7 @@ class AddContact {
     this.callBell = document.getElementById('callBell');
     this.drinkGiven = document.getElementById('drinkGiven');
     this.desc = document.getElementById('desc');
+    this.mood = document.getElementById('mood');
 
     document.getElementById('btnCancel').addEventListener('click', function() { this.remove(this.onCancel); }.bind(this));
     document.getElementById('btnAccept').addEventListener('click', this.save.bind(this));
@@ -612,7 +622,8 @@ class AddContact {
         resID: this.resID,
         callBell: this.callBell.checked,
         drinkGiven: this.drinkGiven.checked,
-        description: this.desc.value
+        description: this.desc.value,
+        mood: this.mood.value
       }
       const response = await fetch(url + '/api/resident/contact/add', {
         method: 'POST',

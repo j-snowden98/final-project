@@ -18,9 +18,10 @@ router.post('/add', async (req, res) => {
         const callBell = req.body.callBell;
         const drinkGiven = req.body.drinkGiven;
         const description = req.body.description;
-        
+        const mood = req.body.mood;
+
         //Use db model to save new record into database
-        const result = await data.insertContact(resID, userID, callBell, drinkGiven, description);
+        const result = await data.insertContact(resID, userID, callBell, drinkGiven, description, mood);
 
         //Retrieve the newly added contact entry to be sent back to user
         //Gives feedback to show the user that they have successfully added an entry
