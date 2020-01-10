@@ -1,0 +1,45 @@
+.form-signin {
+  width: 100%;
+  max-width: 330px;
+  padding: 15px;
+  margin: auto;
+}
+
+.table-str > thead > tr > th {
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.table-str > tbody > tr {
+  cursor: pointer;
+}
+
+
+
+.table-str > tbody > tr > td {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.table-str {
+  table-layout: fixed;
+}
+
+.container {
+  max-width: none !important;
+  padding: 0 !important;
+}
+
+.str-component {
+  margin-top: 0.2rem !important;
+}
+
+.str-btn {
+  text-align: center;
+}
+
+.dnr {
+  color: red;
+  font-weight: bold;
+}
