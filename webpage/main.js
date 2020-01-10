@@ -289,6 +289,8 @@ class Resident {
     this.dietReq = resObject.dietReq;
     this.allergies = resObject.allergies;
     this.thickener = Boolean(resObject.thickener);
+    this.diabetes = resObject.diabetes;
+    this.dnr = Boolean(resObject.dnr);
     this.roomName = resObject.roomName;
   }
 
@@ -305,6 +307,8 @@ class Resident {
             <p class="card-text">Dietary Requirements: ${this.dietReq === ''? 'None' : this.dietReq}</p>
             <p class="card-text">Allergies: ${this.allergies === ''? 'None' : this.allergies}</p>
             <p class="card-text">Thickener: ${!this.thickener? 'No' : 'Yes'}</p>
+            <p class="card-text">Diabetes: ${this.diabetes === 0? 'No' : 'Type ' + this.diabetes}</p>
+            ${this.dnr? '<p class="card-text dnr">Do Not Resuscitate</p>' : ''}
             <button id="btnContact" type="button" class="btn btn-secondary btn">Contact</button>
             <button id="btnFood" type="button" class="btn btn-secondary btn">Food & Fluid</button>
           </div>
@@ -626,7 +630,7 @@ class AddContact {
       else if(status === 401) {
         //Hide form before showing login form
         this.hide();
-        
+
         //Forcelogin uses retry from 'this' upon successful login.
         this.retry = this.save.bind(this);
         forceLogin.bind(this)();

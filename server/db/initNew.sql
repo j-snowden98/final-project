@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS st_ronans_care.Resident (
   dietReq VARCHAR(100) NOT NULL,
   allergies VARCHAR(100) NOT NULL,
   thickener BOOLEAN NOT NULL,
-  diabetes BOOLEAN NOT NULL,
+  diabetes TINYINT(1) NOT NULL,
   dnr BOOLEAN NOT NULL
 );
 

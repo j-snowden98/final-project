@@ -38,3 +38,8 @@
 .str-btn {
   text-align: center;
 }
+
+.dnr {
+  color: red;
+  font-weight: bold;
+}
