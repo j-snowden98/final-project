@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS st_ronans_care.Permissions (
   id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
   name VARCHAR(100) NOT NULL,
   type INT NOT NULL
-)
+);
 
 CREATE TABLE IF NOT EXISTS st_ronans_care.UserPermissions (
   userID INT NOT NULL,
@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS st_ronans_care.Resident (
 
 CREATE TABLE IF NOT EXISTS st_ronans_care.Room (
   id INT PRIMARY KEY AUTO_INCREMENT,
-  roomPrefix VARCHAR NOT NULL,
+  roomPrefix VARCHAR(4) NOT NULL,
   roomNumber INT NOT NULL
 );
 
