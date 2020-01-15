@@ -42,5 +42,5 @@ VALUES
   ((SELECT id FROM st_ronans_care.Resident WHERE surname = 'Calcagno'), (SELECT id FROM st_ronans_care.Room WHERE CONCAT(roomPrefix, roomNumber) = 'A3')),
   ((SELECT id FROM st_ronans_care.Resident WHERE surname = 'Brunet'), (SELECT id FROM st_ronans_care.Room WHERE CONCAT(roomPrefix, roomNumber) = 'B1')),
   ((SELECT id FROM st_ronans_care.Resident WHERE surname = 'Umstead'), (SELECT id FROM st_ronans_care.Room WHERE CONCAT(roomPrefix, roomNumber) = 'B21')),
-  ((SELECT id FROM st_ronans_care.Resident WHERE surname = 'Christianson'), (SELECT id FROM st_ronans_care.Room WHERE CONCAT(roomPrefix, roomNumber) = '5')),
+  ((SELECT id FROM st_ronans_care.Resident WHERE surname = 'Christianson'), (SELECT id FROM st_ronans_care.Room WHERE CONCAT(roomPrefix, roomNumber) = 'B5')),
   ((SELECT id FROM st_ronans_care.Resident WHERE surname = 'Ippolito'), (SELECT id FROM st_ronans_care.Room WHERE CONCAT(roomPrefix, roomNumber) = 'C1'));
