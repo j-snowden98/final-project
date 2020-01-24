@@ -12,7 +12,7 @@ describe('Data model tests', () => {
       });
     });
 
-    describe('Get residents by forename', async(done) => {
+    describe('Get residents by forename', async() => {
       it('it should return 1 resident with name Curtis', async() => {
         let residents = await dataModel.getResidents('Curtis');
         residents.should.have.lengthOf(1);
@@ -38,7 +38,7 @@ describe('Data model tests', () => {
       });
     });
 
-    describe('Get residents by surname', async(done) => {
+    describe('Get residents by surname', async() => {
       it('it should return 1 resident with name Lundstrom', async() => {
         let residents = await dataModel.getResidents('Lundstrom');
         residents.should.have.lengthOf(1);
@@ -64,7 +64,7 @@ describe('Data model tests', () => {
       });
     });
 
-    describe('Get residents by forename and surname', async(done) => {
+    describe('Get residents by forename and surname', async() => {
       it('it should return 1 resident with name Lionel Lundstrom', async() => {
         let residents = await dataModel.getResidents('Lionel Lundstrom');
         residents.should.have.lengthOf(1);
@@ -90,7 +90,7 @@ describe('Data model tests', () => {
       });
     });
 
-    describe('Get residents by room number', async(done) => {
+    describe('Get residents by room number', async() => {
       it('it should return residents in rooms with room number including 1', async() => {
         let residents = await dataModel.getResidents('1');
         residents.should.have.lengthOf(5);
@@ -120,7 +120,7 @@ describe('Data model tests', () => {
       });
     });
 
-    describe('Get residents with substrings in forename, surname or roomName', async(done) => {
+    describe('Get residents with substrings in forename, surname or roomName', async() => {
       it('it should return residents with forename, surname or roomName containing substring a', async() => {
         let residents = await dataModel.getResidents('a');
         residents.should.have.lengthOf(9);
@@ -182,34 +182,354 @@ describe('Data model tests', () => {
       });
     });
 
-    /*describe('Create one contact sheet entry for 4 different residents', () => {
+    describe('Create one contact sheet entry for 4 different residents', () => {
       it('Add a contact entry for Lionel Lundstrom, then searchContact should be of length 1', async() => {
+        //Get resID
         let residents = await dataModel.getResidents('Lionel');
-        let id = residents[0].id;
-        let addContact = await dataModel.insertContact(id);
+        let resID = residents[0].id;
+
+        //Check that resident's contact is empty to begin with
+        let contact = await dataModel.searchContact(resID);
         contact.should.have.lengthOf(0);
+
+        //Get userID
+        let result = await dataModel.getHash('test1');
+        let userID = await result.id;
+
+        //Save contact entry
+        let addContact = await dataModel.insertContact(resID, userID, true, true, 'Example contact sheet info', 'Resident is relaxed');
+
+        if(addContact) {
+          //Get contact for resident
+          contact = await dataModel.searchContact(resID);
+          contact.should.have.lengthOf(1);
+        }
       });
 
-      it('Contact for Del Devine should be empty so far', async() => {
+      it('Add a contact entry for Del Devine, then searchContact should be of length 1', async() => {
+        //Get resID
         let residents = await dataModel.getResidents('Devine');
-        let id = residents[0].id;
-        let contact = await dataModel.searchContact(id);
+        let resID = residents[0].id;
+
+        //Check that resident's contact is empty to begin with
+        let contact = await dataModel.searchContact(resID);
         contact.should.have.lengthOf(0);
+
+        //Get userID
+        let result = await dataModel.getHash('test1');
+        let userID = await result.id;
+
+        //Save contact entry
+        let addContact = await dataModel.insertContact(resID, userID, true, true, 'Example contact sheet info', 'Resident is relaxed');
+
+        if(addContact) {
+          //Get contact for resident
+          contact = await dataModel.searchContact(resID);
+          contact.should.have.lengthOf(1);
+        }
       });
 
-      it('Contact for Hollis Happ should be empty so far', async() => {
+      it('Add a contact entry for Hollis Happ, then searchContact should be of length 1', async() => {
+        //Get resID
         let residents = await dataModel.getResidents('Hollis');
-        let id = residents[0].id;
-        let contact = await dataModel.searchContact(id);
+        let resID = residents[0].id;
+
+        //Check that resident's contact is empty to begin with
+        let contact = await dataModel.searchContact(resID);
         contact.should.have.lengthOf(0);
+
+        //Get userID
+        let result = await dataModel.getHash('test1');
+        let userID = await result.id;
+
+        //Save contact entry
+        let addContact = await dataModel.insertContact(resID, userID, true, true, 'Example contact sheet info', 'Resident is relaxed');
+
+        if(addContact) {
+          //Get contact for resident
+          contact = await dataModel.searchContact(resID);
+          contact.should.have.lengthOf(1);
+        }
       });
 
-      it('Contact for Odell Longshore should be empty so far', async() => {
+      it('Add a contact entry for Odell Longshore, then searchContact should be of length 1', async() => {
+        //Get resID
         let residents = await dataModel.getResidents('Odell');
-        let id = residents[0].id;
-        let contact = await dataModel.searchContact(id);
+        let resID = residents[0].id;
+
+        //Check that resident's contact is empty to begin with
+        let contact = await dataModel.searchContact(resID);
         contact.should.have.lengthOf(0);
+
+        //Get userID
+        let result = await dataModel.getHash('test1');
+        let userID = await result.id;
+
+        //Save contact entry
+        let addContact = await dataModel.insertContact(resID, userID, true, true, 'Example contact sheet info', 'Resident is relaxed');
+
+        if(addContact) {
+          //Get contact for resident
+          contact = await dataModel.searchContact(resID);
+          contact.should.have.lengthOf(1);
+        }
       });
-    });*/
+    });
+
+    describe('Add new contact entries for Lionel Lundstrom, testing call bell and drink given', () => {
+      it('Add a contact entry for Lionel Lundstrom, call bell and drink given both false', async() => {
+        //Get resID
+        let residents = await dataModel.getResidents('Lionel');
+        let resID = residents[0].id;
+
+        //Check that resident's contact is empty to begin with
+        let contact = await dataModel.searchContact(resID);
+        contact.should.have.lengthOf(1);
+
+        //Get userID
+        let result = await dataModel.getHash('test1');
+        let userID = await result.id;
+
+        //Save contact entry
+        let addContact = await dataModel.insertContact(resID, userID, false, false, 'Example contact sheet info', 'Resident is relaxed');
+
+        if(addContact) {
+          //Get contact for resident
+          contact = await dataModel.searchContact(resID);
+          Boolean(contact[0].callBell).should.deep.equal(false);
+          Boolean(contact[0].drinkGiven).should.deep.equal(false);
+          contact.should.have.lengthOf(2);
+        }
+      });
+
+      it('Add a contact entry for Lionel Lundstrom, call bell is true and drink given is false', async() => {
+        //Get resID
+        let residents = await dataModel.getResidents('Lionel');
+        let resID = residents[0].id;
+
+        //Check that resident's contact is empty to begin with
+        let contact = await dataModel.searchContact(resID);
+        contact.should.have.lengthOf(2);
+
+        //Get userID
+        let result = await dataModel.getHash('test1');
+        let userID = await result.id;
+
+        //Save contact entry
+        let addContact = await dataModel.insertContact(resID, userID, true, false, 'Example contact sheet info', 'Resident is relaxed');
+
+        if(addContact) {
+          //Get contact for resident
+          contact = await dataModel.searchContact(resID);
+          Boolean(contact[0].callBell).should.deep.equal(true);
+          Boolean(contact[0].drinkGiven).should.deep.equal(false);
+          contact.should.have.lengthOf(3);
+        }
+      });
+
+      it('Add a contact entry for Lionel Lundstrom, call bell is false and drink given is true', async() => {
+        //Get resID
+        let residents = await dataModel.getResidents('Lionel');
+        let resID = residents[0].id;
+
+        //Check that resident's contact is empty to begin with
+        let contact = await dataModel.searchContact(resID);
+        contact.should.have.lengthOf(3);
+
+        //Get userID
+        let result = await dataModel.getHash('test1');
+        let userID = await result.id;
+
+        //Save contact entry
+        let addContact = await dataModel.insertContact(resID, userID, false, true, 'Example contact sheet info', 'Resident is relaxed');
+
+        if(addContact) {
+          //Get contact for resident
+          contact = await dataModel.searchContact(resID);
+          Boolean(contact[0].callBell).should.deep.equal(false);
+          Boolean(contact[0].drinkGiven).should.deep.equal(true);
+          contact.should.have.lengthOf(4);
+        }
+      });
+
+      it('Add a contact entry for Lionel Lundstrom, call bell and drink given both true', async() => {
+        //Get resID
+        let residents = await dataModel.getResidents('Lionel');
+        let resID = residents[0].id;
+
+        //Check that resident's contact is empty to begin with
+        let contact = await dataModel.searchContact(resID);
+        contact.should.have.lengthOf(4);
+
+        //Get userID
+        let result = await dataModel.getHash('test1');
+        let userID = await result.id;
+
+        //Save contact entry
+        let addContact = await dataModel.insertContact(resID, userID, true, true, 'Example contact sheet info', 'Resident is relaxed');
+
+        if(addContact) {
+          //Get contact for resident
+          contact = await dataModel.searchContact(resID);
+          Boolean(contact[0].callBell).should.deep.equal(true);
+          Boolean(contact[0].drinkGiven).should.deep.equal(true);
+          contact.should.have.lengthOf(5);
+        }
+      });
+    });
+    describe('Add new contact entries for Lionel Lundstrom, testing description and mood', () => {
+      it('Add a contact entry for Lionel Lundstrom, description = description1, mood = mood1', async() => {
+        //Get resID
+        let residents = await dataModel.getResidents('Lionel');
+        let resID = residents[0].id;
+
+        //Check that resident's contact is empty to begin with
+        let contact = await dataModel.searchContact(resID);
+        contact.should.have.lengthOf(5);
+
+        //Get userID
+        let result = await dataModel.getHash('test1');
+        let userID = await result.id;
+
+        //Save contact entry
+        let addContact = await dataModel.insertContact(resID, userID, false, false, 'description1', 'mood1');
+
+        if(addContact) {
+          //Get contact for resident
+          contact = await dataModel.searchContact(resID);
+          contact[0].description.should.deep.equal('description1');
+          contact[0].mood.should.deep.equal('mood1');
+          contact.should.have.lengthOf(6);
+        }
+      });
+
+      it('Add a contact entry for Lionel Lundstrom, description = description2, mood = mood2', async() => {
+        //Get resID
+        let residents = await dataModel.getResidents('Lionel');
+        let resID = residents[0].id;
+
+        //Check that resident's contact is empty to begin with
+        let contact = await dataModel.searchContact(resID);
+        contact.should.have.lengthOf(6);
+
+        //Get userID
+        let result = await dataModel.getHash('test1');
+        let userID = await result.id;
+
+        //Save contact entry
+        let addContact = await dataModel.insertContact(resID, userID, false, false, 'description2', 'mood2');
+
+        if(addContact) {
+          //Get contact for resident
+          contact = await dataModel.searchContact(resID);
+          contact[0].description.should.deep.equal('description2');
+          contact[0].mood.should.deep.equal('mood2');
+          contact.should.have.lengthOf(7);
+        }
+      });
+
+      it('Add a contact entry for Lionel Lundstrom, description = description3, mood = mood3', async() => {
+        //Get resID
+        let residents = await dataModel.getResidents('Lionel');
+        let resID = residents[0].id;
+
+        //Check that resident's contact is empty to begin with
+        let contact = await dataModel.searchContact(resID);
+        contact.should.have.lengthOf(7);
+
+        //Get userID
+        let result = await dataModel.getHash('test1');
+        let userID = await result.id;
+
+        //Save contact entry
+        let addContact = await dataModel.insertContact(resID, userID, false, false, 'description3', 'mood3');
+
+        if(addContact) {
+          //Get contact for resident
+          contact = await dataModel.searchContact(resID);
+          contact[0].description.should.deep.equal('description3');
+          contact[0].mood.should.deep.equal('mood3');
+          contact.should.have.lengthOf(8);
+        }
+      });
+    });
+
+    describe('Add new contact entries for Lionel Lundstrom, testing different users', () => {
+      it('Add a contact entry for Lionel Lundstrom with user test1', async() => {
+        //Get resID
+        let residents = await dataModel.getResidents('Lionel');
+        let resID = residents[0].id;
+
+        //Get userID
+        let result = await dataModel.getHash('test1');
+        let userID = await result.id;
+
+        //Save contact entry
+        let addContact = await dataModel.insertContact(resID, userID, false, false, 'description1', 'mood1');
+
+        if(addContact) {
+          //Get contact for resident
+          contact = await dataModel.searchContact(resID);
+          contact[0].username.should.deep.equal('test1');
+        }
+      });
+
+      it('Add a contact entry for Lionel Lundstrom with user test2', async() => {
+        //Get resID
+        let residents = await dataModel.getResidents('Lionel');
+        let resID = residents[0].id;
+
+        //Get userID
+        let result = await dataModel.getHash('test2');
+        let userID = await result.id;
+
+        //Save contact entry
+        let addContact = await dataModel.insertContact(resID, userID, false, false, 'description1', 'mood1');
+
+        if(addContact) {
+          //Get contact for resident
+          contact = await dataModel.searchContact(resID);
+          contact[0].username.should.deep.equal('test2');
+        }
+      });
+
+      it('Add a contact entry for Lionel Lundstrom with user test3', async() => {
+        //Get resID
+        let residents = await dataModel.getResidents('Lionel');
+        let resID = residents[0].id;
+
+        //Get userID
+        let result = await dataModel.getHash('test3');
+        let userID = await result.id;
+
+        //Save contact entry
+        let addContact = await dataModel.insertContact(resID, userID, false, false, 'description1', 'mood1');
+
+        if(addContact) {
+          //Get contact for resident
+          contact = await dataModel.searchContact(resID);
+          contact[0].username.should.deep.equal('test3');
+        }
+      });
+
+      it('Add a contact entry for Lionel Lundstrom with user test4', async() => {
+        //Get resID
+        let residents = await dataModel.getResidents('Lionel');
+        let resID = residents[0].id;
+
+        //Get userID
+        let result = await dataModel.getHash('test4');
+        let userID = await result.id;
+
+        //Save contact entry
+        let addContact = await dataModel.insertContact(resID, userID, false, false, 'description1', 'mood1');
+
+        if(addContact) {
+          //Get contact for resident
+          contact = await dataModel.searchContact(resID);
+          contact[0].username.should.deep.equal('test4');
+        }
+      });
+    });
   });
 });
