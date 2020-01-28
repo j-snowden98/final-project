@@ -627,14 +627,79 @@ describe('Data model tests', () => {
     });
   });
 
-  /*describe('isAuthorised', () => {
-    describe('Retrieve empty contact sheets for 4 different residents', () => {
-      it('Contact for Lionel Lundstrom should be empty so far', async() => {
-        let residents = await dataModel.getResidents('Lionel');
-        let id = residents[0].id;
-        let contact = await dataModel.searchContact(id);
-        contact.should.have.lengthOf(0);
+  describe('Permissions', () => {
+    describe('Test whether a given user has a given permission', () => {
+      it('test1 should have permission 1', async() => {
+        //Get userID
+        let result = await dataModel.getHash('test1');
+        let userID = await result.id;
+
+        let auth = await dataModel.isAuthorised(userID, 1);
+        auth.should.deep.equal(true);
+      });
+
+      it('test1 should have permission 3', async() => {
+        //Get userID
+        let result = await dataModel.getHash('test1');
+        let userID = await result.id;
+
+        let auth = await dataModel.isAuthorised(userID, 3);
+        auth.should.deep.equal(true);
+      });
+
+      it('test2 should have permission 1', async() => {
+        //Get userID
+        let result = await dataModel.getHash('test2');
+        let userID = await result.id;
+
+        let auth = await dataModel.isAuthorised(userID, 1);
+        auth.should.deep.equal(true);
+      });
+
+      it('test2 should not have permission 3', async() => {
+        //Get userID
+        let result = await dataModel.getHash('test2');
+        let userID = await result.id;
+
+        let auth = await dataModel.isAuthorised(userID, 3);
+        auth.should.deep.equal(false);
+      });
+
+      it('test3 should not have permission 1', async() => {
+        //Get userID
+        let result = await dataModel.getHash('test3');
+        let userID = await result.id;
+
+        let auth = await dataModel.isAuthorised(userID, 1);
+        auth.should.deep.equal(false);
+      });
+
+      it('test3 should have permission 3', async() => {
+        //Get userID
+        let result = await dataModel.getHash('test3');
+        let userID = await result.id;
+
+        let auth = await dataModel.isAuthorised(userID, 3);
+        auth.should.deep.equal(true);
+      });
+
+      it('test4 should not have permission 1', async() => {
+        //Get userID
+        let result = await dataModel.getHash('test4');
+        let userID = await result.id;
+
+        let auth = await dataModel.isAuthorised(userID, 1);
+        auth.should.deep.equal(false);
+      });
+
+      it('test4 should not have permission 3', async() => {
+        //Get userID
+        let result = await dataModel.getHash('test4');
+        let userID = await result.id;
+
+        let auth = await dataModel.isAuthorised(userID, 3);
+        auth.should.deep.equal(false);
       });
     });
-  });*/
+  });
 });
