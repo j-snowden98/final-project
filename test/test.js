@@ -531,5 +531,110 @@ describe('Data model tests', () => {
         }
       });
     });
+
+    describe('Test getNewContact to ensure the newest contact entry is retrieved', () => {
+      it('Add a contact entry for Hollis Happ and test that the same one is returned by getNewContact', async() => {
+        //Get resID
+        let residents = await dataModel.getResidents('Hollis');
+        let resID = residents[0].id;
+
+        //Get userID
+        let result = await dataModel.getHash('test1');
+        let userID = await result.id;
+
+        //Save contact entry
+        let addContact = await dataModel.insertContact(resID, userID, true, false, 'unique description 1', 'unique mood 1');
+
+        if(addContact) {
+          //Get top contact entry for resident
+          contact = await dataModel.getNewContact(resID);
+          contact.username.should.deep.equal('test1');
+          Boolean(contact.callBell).should.deep.equal(true);
+          Boolean(contact.drinkGiven).should.deep.equal(false);
+          contact.description.should.deep.equal('unique description 1');
+          contact.mood.should.deep.equal('unique mood 1');
+        }
+      });
+
+      it('Add a contact entry for Hollis Happ and test that the same one is returned by getNewContact', async() => {
+        //Get resID
+        let residents = await dataModel.getResidents('Hollis');
+        let resID = residents[0].id;
+
+        //Get userID
+        let result = await dataModel.getHash('test1');
+        let userID = await result.id;
+
+        //Save contact entry
+        let addContact = await dataModel.insertContact(resID, userID, true, true, 'unique description 2', 'unique mood 2');
+
+        if(addContact) {
+          //Get top contact entry for resident
+          contact = await dataModel.getNewContact(resID);
+          contact.username.should.deep.equal('test1');
+          Boolean(contact.callBell).should.deep.equal(true);
+          Boolean(contact.drinkGiven).should.deep.equal(true);
+          contact.description.should.deep.equal('unique description 2');
+          contact.mood.should.deep.equal('unique mood 2');
+        }
+      });
+
+      it('Add a contact entry for Hollis Happ and test that the same one is returned by getNewContact', async() => {
+        //Get resID
+        let residents = await dataModel.getResidents('Hollis');
+        let resID = residents[0].id;
+
+        //Get userID
+        let result = await dataModel.getHash('test1');
+        let userID = await result.id;
+
+        //Save contact entry
+        let addContact = await dataModel.insertContact(resID, userID, false, false, 'unique description 3', 'unique mood 3');
+
+        if(addContact) {
+          //Get top contact entry for resident
+          contact = await dataModel.getNewContact(resID);
+          contact.username.should.deep.equal('test1');
+          Boolean(contact.callBell).should.deep.equal(false);
+          Boolean(contact.drinkGiven).should.deep.equal(false);
+          contact.description.should.deep.equal('unique description 3');
+          contact.mood.should.deep.equal('unique mood 3');
+        }
+      });
+
+      it('Add a contact entry for Hollis Happ and test that the same one is returned by getNewContact', async() => {
+        //Get resID
+        let residents = await dataModel.getResidents('Hollis');
+        let resID = residents[0].id;
+
+        //Get userID
+        let result = await dataModel.getHash('test1');
+        let userID = await result.id;
+
+        //Save contact entry
+        let addContact = await dataModel.insertContact(resID, userID, false, true, 'unique description 4', 'unique mood 4');
+
+        if(addContact) {
+          //Get top contact entry for resident
+          contact = await dataModel.getNewContact(resID);
+          contact.username.should.deep.equal('test1');
+          Boolean(contact.callBell).should.deep.equal(false);
+          Boolean(contact.drinkGiven).should.deep.equal(true);
+          contact.description.should.deep.equal('unique description 4');
+          contact.mood.should.deep.equal('unique mood 4');
+        }
+      });
+    });
   });
+
+  /*describe('isAuthorised', () => {
+    describe('Retrieve empty contact sheets for 4 different residents', () => {
+      it('Contact for Lionel Lundstrom should be empty so far', async() => {
+        let residents = await dataModel.getResidents('Lionel');
+        let id = residents[0].id;
+        let contact = await dataModel.searchContact(id);
+        contact.should.have.lengthOf(0);
+      });
+    });
+  });*/
 });
