@@ -1,5 +1,5 @@
 'use strict';
-const url = 'http://192.168.0.7:8080';
+const url = document.location.origin;
 let navbar = false;
 let resTbl;
 
