@@ -13,7 +13,6 @@ VALUES
   ('Carmine', 'Christianson', '', '', false, 0, true),
   ('Ivan', 'Ippolito', '', '', true, 0, true);
 
-
 INSERT INTO st_ronans_care.Room (roomPrefix, roomNumber)
 VALUES
   ('A', 1),
