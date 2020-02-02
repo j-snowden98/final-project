@@ -27,17 +27,6 @@ async function releaseConnection(connection) {
   await connection.end();
 }
 
-async function addUser(username, password, role) {
-  //insert a new user into the database
-  const sql = await init();
-  const userQuery = sql.format('INSERT INTO User SET ? ;', {
-    username: username,
-    password: password,
-    role: role,
-  });
-  await sql.query(userQuery);
-}
-
 //Retrieve hashed password associated with a username, to later authenticate against entered password during login attempt.
 async function getHash(username) {
   const sql = await init();
@@ -93,7 +82,6 @@ async function isAuthorised(userID, type) {
 }
 
 module.exports = {
-  addUser: addUser,
   getHash: getHash,
   getResidents: getResidents,
   searchContact: searchContact,
