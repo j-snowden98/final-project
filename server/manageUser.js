@@ -1,3 +1,11 @@
+const express = require('express');
+const bodyParser = require('body-parser');
+const data = require('./db/model_mysql.js');
+
+const router = express.Router();
+router.use(bodyParser.urlencoded({ extended: false }));
+router.use(bodyParser.json());
+
 router.post('/register', async (req, res) => {
   const username = req.body.username;
   const password = req.body.password;
@@ -22,3 +30,4 @@ router.post('/register', async (req, res) => {
   }
 
 });
+module.exports = router;

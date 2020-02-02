@@ -1,5 +1,5 @@
 const express = require('express');
-const user = require('./user.js');
+const user = require('./manageUser.js');
 const manageResident = require('./manageResident.js');
 const manageUser = require('./manageUser.js');
 const manageRoom = require('./manageRoom.js')
