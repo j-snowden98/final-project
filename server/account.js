@@ -10,7 +10,7 @@ router.use(bodyParser.urlencoded({ extended: false }));
 router.use(bodyParser.json());
 
 
-router.post('/', async (req, res) => {
+router.post('/login', async (req, res) => {
   const username = req.body.username;
   const password = req.body.password;
 
@@ -25,8 +25,8 @@ router.post('/', async (req, res) => {
       const result = bcrypt.compareSync(password, hash);
       if (result) {
         //if password validates, send jwt token back to user
-        let reportAccess = await data.isAuthorised(userID, '');
-        let adminAccess = await data.isAuthorised(userID, '')
+        let reportAccess = await data.isAuthorised(userID, '6');
+        let adminAccess = await data.isAuthorised(userID, '5');
         const expiresIn = 2 * 60 * 60;
 
         //Set userID and username in the JWT token, allowing them to be used for authentication of requests

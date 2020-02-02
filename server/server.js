@@ -1,10 +1,10 @@
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
-const login = require('./login.js');
+const account = require('./account.js');
 const getResidents = require('./searchResidents.js');
 const contact = require('./contact.js');
-const admin = require('/admin.js');
+const admin = require('./admin.js');
 const SECRET_KEY = "secretkey23456";
 
 //Create express server
@@ -39,7 +39,7 @@ protectedApp.use((req, res, next) => {
 });
 
 //This is the only route not requiring a token, to log a user in.
-app.use('/login', login);
+app.use('/account', account);
 
 //All api routes will used the protectedApp middleware first
 app.use('/api', protectedApp);

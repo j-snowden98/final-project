@@ -45,7 +45,7 @@ async function loginServer() {
   const data = { username: usr, password: pass };
 
   try {
-    const response = await fetch(url + '/user/login', {
+    const response = await fetch(url + '/account/login', {
       method: 'POST',
       body: JSON.stringify(data),
       headers: {
@@ -94,7 +94,7 @@ async function loginServer() {
 async function logout() {
   try {
     //Tell server to clear access cookie
-    const response = await fetch(url + '/user/logout', {
+    const response = await fetch(url + '/account/logout', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
