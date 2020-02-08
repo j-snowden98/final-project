@@ -43,3 +43,7 @@
   color: red;
   font-weight: bold;
 }
+
+.material-icons {
+  vertical-align: text-bottom !important;
+}

@@ -398,11 +398,11 @@ class ContactTable {
           <table class="table table-str table-striped table-dark str-component rounded">
             <thead>
               <tr>
-                <th scope="col">Date</th>
-                <th scope="col">Time</th>
-                <th scope="col">Drink Given</th>
-                <th scope="col">Description</th>
-                <th scope="col">Username</th>
+                <th scope="col">${ window.screen.availWidth >= 600 ? 'Date' : '<i class="material-icons">calendar_today</i>' }</th>
+                <th scope="col">${ window.screen.availWidth >= 600 ? 'Time' : '<i class="material-icons">access_time</i>' }</th>
+                <th scope="col">${ window.screen.availWidth >= 600 ? 'Drink Given' : '<i class="material-icons">local_cafe</i>' }</th>
+                <th scope="col">${ window.screen.availWidth >= 600 ? 'Descripion' : '<i class="material-icons">create</i>' }</th>
+                <th scope="col">${ window.screen.availWidth >= 600 ? 'User' : '<i class="material-icons">account_circle</i>' }</th>
               </tr>
             </thead>
             <tbody id=contactTblBody>
