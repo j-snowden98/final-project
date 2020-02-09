@@ -57,16 +57,12 @@ async function loginServer() {
     const status = await response.status;
     if(status === 401) {
       //Alert the user that the credentials they entered were incorrect
-      document.getElementById('signin').insertAdjacentHTML('afterBegin', `
-      <div class="alert alert-danger" role="alert">
-        ${await response.text()}
-      </div>`);
+      document.getElementById('signin').insertAdjacentHTML('afterBegin', `<div id="errorAlert" class="alert alert-danger" role="alert">${await response.text()}</div>`);
     }
     else if (status === 500) {
       //Alert user of an error with the server
       clearError();
-      document.getElementById('signin').insertAdjacentHTML('afterBegin', `<div id="errorAlert" class="alert alert-warning" role="alert">There was an error. Please try again later.
-      </div>`);
+      document.getElementById('signin').insertAdjacentHTML('afterBegin', `<div id="errorAlert" class="alert alert-warning" role="alert">There was an error. Please try again later.</div>`);
     }
     else {
       const json = await response.json();
@@ -580,12 +576,27 @@ class AddContact {
             </div>
             <div class="form-group">
               <label for="mood">Mood</label>
-              <textarea class="form-control" id="mood" rows="3" spellcheck="true"></textarea>
+              <select class="form-control" id="moodSelect">
+                <option>Calm</option>
+                <option>Amused</option>
+                <option>Cheerful</option>
+                <option>Content</option>
+                <option>Happy</option>
+                <option>Peaceful</option>
+                <option>Sad</option>
+                <option>Stressed</option>
+                <option>Restless</option>
+                <option>Angry</option>
+                <option>Grumpy</option>
+                <option>Irritated</option>
+                <option>Other</option>
+              </select>
+              <textarea class="form-control" id="mood" rows="3" spellcheck="true" placeholder="If 'Other', please specify."></textarea>
             </div>
           </form>
           <div class="str-btn">
             <button id="btnCancel" type="button" class="btn btn-danger btn">Cancel</button>
-            <button id="btnAccept" type="button" class="btn btn-success btn">Accept</button>
+            <button id="btnSave" type="button" class="btn btn-success btn">Save</button>
           </div>
         </div>
       </div>
@@ -595,10 +606,24 @@ class AddContact {
     this.callBell = document.getElementById('callBell');
     this.drinkGiven = document.getElementById('drinkGiven');
     this.desc = document.getElementById('desc');
-    this.mood = document.getElementById('mood');
+    this.moodSelect = document.getElementById('moodSelect');
+    this.mood = document.getElementById('mood')
+
+    this.moodSelect.addEventListener('change', this.moodChange.bind(this));
+    this.mood.setAttribute('readonly', 'true');
 
     document.getElementById('btnCancel').addEventListener('click', function() { this.remove(this.onCancel); }.bind(this));
-    document.getElementById('btnAccept').addEventListener('click', this.save.bind(this));
+    document.getElementById('btnSave').addEventListener('click', this.save.bind(this));
+  }
+
+  moodChange() {
+    if (this.moodSelect.value == "Other") {
+      this.mood.removeAttribute('readonly');
+    }
+    else {
+      this.mood.value = '';
+      this.mood.setAttribute('readonly', 'true');
+    }
   }
 
   remove(callback, json) {
@@ -615,57 +640,72 @@ class AddContact {
     this.container.setAttribute('style', 'display: flex');
   }
 
-  async save() {
-    try {
-      //Attempt to save the new entry to the server
-      let data = {
-        resID: this.resID,
-        callBell: this.callBell.checked,
-        drinkGiven: this.drinkGiven.checked,
-        description: this.desc.value,
-        mood: this.mood.value
-      }
-      const response = await fetch(url + '/api/resident/contact/add', {
-        method: 'POST',
-        body: JSON.stringify(data),
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
-      const status = await response.status;
-
-      if(status === 200) {
-        const json = await response.json();
-        this.remove(this.added, json.new);
-      }
-      else if(status === 401) {
-        //Hide form before showing login form
-        this.hide();
-
-        //Forcelogin uses retry from 'this' upon successful login.
-        this.retry = this.save.bind(this);
-        forceLogin.bind(this)();
-      }
-      else if(status === 403) {
-        //Notify the user that they are not authorised. Go back to previous state
-        window.alert(await response.text());
-        //Hide form before showing login form
-        this.hide();
-        this.onCancel();
-      }
-      else if (status === 500) {
-        clearError();
-        //Need to show form in case the user was forced to log in again which would have hidden it.
-        this.show();
-
-        //Notify user there has been an error. Leaves the form as it is in case they want to try again and keep the data.
-        //User can also click cancel at this point
-        this.container.insertAdjacentHTML('afterBegin', `<div id="errorAlert" class="alert alert-warning" role="alert">There was an error. Please try again later.
-        </div>`);
-      }
+  validateInputs() {
+    clearError();
+    if (this.desc.value === '') {
+      this.container.insertAdjacentHTML('afterBegin', `<div id="errorAlert" class="alert alert-danger" role="alert">Please fill in the Care and Contact section.</div>`);
     }
-    catch(error) {
-      console.error(error);
+    else if (this.moodSelect.value === 'Other' && this.mood.value === '') {
+      this.container.insertAdjacentHTML('afterBegin', `<div id="errorAlert" class="alert alert-danger" role="alert">Please fill in the Mood section.</div>`);
+    }
+    else {
+      return true;
+    }
+  }
+
+  async save() {
+    if (this.validateInputs()) {
+      try {
+        //Attempt to save the new entry to the server
+        let data = {
+          resID: this.resID,
+          callBell: this.callBell.checked,
+          drinkGiven: this.drinkGiven.checked,
+          description: this.desc.value,
+          mood: this.moodSelect.value === 'Other' ? this.mood.value : this.moodSelect.value
+        }
+        const response = await fetch(url + '/api/resident/contact/add', {
+          method: 'POST',
+          body: JSON.stringify(data),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        const status = await response.status;
+
+        if(status === 200) {
+          const json = await response.json();
+          this.remove(this.added, json.new);
+        }
+        else if(status === 401) {
+          //Hide form before showing login form
+          this.hide();
+
+          //Forcelogin uses retry from 'this' upon successful login.
+          this.retry = this.save.bind(this);
+          forceLogin.bind(this)();
+        }
+        else if(status === 403) {
+          //Notify the user that they are not authorised. Go back to previous state
+          window.alert(await response.text());
+          //Hide form before showing login form
+          this.hide();
+          this.onCancel();
+        }
+        else if (status === 500) {
+          clearError();
+          //Need to show form in case the user was forced to log in again which would have hidden it.
+          this.show();
+
+          //Notify user there has been an error. Leaves the form as it is in case they want to try again and keep the data.
+          //User can also click cancel at this point
+          this.container.insertAdjacentHTML('afterBegin', `<div id="errorAlert" class="alert alert-warning" role="alert">There was an error. Please try again later.
+          </div>`);
+        }
+      }
+      catch(error) {
+        console.error(error);
+      }
     }
   }
 }
