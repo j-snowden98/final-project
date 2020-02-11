@@ -36,6 +36,19 @@ async function addUser(username, password, role) {
     role: role,
   });
   await sql.query(userQuery);
+async function searchUsers(search) {
+  const sql = await init();
+  const filter = '%' + search + '%';
+  const query = sql.format('SELECT id, username, role FROM User WHERE username LIKE ? OR role LIKE ? ORDER BY username ASC', [filter, filter]);
+  const [rows] = await sql.query(query);
+  return (rows);
+}
+
+async function getUser(userID) {
+  const sql = await init();
+  const query = sql.format('SELECT id, username, role FROM User WHERE id = ?', [userID]);
+  const [rows] = await sql.query(query);
+  return (rows)[0];
 }
 
 async function editUser(userID, username, role) {
@@ -54,6 +67,8 @@ async function resetPassword(userID, newPassword) {
 
 module.exports = {
   addUser: addUser,
+  searchUsers: searchUsers,
   editUser: editUser,
+  getUser: getUser,
   resetPassword: resetPassword
 };
