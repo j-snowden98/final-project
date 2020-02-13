@@ -1,6 +1,6 @@
 'use strict';
 const mysql = require('mysql2/promise');
-const config = require('./../../config_admin.json');
+const config = require('./../../admin_config.json');
 
 let sqlPromise = null;
 async function init() {
@@ -27,15 +27,28 @@ async function releaseConnection(connection) {
   await connection.end();
 }
 
-async function addUser(username, password, role) {
+async function addUser(username, password, role, permissions) {
   //insert a new user into the database
   const sql = await init();
-  const userQuery = sql.format('INSERT INTO User SET ? ;', {
+  const query = sql.format('INSERT INTO User SET ? ;', {
     username: username,
     password: password,
     role: role,
   });
-  await sql.query(userQuery);
+
+  //Get the last inserted ID of the new user
+  const result = await sql.query(query);
+  const resultInfo = await result[0];
+  const userID = await resultInfo.insertId;
+
+  //Set permissions of new user using their ID
+  const permissionsSet = await setPermissions(userID, permissions);
+  //Once their permissions have been set, return the new user to be shown in the webpage.
+  if (await permissionsSet) {
+    return await getUser(userID);
+  }
+}
+
 async function searchUsers(search) {
   const sql = await init();
   const filter = '%' + search + '%';
