@@ -70,6 +70,14 @@ async function setPermissions(userID, permissions) {
     return true;
   }
 };
+
+async function getPermissions(userID) {
+  const sql = await init();
+  const query = sql.format('SELECT P.id, P.name, P.type, U.userID FROM Permissions P LEFT JOIN (SELECT userID, pmsnID FROM UserPermissions WHERE userID = ?) U ON P.id = U.pmsnID ORDER BY P.type ASC', [userID]);
+  const [rows] = await sql.query(query);
+  return (rows);
+}
+
 async function resetPassword(userID, newPassword) {
   //Change a user's password
   const sql = await init();
@@ -82,6 +90,7 @@ module.exports = {
   searchUsers: searchUsers,
   editUser: editUser,
   getUser: getUser,
+  getPermissions: getPermissions,
   setPermissions: setPermissions,
   resetPassword: resetPassword
 };
