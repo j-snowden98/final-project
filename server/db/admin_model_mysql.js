@@ -58,6 +58,18 @@ async function editUser(userID, username, role) {
   await sql.query(userQuery);
 }
 
+async function setPermissions(userID, permissions) {
+  const sql = await newConnection();
+  let success = await sql.query('DELETE FROM UserPermissions WHERE userID = ?', [userID]);
+  if (await success) {
+    for(let p of permissions) {
+      await sql.query('INSERT INTO UserPermissions (userID, pmsnID) VALUES (?, ?)', [userID, p]);
+    }
+
+    releaseConnection(sql);
+    return true;
+  }
+};
 async function resetPassword(userID, newPassword) {
   //Change a user's password
   const sql = await init();
@@ -70,5 +82,6 @@ module.exports = {
   searchUsers: searchUsers,
   editUser: editUser,
   getUser: getUser,
+  setPermissions: setPermissions,
   resetPassword: resetPassword
 };
