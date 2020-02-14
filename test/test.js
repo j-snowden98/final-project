@@ -778,10 +778,9 @@ describe('Admin data model tests', () => {
     });*/
 
     describe('Reset password', () => {
-      it('Reset password for carer01', async() => {
+      it('Reset password for testCarer01', async() => {
         let user = await adminModel.searchUsers('testCarer01');
         let passwordChanged = await adminModel.resetPassword(await user[0].id, 'newcarer01password');
-        console.log(await passwordChanged);
         if (passwordChanged) {
           let result = await dataModel.getHash('testCarer01');
           let password = await result.password;
@@ -790,15 +789,34 @@ describe('Admin data model tests', () => {
         }
       });
 
-      it('Reset password for carer03', async() => {
+      it('Reset password for testCarer03', async() => {
         let user = await adminModel.searchUsers('testCarer03');
         let passwordChanged = await adminModel.resetPassword(await user[0].id, 'newcarer03password');
-        console.log(await passwordChanged);
         if (passwordChanged) {
           let result = await dataModel.getHash('testCarer03');
           let password = await result.password;
           console.log(password);
           password.should.deep.equal('newcarer03password');
+        }
+      });
+    });
+
+    describe('Deactivate user', () => {
+      it('Deactivate testCarer02', async() => {
+        let user = await adminModel.searchUsers('testCarer02');
+        let deactivated = await adminModel.deactivate(await user[0].id);
+        if (deactivated) {
+          let result = await dataModel.getHash('testCarer02');
+          result.should.deep.equal(false);
+        }
+      });
+
+      it('Deactivate testCarer04', async() => {
+        let user = await adminModel.searchUsers('testCarer04');
+        let deactivated = await adminModel.deactivate(await user[0].id);
+        if (deactivated) {
+          let result = await dataModel.getHash('testCarer04');
+          result.should.deep.equal(false);
         }
       });
     });

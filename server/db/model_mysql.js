@@ -30,9 +30,9 @@ async function releaseConnection(connection) {
 //Retrieve hashed password associated with a username, to later authenticate against entered password during login attempt.
 async function getHash(username) {
   const sql = await init();
-  const query = sql.format('SELECT id, password FROM User WHERE username = ?', [username]);
+  const query = sql.format('SELECT id, password FROM User WHERE username = ? AND active = 1', [username]);
   const [rows] = await sql.query(query);
-  return (rows)[0];
+  return (rows[0] === undefined ? false : rows[0]);
 }
 
 //Retrieve all residents with their information from the database. Filters on name or room number to easily find residents.

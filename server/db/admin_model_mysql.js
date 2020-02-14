@@ -98,6 +98,12 @@ async function resetPassword(userID, newPassword) {
   return await sql.query(userQuery);
 }
 
+async function deactivate(userID) {
+  const sql = await init();
+  const query = sql.format('UPDATE User SET active = 0 WHERE id = ?;', [userID]);
+  return await sql.query(query);
+}
+
 module.exports = {
   addUser: addUser,
   searchUsers: searchUsers,
@@ -105,5 +111,6 @@ module.exports = {
   getUser: getUser,
   getPermissions: getPermissions,
   setPermissions: setPermissions,
-  resetPassword: resetPassword
+  resetPassword: resetPassword,
+  deactivate: deactivate
 };
