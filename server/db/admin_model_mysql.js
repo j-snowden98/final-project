@@ -95,7 +95,7 @@ async function resetPassword(userID, newPassword) {
   //Change a user's password
   const sql = await init();
   const userQuery = sql.format('UPDATE User SET password = ? WHERE id = ?;', [newPassword, userID]);
-  await sql.query(userQuery);
+  return await sql.query(userQuery);
 }
 
 module.exports = {
