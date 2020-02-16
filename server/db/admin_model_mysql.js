@@ -27,6 +27,10 @@ async function releaseConnection(connection) {
   await connection.end();
 }
 
+
+//User Management Functionality
+//-----------------------------------
+
 async function addUser(username, password, role, permissions) {
   //insert a new user into the database
   const sql = await init();
@@ -54,7 +58,7 @@ async function searchUsers(search) {
   const filter = '%' + search + '%';
   const query = sql.format('SELECT id, username, role FROM User WHERE username LIKE ? OR role LIKE ? ORDER BY username ASC', [filter, filter]);
   const [rows] = await sql.query(query);
-  return (rows);
+  return rows;
 }
 
 async function getUser(userID) {
@@ -68,7 +72,7 @@ async function editUser(userID, username, role) {
   //Edit a user's username and role
   const sql = await init();
   const userQuery = sql.format('UPDATE User SET username = ?, role = ? WHERE id = ?;', [username, role, userID]);
-  await sql.query(userQuery);
+  return await sql.query(userQuery);
 }
 
 async function setPermissions(userID, permissions) {
@@ -88,7 +92,7 @@ async function getPermissions(userID) {
   const sql = await init();
   const query = sql.format('SELECT P.id, P.name, P.type, U.userID FROM Permissions P LEFT JOIN (SELECT userID, pmsnID FROM UserPermissions WHERE userID = ?) U ON P.id = U.pmsnID ORDER BY P.type ASC', [userID]);
   const [rows] = await sql.query(query);
-  return (rows);
+  return rows;
 }
 
 async function resetPassword(userID, newPassword) {
@@ -104,6 +108,16 @@ async function deactivate(userID) {
   return await sql.query(query);
 }
 
+//Room Management Functionality
+//------------------------------------
+
+async function searchRooms(search) {
+  const filter = '%' + search + '%';
+  const sql = await init();
+  const query = sql.format('SELECT RM.id, RM.roomPrefix, RM.roomNumber, RE.names FROM Room RM LEFT JOIN (SELECT GROUP_CONCAT(DISTINCT Y.Forename ORDER BY Y.Forename ASC SEPARATOR \',\') AS names, X.roomID FROM ResidentRoom X INNER JOIN Resident Y ON X.resID = Y.id GROUP BY X.roomID) RE ON RE.roomID = RM.id WHERE RM.roomNumber LIKE ? OR RM.roomPrefix LIKE ? OR CONCAT(RM.roomPrefix, RM.roomNumber) LIKE ? ORDER BY RM.roomPrefix, RM.roomNumber ASC', [filter, filter, filter]);
+  const [rows] = await sql.query(query);
+  return rows;
+}
 module.exports = {
   addUser: addUser,
   searchUsers: searchUsers,
@@ -112,5 +126,6 @@ module.exports = {
   getPermissions: getPermissions,
   setPermissions: setPermissions,
   resetPassword: resetPassword,
-  deactivate: deactivate
+  deactivate: deactivate,
+  searchRooms: searchRooms
 };
