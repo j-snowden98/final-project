@@ -126,6 +126,20 @@ async function loadRoomResidents(roomID) {
   return rows;
 }
 
+async function addRoom(prefix, number) {
+  //insert a new user into the database
+  const sql = await init();
+  const query = sql.format('INSERT INTO Room SET ? ;', {
+    roomPrefix: prefix,
+    roomNumber: number
+  });
+
+  const result = await sql.query(query);
+  if (await result) {
+    return await searchRooms('');
+  }
+}
+
 module.exports = {
   addUser: addUser,
   searchUsers: searchUsers,
@@ -136,5 +150,6 @@ module.exports = {
   resetPassword: resetPassword,
   deactivate: deactivate,
   searchRooms: searchRooms,
-  loadRoomResidents: loadRoomResidents
+  loadRoomResidents: loadRoomResidents,
+  addRoom: addRoom
 };
