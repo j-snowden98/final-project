@@ -118,6 +118,14 @@ async function searchRooms(search) {
   const [rows] = await sql.query(query);
   return rows;
 }
+
+async function loadRoomResidents(roomID) {
+  const sql = await init();
+  const query = sql.format('SELECT Y.id, CONCAT(CONCAT(Y.forename, " "), Y.surname) AS resName FROM ResidentRoom X INNER JOIN Resident Y ON X.resID = Y.id WHERE X.roomID = ? ORDER BY Y.forename, Y.surname ASC', [roomID]);
+  const [rows] = await sql.query(query);
+  return rows;
+}
+
 module.exports = {
   addUser: addUser,
   searchUsers: searchUsers,
@@ -127,5 +135,6 @@ module.exports = {
   setPermissions: setPermissions,
   resetPassword: resetPassword,
   deactivate: deactivate,
-  searchRooms: searchRooms
+  searchRooms: searchRooms,
+  loadRoomResidents: loadRoomResidents
 };
