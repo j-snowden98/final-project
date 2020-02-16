@@ -114,7 +114,7 @@ async function deactivate(userID) {
 async function searchRooms(search) {
   const filter = '%' + search + '%';
   const sql = await init();
-  const query = sql.format('SELECT RM.id, RM.roomPrefix, RM.roomNumber, RE.names FROM Room RM LEFT JOIN (SELECT GROUP_CONCAT(DISTINCT Y.Forename ORDER BY Y.Forename ASC SEPARATOR \',\') AS names, X.roomID FROM ResidentRoom X INNER JOIN Resident Y ON X.resID = Y.id GROUP BY X.roomID) RE ON RE.roomID = RM.id WHERE RM.roomNumber LIKE ? OR RM.roomPrefix LIKE ? OR CONCAT(RM.roomPrefix, RM.roomNumber) LIKE ? ORDER BY RM.roomPrefix, RM.roomNumber ASC', [filter, filter, filter]);
+  const query = sql.format('SELECT RM.id, RM.roomPrefix, RM.roomNumber, RE.names FROM Room RM LEFT JOIN (SELECT GROUP_CONCAT(DISTINCT Y.Forename ORDER BY Y.Forename ASC SEPARATOR \', \') AS names, X.roomID FROM ResidentRoom X INNER JOIN Resident Y ON X.resID = Y.id GROUP BY X.roomID) RE ON RE.roomID = RM.id WHERE RM.roomNumber LIKE ? OR RM.roomPrefix LIKE ? OR CONCAT(RM.roomPrefix, RM.roomNumber) LIKE ? ORDER BY RM.roomPrefix, RM.roomNumber ASC', [filter, filter, filter]);
   const [rows] = await sql.query(query);
   return rows;
 }
@@ -127,14 +127,27 @@ async function loadRoomResidents(roomID) {
 }
 
 async function addRoom(prefix, number) {
-  //insert a new user into the database
+  //Add a new room to the database
   const sql = await init();
   const query = sql.format('INSERT INTO Room SET ? ;', {
     roomPrefix: prefix,
     roomNumber: number
   });
-
   const result = await sql.query(query);
+
+  //Once query has been executed, will refresh the search of rooms
+  if (await result) {
+    return await searchRooms('');
+  }
+}
+
+async function editRoom(roomID, prefix, number) {
+  //Edit a room's prefix and number
+  const sql = await init();
+  const query = sql.format('UPDATE Room SET roomPrefix = ?, roomNumber = ? WHERE id = ?;', [prefix, number, roomID]);
+  const result = await sql.query(query);
+
+  //Once query has been executed, will refresh the search of rooms
   if (await result) {
     return await searchRooms('');
   }
@@ -151,5 +164,6 @@ module.exports = {
   deactivate: deactivate,
   searchRooms: searchRooms,
   loadRoomResidents: loadRoomResidents,
-  addRoom: addRoom
+  addRoom: addRoom,
+  editRoom: editRoom
 };
