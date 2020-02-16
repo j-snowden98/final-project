@@ -153,6 +153,15 @@ async function editRoom(roomID, prefix, number) {
   }
 }
 
+async function removeResident(roomID, resID) {
+  const sql = await init();
+  const query = sql.format('DELETE FROM ResidentRoom WHERE roomID = ? AND resID = ?;', [roomID, resID]);
+  const result = await sql.query(query);
+  if(await result) {
+    return await loadRoomResidents(roomID);
+  }
+}
+
 module.exports = {
   addUser: addUser,
   searchUsers: searchUsers,
@@ -165,5 +174,6 @@ module.exports = {
   searchRooms: searchRooms,
   loadRoomResidents: loadRoomResidents,
   addRoom: addRoom,
-  editRoom: editRoom
+  editRoom: editRoom,
+  removeResident: removeResident
 };
