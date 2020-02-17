@@ -186,6 +186,21 @@ async function assignResident(roomID, resID) {
   }
 }
 
+
+//Resident Management Functionality
+//------------------------------------
+
+async function searchResidents(search) {
+  const filter = '%' + search + '%';
+  const sql = await init();
+
+  //This returns all residents matching the search, by forename, surname or forname and surname.
+  //Maximun of 60 rows as there will be inactive residents as well which would result a lot of data in the response.
+  const query = sql.format('SELECT X.id, X.forename, X.surname, X.dietReq, X.allergies, X.thickener, X.diabetes, X.dnr FROM Resident X WHERE X.forename LIKE ? OR X.surname LIKE ? OR CONCAT(CONCAT(X.forename, " "), X.surname) LIKE ? ORDER BY X.active DESC, X.forename, X.surname ASC LIMIT 60', [filter, filter, filter]);
+  const [rows] = await sql.query(query);
+  return rows;
+}
+
 module.exports = {
   addUser: addUser,
   searchUsers: searchUsers,
@@ -201,5 +216,6 @@ module.exports = {
   editRoom: editRoom,
   unassignResident: unassignResident,
   availableResidents: availableResidents,
-  assignResident: assignResident
+  assignResident: assignResident,
+  searchResidents: searchResidents,
 };
