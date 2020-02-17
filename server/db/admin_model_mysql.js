@@ -174,6 +174,13 @@ async function availableResidents() {
   return rows;
 }
 
+async function assignResident(roomID, resID) {
+  const sql = await init();
+  const query = sql.format('INSERT INTO ResidentRoom SET ? ;', {
+    roomID: roomID,
+    resID: resID
+  });
+  const result = await sql.query(query);
   if(await result) {
     return await loadRoomResidents(roomID);
   }
@@ -194,4 +201,5 @@ module.exports = {
   editRoom: editRoom,
   unassignResident: unassignResident,
   availableResidents: availableResidents,
+  assignResident: assignResident
 };
