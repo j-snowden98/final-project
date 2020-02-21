@@ -90,7 +90,7 @@ async function setPermissions(userID, permissions) {
 
 async function getPermissions(userID) {
   const sql = await init();
-  const query = sql.format('SELECT P.id, P.name, P.type, U.userID FROM Permissions P LEFT JOIN (SELECT userID, pmsnID FROM UserPermissions WHERE userID = ?) U ON P.id = U.pmsnID ORDER BY P.type ASC', [userID]);
+  const query = sql.format('SELECT P.id, P.name, P.type, U.userID FROM Permissions P LEFT JOIN UserPermissions U ON P.id = U.pmsnID AND U.userID = ? ORDER BY P.type ASC', [userID]);
   const [rows] = await sql.query(query);
   return rows;
 }
