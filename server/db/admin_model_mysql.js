@@ -201,6 +201,58 @@ async function searchResidents(search) {
   return rows;
 }
 
+async function addResident(forename, surname, dietReq, allergies, thickener, diabetes, dnr) {
+  //Add a new resident to the database
+  const sql = await init();
+  const query = sql.format('INSERT INTO Resident SET ? ;', {
+    forename: forename,
+    surname: surname,
+    dietReq: dietReq,
+    allergies: allergies,
+    thickener: thickener,
+    diabetes: diabetes,
+    dnr: dnr
+  });
+  const result = await sql.query(query);
+
+  //Once query has been executed, will get updated list of residents
+  if (await result) {
+    return await searchResidents('');
+  }
+}
+
+async function deactivateResident(resID) {
+  //Deactivates a resident. They will not show up on most searches, but their details and related contact are retained.
+  const sql = await init();
+  const query = sql.format('UPDATE Resident SET active = 0 WHERE id = ?;', [resID]);
+  const result = await sql.query(query);
+
+  //Once query has been executed, will refresh the search of rooms
+  if (await result) {
+    return true;
+  }
+}
+
+async function editResident(resID, forename, surname, dietReq, allergies, thickener, diabetes, dnr) {
+  //Saves amendments to a reisdent's details
+  const sql = await init();
+  const query = sql.format('UPDATE Resident SET ? WHERE id = ?;', [{
+    forename: forename,
+    surname: surname,
+    dietReq: dietReq,
+    allergies: allergies,
+    thickener: thickener,
+    diabetes: diabetes,
+    dnr: dnr
+  }, resID]);
+  const result = await sql.query(query);
+
+  //Once query has been executed, will refresh the search of rooms
+  if (await result) {
+    return await searchResidents();
+  }
+}
+
 module.exports = {
   addUser: addUser,
   searchUsers: searchUsers,
@@ -218,4 +270,7 @@ module.exports = {
   availableResidents: availableResidents,
   assignResident: assignResident,
   searchResidents: searchResidents,
+  addResident: addResident,
+  deactivateResident: deactivateResident,
+  editResident: editResident
 };
