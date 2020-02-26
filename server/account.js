@@ -25,8 +25,8 @@ router.post('/login', async (req, res) => {
       const result = bcrypt.compareSync(password, hash);
       if (result) {
         //if password validates, send jwt token back to user
-        let reportAccess = await data.isAuthorised(userID, '6');
-        let adminAccess = await data.isAuthorised(userID, '5');
+        let adminAccess = await data.isAuthorised(userID, 5);
+        let reportAccess = await data.isAuthorised(userID, 6);
         const expiresIn = 2 * 60 * 60;
 
         //Set userID and username in the JWT token, allowing them to be used for authentication of requests
@@ -34,7 +34,7 @@ router.post('/login', async (req, res) => {
 
         //Set access token as a cookie in the client's browser.
         //HTTPonly so it cannot be accessed by client side scripts
-        res.status(200).cookie('accessToken', accessToken, { httpOnly: true, maxAge: expiresIn * 1000 }).json({ username: username, report: reportAccess, admin: adminAccess });
+        res.status(200).cookie('accessToken', accessToken, { httpOnly: true, maxAge: expiresIn * 1000 }).json({ username: username, admin: adminAccess, report: reportAccess });
         //Username is sent back to user so it can be added to navbar.
         //Uses the username from the request, which has been verified at this point
       }

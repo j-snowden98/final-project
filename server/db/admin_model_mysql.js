@@ -169,7 +169,7 @@ async function unassignResident(roomID, resID) {
 async function availableResidents() {
   //Return all residents not assigned to rooms in alphabetical order of their names.
   const sql = await init();
-  const query = sql.format('SELECT X.id, CONCAT(CONCAT(X.forename, " "), X.surname) AS resName FROM Resident X LEFT JOIN ResidentRoom Y ON Y.resID = X.id WHERE Y.roomID IS NULL ORDER BY X.forename, X.surname ASC');
+  const query = sql.format('SELECT X.id, CONCAT(CONCAT(X.forename, " "), X.surname) AS resName FROM Resident X LEFT JOIN ResidentRoom Y ON Y.resID = X.id WHERE Y.roomID IS NULL AND X.active = 1 ORDER BY X.forename, X.surname ASC');
   const [rows] = await sql.query(query);
   return rows;
 }

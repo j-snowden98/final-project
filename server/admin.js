@@ -1,15 +1,14 @@
 const express = require('express');
-const user = require('./manageUser.js');
 const manageResident = require('./manageResident.js');
 const manageUser = require('./manageUser.js');
-const manageRoom = require('./manageRoom.js')
+const manageRoom = require('./manageRoom.js');
 const data = require('./db/model_mysql.js');
 
 const adminApp = express.Router();
 
 adminApp.use(async (req, res, next) => {
   const userID = req.decoded.id;
-  const auth = await data.getAuthorised(userID, 5);
+  const auth = await data.isAuthorised(userID, 5);
 
   if(auth) {
     next();

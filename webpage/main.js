@@ -57,6 +57,7 @@ async function loginServer() {
     const status = await response.status;
     if(status === 401) {
       //Alert the user that the credentials they entered were incorrect
+      clearError();
       document.getElementById('signin').insertAdjacentHTML('afterBegin', `<div id="errorAlert" class="alert alert-danger" role="alert">${await response.text()}</div>`);
     }
     else if (status === 500) {
@@ -74,7 +75,7 @@ async function loginServer() {
       //Adds the navbar if it's not already there; user is now authorised
       //passes username from response to the navbar
       if(!navbar)
-        addNavbar(json.username);
+        addNavbar(json.username, json.admin);
 
       //Calls retry function of class bound to this.
       //Allows user to pick up where they left off after logging in again.
@@ -104,7 +105,7 @@ async function logout() {
   }
 }
 
-function addNavbar(username) {
+function addNavbar(username, admin) {
   //Creates navbar which displays username and has a logout button
   const html = `<nav class="navbar navbar-expand-lg navbar-light bg-light">
     <a class="navbar-brand" href="#">FastTrack</a>
@@ -114,9 +115,11 @@ function addNavbar(username) {
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav mr-auto">
-        <li class="nav-item active">
+        <li id="homeBtn" class="nav-item active">
           <a class="nav-link" href="">Home <span class="sr-only">(current)</span></a>
         </li>
+
+        ${ admin? '<li id="adminBtn" class="nav-item"><a class="nav-link" href="#">Admin</a></li>' : '' }
       </ul>
       <span class="navbar-text mr-1">${username}</span>
       <button id="logout" class="btn btn-outline-secondary my-2 my-sm-0" type="btn">Logout</button>
@@ -125,8 +128,16 @@ function addNavbar(username) {
   document.body.insertAdjacentHTML('afterBegin', html);
   document.getElementById('logout').addEventListener('click', logout);
 
+  if (admin) {
+    document.getElementById('adminBtn').addEventListener('click', loadAdmin);
+  }
+
   //Sets global navbar to true to ensure it is not added again.
   navbar = true;
+}
+
+function loadAdmin() {
+  let adminPg = new Admin();
 }
 
 function clearError() {
@@ -136,6 +147,7 @@ function clearError() {
     document.getElementById('errorAlert').outerHTML = '';
   }
 }
+
 
 
 class ResTable {
@@ -178,7 +190,7 @@ class ResTable {
 
       //Passes username from response to navbar
       if(!navbar)
-        addNavbar(json.username);
+        addNavbar(json.username, json.admin);
     }
     else if(status === 401) {
       //Forcelogin uses retry from 'this' upon successful login.
@@ -188,7 +200,7 @@ class ResTable {
     else if (status === 500) {
       clearError();
       //Notify the user that there has been an error.
-      document.body.insertAdjacentHTML('beforeend', `<div class="alert alert-warning" role="alert">There was an error. Please try again later.
+      document.body.insertAdjacentHTML('beforeend', `<div id="errorAlert" class="alert alert-warning" role="alert">There was an error. Please try again later.
       </div>`);
     }
   }
@@ -205,7 +217,7 @@ class ResTable {
     if(this.hidden) {
       this.show();
     }
-    //Get response from search funciton making request to server
+    //Get response from search function making request to server
     const response = await this.searchResidents(document.getElementById('searchbar').value);
     const status = await response.status;
 
@@ -222,7 +234,7 @@ class ResTable {
     else if (status === 500) {
       clearError();
       //Notify the user that there has been an error
-      this.resDiv.insertAdjacentHTML('afterBegin', `<div class="alert alert-warning" role="alert">There was an error. Please try again later.
+      this.resDiv.insertAdjacentHTML('afterBegin', `<div id="errorAlert" class="alert alert-warning" role="alert">There was an error. Please try again later.
       </div>`);
     }
   }
@@ -727,3 +739,208 @@ class AddFoodFluid {
 
   }
 }
+
+class Admin {
+  constructor() {
+    this.hidden = false;
+    this.timeout;
+    this.init();
+  }
+
+  async init() {
+    const response = await this.searchUsers();
+    const status = await response.status;
+    if(status === 200) {
+      clearError();
+      const json = await response.json();
+      document.getElementById('homeBtn').classList.remove('active');
+      document.getElementById('adminBtn').classList.add('active');
+      document.getElementById('adminBtn').removeEventListener('click', loadAdmin);
+      document.getElementById('residents').outerHTML = '';
+
+      document.body.insertAdjacentHTML('beforeend', `
+        <div id="adminPg" class="ml-1 mr-1 str-component">
+          <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item">
+              <a class="nav-link active" id="users-tab" data-toggle="tab" href="#users" role="tab" aria-controls="users" aria-selected="true">Users</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" id="rooms-tab" data-toggle="tab" href="#rooms" role="tab" aria-controls="rooms" aria-selected="false">Rooms</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" id="residents-tab" data-toggle="tab" href="#residents" role="tab" aria-controls="residents" aria-selected="false">Residents</a>
+            </li>
+          </ul>
+          <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active" id="users" role="tabpanel" aria-labelledby="users-tab">
+              <form class="form-inline my-2 my-lg-0">
+                <input id="userSearch" class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+              </form>
+              <table class="table table-str table-striped table-dark str-component rounded">
+                <thead>
+                  <tr>
+                    <th scope="col">Username</th>
+                    <th scope="col">Role</th>
+                  </tr>
+                </thead>
+                <tbody id="usrTblBody">
+              </table>
+            </div>
+            <div class="tab-pane fade" id="rooms" role="tabpanel" aria-labelledby="rooms-tab">
+              <form class="form-inline my-2 my-lg-0">
+                <input id="userSearch" class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+              </form>
+              <table class="table table-str table-striped table-dark str-component rounded">
+                <thead>
+                  <tr>
+                    <th scope="col">Room</th>
+                    <th scope="col">Forename</th>
+                    <th scope="col">Surname</th>
+                  </tr>
+                </thead>
+                <tbody id="roomTblBody">
+              </table>
+            </div>
+            <div class="tab-pane fade" id="residents" role="tabpanel" aria-labelledby="residents-tab">
+              <form class="form-inline my-2 my-lg-0">
+                <input id="userSearch" class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+              </form>
+              <table class="table table-str table-striped table-dark str-component rounded">
+                <thead>
+                  <tr>
+                    <th scope="col">Room</th>
+                    <th scope="col">Forename</th>
+                    <th scope="col">Surname</th>
+                  </tr>
+                </thead>
+                <tbody id="resTblBody">
+              </table>
+            </div>
+          </div>
+        </div>`);
+
+      this.updateUsers(json.users);
+      this.adminPg = document.getElementById('adminPg');
+
+      document.getElementById('userSearch').addEventListener('input', (event) => {
+        this.usrSearchChange();
+      });
+
+      //Passes username from response to navbar
+      if(!navbar)
+        addNavbar(json.username, json.admin);
+    }
+
+    else if (status === 401) {
+      //Forcelogin uses retry from 'this' upon successful login.
+      resTbl.hide();
+      this.retry = this.init.bind(this);
+      forceLogin.bind(this)();
+    }
+    else if (status === 403) {
+      window.alert(await response.text());
+      location.reload();
+    }
+    else if (status === 500) {
+      clearError();
+      //Notify the user that there has been an error.
+      document.body.insertAdjacentHTML('beforeend', `<div id="errorAlert" class="alert alert-warning" role="alert">There was an error. Please try again later.
+      </div>`);
+    }
+  }
+
+  async searchUsers(filter = '') {
+    try {
+      //Send request to server to search for users with a given filter
+      const response = await fetch(url + `/api/admin/user/search?filter=${filter}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'same-origin'
+      });
+      //Returns whole response object, allowing caller to inspect status code to respond accordingly
+      return response;
+
+    } catch(error) {
+      console.error('Error:', error);
+    }
+  }
+
+  async updateUsers(users) {
+    //Clear table before adding search results
+    document.getElementById('usrTblBody').innerHTML = '';
+    //Iterate through array of results. For each create a row with new instance of class user
+    //so they can be clicked to show details
+    for(let u of users) {
+      let newUsr = new ManageUser(u);
+      let row = document.createElement('tr');
+      row.insertAdjacentHTML('beforeend', `
+        <tr>
+          <td>${u.username}</td>
+          <td>${u.role}</td>
+        </tr>`);
+      document.getElementById('usrTblBody').appendChild(row);
+      //Clicking on this new row will allow the user's details to be amended.
+      //row.addEventListener('click', newRes.openResMenu.bind(newRes));
+    }
+  }
+
+  usrSearchChange() {
+    //Reset timeout for retrieving users from server. Wait another 500ms, to avoid sending too many requests to the server.
+    //Should allow time to finish typing for most people, without appearing unresponsive
+    clearTimeout(this.timeout);
+    this.timeout = setTimeout(this.usrDoneTyping.bind(this), 500);
+  }
+
+  async usrDoneTyping() {
+    //If hidden (implying the user was forced to login on the last attempt) will show table again.
+    if(this.hidden) {
+      this.show();
+    }
+    //Get response from search function making request to server
+    const response = await this.searchUsers(document.getElementById('userSearch').value);
+    const status = await response.status;
+
+    if(status === 200) {
+      clearError();
+      const json = await response.json();
+      this.updateUsers(json.users);
+    }
+    else if(status === 401) {
+      //Forcelogin uses retry from 'this' upon successful login.
+      this.hide();
+      this.retry = this.usrDoneTyping.bind(this);
+      forceLogin.bind(this)();
+    }
+    else if(status === 403) {
+      window.alert(await response.text());
+      location.reload();
+    }
+    else if (status === 500) {
+      clearError();
+      //Notify the user that there has been an error
+      document.getElementById('users').insertAdjacentHTML('afterBegin', `<div id="errorAlert" class="alert alert-warning" role="alert">There was an error. Please try again later.
+      </div>`);
+    }
+  }
+
+  show() {
+    this.hidden = false;
+    this.adminPg.setAttribute('style', 'display: block');
+  }
+
+  hide() {
+    this.hidden = true;
+    this.adminPg.setAttribute('style', 'display: none');
+  }
+}
+
+class ManageUser {
+  constructor(userObj) {
+    this.userID = userObj.id;
+    this.username = userObj.username;
+    this.role = userObj.role;
+  }
+}
+
