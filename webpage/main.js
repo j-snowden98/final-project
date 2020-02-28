@@ -805,6 +805,7 @@ class Admin {
       </div>`);
 
     this.usr = new AdminUsrTbl();
+    this.room = new AdminRoomTbl();
     document.getElementById('homeBtn').classList.remove('active');
     document.getElementById('adminBtn').classList.add('active');
     document.getElementById('adminBtn').removeEventListener('click', loadAdmin);
@@ -942,11 +943,148 @@ class AdminUsrTbl {
   }
 }
 
+class AdminRoomTbl {
+  constructor() {
+    this.hidden = false;
+    this.timeout;
+    this.adminPg = document.getElementById('adminPg');
+    this.init();
+  }
+
+  async init() {
+    const response = await this.searchRooms();
+    const status = await response.status;
+    if(status === 200) {
+      clearError();
+      const json = await response.json();
+      this.updateRooms(json.rooms);
+
+      document.getElementById('roomSearch').addEventListener('input', (event) => {
+        this.searchChange();
+      });
+    }
+    else if (status === 401) {
+      //Forcelogin uses retry from 'this' upon successful login.
+      this.hide();
+      this.retry = this.init.bind(this);
+      forceLogin.bind(this)();
+    }
+    else if (status === 403) {
+      window.alert(await response.text());
+      location.reload();
+    }
+    else if (status === 500) {
+      clearError();
+      //Notify the user that there has been an error.
+      document.getElementById('rooms').insertAdjacentHTML('afterBegin', `<div id="errorAlert" class="alert alert-warning" role="alert">There was an error. Please try again later.
+      </div>`);
+    }
+  }
+
+  async searchRooms(filter = '') {
+    try {
+      //Send request to server to search for users with a given filter
+      const response = await fetch(url + `/api/admin/room/search?filter=${filter}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'same-origin'
+      });
+      //Returns whole response object, allowing caller to inspect status code to respond accordingly
+      return response;
+
+    } catch(error) {
+      console.error('Error:', error);
+    }
+  }
+
+  async updateRooms(rooms) {
+    //Clear table before adding search results
+    document.getElementById('roomTblBody').innerHTML = '';
+    //Iterate through array of results. For each create a row with new instance of class user
+    //so they can be clicked to show details
+    for(let r of rooms) {
+      let newRoom = new ManageRoom(r);
+      let row = document.createElement('tr');
+      row.insertAdjacentHTML('beforeend', `
+        <tr>
+          <td>${r.roomPrefix + r.roomNumber}</td>
+          <td>${r.names}</td>
+        </tr>`);
+      document.getElementById('roomTblBody').appendChild(row);
+      //Clicking on this new row will allow the room's details to be amended.
+      //row.addEventListener('click', newRoom.openResMenu.bind(newRoom));
+    }
+  }
+
+  searchChange() {
+    //Reset timeout for retrieving users from server. Wait another 500ms, to avoid sending too many requests to the server.
+    //Should allow time to finish typing for most people, without appearing unresponsive
+    clearTimeout(this.timeout);
+    this.timeout = setTimeout(this.doneTyping.bind(this), 500);
+  }
+
+  async doneTyping() {
+    //If hidden (implying the user was forced to login on the last attempt) will show table again.
+    if(this.hidden) {
+      this.show();
+    }
+    //Get response from search function making request to server
+    const response = await this.searchRooms(document.getElementById('roomSearch').value);
+    const status = await response.status;
+
+    if(status === 200) {
+      clearError();
+      const json = await response.json();
+      this.updateRooms(json.rooms);
+    }
+    else if(status === 401) {
+      //Forcelogin uses retry from 'this' upon successful login.
+      this.hide();
+      this.retry = this.doneTyping.bind(this);
+      forceLogin.bind(this)();
+    }
+    else if(status === 403) {
+      window.alert(await response.text());
+      location.reload();
+    }
+    else if (status === 500) {
+      clearError();
+      //Notify the user that there has been an error
+      document.getElementById('rooms').insertAdjacentHTML('afterBegin', `<div id="errorAlert" class="alert alert-warning" role="alert">There was an error. Please try again later.
+      </div>`);
+    }
+  }
+
+  show() {
+    this.hidden = false;
+    this.adminPg.setAttribute('style', 'display: block');
+  }
+
+  hide() {
+    this.hidden = true;
+    this.adminPg.setAttribute('style', 'display: none');
+  }
+}
+
+class AdminResTbl {
+  constructor() {
+
+  }
+}
+
 class ManageUser {
   constructor(userObj) {
     this.userID = userObj.id;
     this.username = userObj.username;
     this.role = userObj.role;
+  }
+}
+
+class ManageRoom {
+  constructor() {
+
   }
 }
 
