@@ -1144,7 +1144,7 @@ class AdminResTbl {
   }
 
   searchChange() {
-    //Reset timeout for retrieving users from server. Wait another 500ms, to avoid sending too many requests to the server.
+    //Reset timeout for retrieving residents from server. Wait another 500ms, to avoid sending too many requests to the server.
     //Should allow time to finish typing for most people, without appearing unresponsive
     clearTimeout(this.timeout);
     this.timeout = setTimeout(this.doneTyping.bind(this), 500);
