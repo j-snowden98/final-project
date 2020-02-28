@@ -743,7 +743,6 @@ class AddFoodFluid {
 class Admin {
   constructor() {
     document.getElementById('residents').outerHTML = '';
-
     document.body.insertAdjacentHTML('beforeend', `
       <div id="adminPg" class="ml-1 mr-1 str-component">
         <ul class="nav nav-tabs" id="myTab" role="tablist">
@@ -793,9 +792,9 @@ class Admin {
             <table class="table table-str table-striped table-dark str-component rounded">
               <thead>
                 <tr>
-                  <th scope="col">Room</th>
                   <th scope="col">Forename</th>
                   <th scope="col">Surname</th>
+                  <th scope="col">Active</th>
                 </tr>
               </thead>
               <tbody id="resTblBody">
@@ -804,10 +803,16 @@ class Admin {
         </div>
       </div>`);
 
+    //Loads all of the tables for the admin page.
     this.usr = new AdminUsrTbl();
     this.room = new AdminRoomTbl();
+    this.res = new AdminResTbl();
+
+    //Show that the admin page is now selected
     document.getElementById('homeBtn').classList.remove('active');
     document.getElementById('adminBtn').classList.add('active');
+
+    //Prevents the user clicking on the admin page while it is selected
     document.getElementById('adminBtn').removeEventListener('click', loadAdmin);
   }
 }
@@ -827,19 +832,14 @@ class AdminUsrTbl {
       clearError();
       const json = await response.json();
       this.updateUsers(json.users);
-      this.adminPg = document.getElementById('adminPg');
 
       document.getElementById('userSearch').addEventListener('input', (event) => {
         this.searchChange();
       });
-
-      //Passes username from response to navbar
-      if(!navbar)
-        addNavbar(json.username, json.admin);
     }
 
     else if (status === 401) {
-      //Forcelogin uses retry from 'this' upon successful login.
+      //Forcelogin calls init function again upon successful login.
       resTbl.hide();
       this.retry = this.init.bind(this);
       forceLogin.bind(this)();
@@ -877,8 +877,8 @@ class AdminUsrTbl {
   async updateUsers(users) {
     //Clear table before adding search results
     document.getElementById('usrTblBody').innerHTML = '';
-    //Iterate through array of results. For each create a row with new instance of class user
-    //so they can be clicked to show details
+
+    //Iterate through array of results. For each create a row with new instance of class user so they can be clicked to show details
     for(let u of users) {
       let newUsr = new ManageUser(u);
       let row = document.createElement('tr');
@@ -915,7 +915,7 @@ class AdminUsrTbl {
       this.updateUsers(json.users);
     }
     else if(status === 401) {
-      //Forcelogin uses retry from 'this' upon successful login.
+      //Forcelogin calls doneTyping function again upon successful login.
       this.hide();
       this.retry = this.doneTyping.bind(this);
       forceLogin.bind(this)();
@@ -964,7 +964,7 @@ class AdminRoomTbl {
       });
     }
     else if (status === 401) {
-      //Forcelogin uses retry from 'this' upon successful login.
+      //Forcelogin calls init function again upon successful login.
       this.hide();
       this.retry = this.init.bind(this);
       forceLogin.bind(this)();
@@ -983,7 +983,7 @@ class AdminRoomTbl {
 
   async searchRooms(filter = '') {
     try {
-      //Send request to server to search for users with a given filter
+      //Send request to server to search for rooms with a given filter
       const response = await fetch(url + `/api/admin/room/search?filter=${filter}`, {
         method: 'GET',
         headers: {
@@ -1002,8 +1002,7 @@ class AdminRoomTbl {
   async updateRooms(rooms) {
     //Clear table before adding search results
     document.getElementById('roomTblBody').innerHTML = '';
-    //Iterate through array of results. For each create a row with new instance of class user
-    //so they can be clicked to show details
+    //Iterate through array of results. For each create a row with new instance of class ManageRoom
     for(let r of rooms) {
       let newRoom = new ManageRoom(r);
       let row = document.createElement('tr');
@@ -1019,7 +1018,7 @@ class AdminRoomTbl {
   }
 
   searchChange() {
-    //Reset timeout for retrieving users from server. Wait another 500ms, to avoid sending too many requests to the server.
+    //Reset timeout for retrieving rooms from server. Wait another 500ms, to avoid sending too many requests to the server.
     //Should allow time to finish typing for most people, without appearing unresponsive
     clearTimeout(this.timeout);
     this.timeout = setTimeout(this.doneTyping.bind(this), 500);
@@ -1040,7 +1039,7 @@ class AdminRoomTbl {
       this.updateRooms(json.rooms);
     }
     else if(status === 401) {
-      //Forcelogin uses retry from 'this' upon successful login.
+      //Forcelogin calls doneTyping function again upon successful login.
       this.hide();
       this.retry = this.doneTyping.bind(this);
       forceLogin.bind(this)();
