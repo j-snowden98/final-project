@@ -1070,7 +1070,130 @@ class AdminRoomTbl {
 
 class AdminResTbl {
   constructor() {
+    this.hidden = false;
+    this.timeout;
+    this.adminPg = document.getElementById('adminPg');
+    this.init();
+  }
 
+  async init() {
+    const response = await this.searchResidents();
+    const status = await response.status;
+    if(status === 200) {
+      clearError();
+      const json = await response.json();
+      this.updateResidents(json.residents);
+
+      document.getElementById('resSearch').addEventListener('input', (event) => {
+        this.searchChange();
+      });
+    }
+
+    else if (status === 401) {
+      //Forcelogin calls init function again upon successful login.
+      resTbl.hide();
+      this.retry = this.init.bind(this);
+      forceLogin.bind(this)();
+    }
+    else if (status === 403) {
+      window.alert(await response.text());
+      location.reload();
+    }
+    else if (status === 500) {
+      clearError();
+      //Notify the user that there has been an error.
+      document.getElementById('resident').insertAdjacentHTML('afterBegin', `<div id="errorAlert" class="alert alert-warning" role="alert">There was an error. Please try again later.
+      </div>`);
+    }
+  }
+
+  async searchResidents(filter = '') {
+    try {
+      //Send request to server to search for residents with a given filter
+      const response = await fetch(url + `/api/admin/resident/search?filter=${filter}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'same-origin'
+      });
+      //Returns whole response object, allowing caller to inspect status code to respond accordingly
+      return response;
+
+    } catch(error) {
+      console.error('Error:', error);
+    }
+  }
+
+  async updateResidents(residents) {
+    //Clear table before adding search results
+    document.getElementById('resTblBody').innerHTML = '';
+    //Iterate through array of results. For each create a row with new instance of class ManageResident so they can be clicked to show details
+    for(let r of residents) {
+      let newRes = new ManageResident(r);
+      let row = document.createElement('tr');
+      row.insertAdjacentHTML('beforeend', `
+        <tr>
+          <td>${r.forename}</td>
+          <td>${r.surname}</td>
+          <td>${r.active}</td>
+        </tr>`);
+      document.getElementById('resTblBody').appendChild(row);
+      //Clicking on this new row will allow the resident's details to be amended.
+      //row.addEventListener('click', newRes.openResMenu.bind(newRes));
+    }
+  }
+
+  searchChange() {
+    //Reset timeout for retrieving users from server. Wait another 500ms, to avoid sending too many requests to the server.
+    //Should allow time to finish typing for most people, without appearing unresponsive
+    clearTimeout(this.timeout);
+    this.timeout = setTimeout(this.doneTyping.bind(this), 500);
+  }
+
+  async doneTyping() {
+    //If hidden (implying the user was forced to login on the last attempt) will show table again.
+    if(this.hidden) {
+      this.show();
+    }
+    //Get response from search function making request to server
+    const response = await this.searchResidents(document.getElementById('resSearch').value);
+    const status = await response.status;
+
+    if(status === 200) {
+      clearError();
+      const json = await response.json();
+      this.updateResidents(json.residents);
+    }
+
+    else if(status === 401) {
+      //Forcelogin uses retry from 'this' upon successful login.
+      this.hide();
+      this.retry = this.doneTyping.bind(this);
+      forceLogin.bind(this)();
+    }
+
+    else if(status === 403) {
+      window.alert(await response.text());
+      location.reload();
+    }
+
+    else if (status === 500) {
+      clearError();
+      //Notify the user that there has been an error
+      document.getElementById('residents').insertAdjacentHTML('afterBegin', `<div id="errorAlert" class="alert alert-warning" role="alert">There was an error. Please try again later.
+      </div>`);
+    }
+  }
+
+  show() {
+    this.hidden = false;
+    this.adminPg.setAttribute('style', 'display: block');
+  }
+
+  hide() {
+    this.hidden = true;
+    this.adminPg.setAttribute('style', 'display: none');
   }
 }
 
@@ -1088,3 +1211,8 @@ class ManageRoom {
   }
 }
 
+class ManageResident {
+  constructor() {
+
+  }
+}
