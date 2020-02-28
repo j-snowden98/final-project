@@ -742,8 +742,80 @@ class AddFoodFluid {
 
 class Admin {
   constructor() {
+    document.getElementById('residents').outerHTML = '';
+
+    document.body.insertAdjacentHTML('beforeend', `
+      <div id="adminPg" class="ml-1 mr-1 str-component">
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+          <li class="nav-item">
+            <a class="nav-link active" id="users-tab" data-toggle="tab" href="#users" role="tab" aria-controls="users" aria-selected="true">Users</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="rooms-tab" data-toggle="tab" href="#rooms" role="tab" aria-controls="rooms" aria-selected="false">Rooms</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="residents-tab" data-toggle="tab" href="#residents" role="tab" aria-controls="residents" aria-selected="false">Residents</a>
+          </li>
+        </ul>
+        <div class="tab-content" id="myTabContent">
+          <div class="tab-pane fade show active" id="users" role="tabpanel" aria-labelledby="users-tab">
+            <form class="form-inline my-2 my-lg-0">
+              <input id="userSearch" class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+            </form>
+            <table class="table table-str table-striped table-dark str-component rounded">
+              <thead>
+                <tr>
+                  <th scope="col">Username</th>
+                  <th scope="col">Role</th>
+                </tr>
+              </thead>
+              <tbody id="usrTblBody">
+            </table>
+          </div>
+          <div class="tab-pane fade" id="rooms" role="tabpanel" aria-labelledby="rooms-tab">
+            <form class="form-inline my-2 my-lg-0">
+              <input id="roomSearch" class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+            </form>
+            <table class="table table-str table-striped table-dark str-component rounded">
+              <thead>
+                <tr>
+                  <th scope="col">Room</th>
+                  <th scope="col">Residents</th>
+                </tr>
+              </thead>
+              <tbody id="roomTblBody">
+            </table>
+          </div>
+          <div class="tab-pane fade" id="residents" role="tabpanel" aria-labelledby="residents-tab">
+            <form class="form-inline my-2 my-lg-0">
+              <input id="resSearch" class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+            </form>
+            <table class="table table-str table-striped table-dark str-component rounded">
+              <thead>
+                <tr>
+                  <th scope="col">Room</th>
+                  <th scope="col">Forename</th>
+                  <th scope="col">Surname</th>
+                </tr>
+              </thead>
+              <tbody id="resTblBody">
+            </table>
+          </div>
+        </div>
+      </div>`);
+
+    this.usr = new AdminUsrTbl();
+    document.getElementById('homeBtn').classList.remove('active');
+    document.getElementById('adminBtn').classList.add('active');
+    document.getElementById('adminBtn').removeEventListener('click', loadAdmin);
+  }
+}
+
+class AdminUsrTbl {
+  constructor() {
     this.hidden = false;
     this.timeout;
+    this.adminPg = document.getElementById('adminPg');
     this.init();
   }
 
@@ -753,77 +825,11 @@ class Admin {
     if(status === 200) {
       clearError();
       const json = await response.json();
-      document.getElementById('homeBtn').classList.remove('active');
-      document.getElementById('adminBtn').classList.add('active');
-      document.getElementById('adminBtn').removeEventListener('click', loadAdmin);
-      document.getElementById('residents').outerHTML = '';
-
-      document.body.insertAdjacentHTML('beforeend', `
-        <div id="adminPg" class="ml-1 mr-1 str-component">
-          <ul class="nav nav-tabs" id="myTab" role="tablist">
-            <li class="nav-item">
-              <a class="nav-link active" id="users-tab" data-toggle="tab" href="#users" role="tab" aria-controls="users" aria-selected="true">Users</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" id="rooms-tab" data-toggle="tab" href="#rooms" role="tab" aria-controls="rooms" aria-selected="false">Rooms</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" id="residents-tab" data-toggle="tab" href="#residents" role="tab" aria-controls="residents" aria-selected="false">Residents</a>
-            </li>
-          </ul>
-          <div class="tab-content" id="myTabContent">
-            <div class="tab-pane fade show active" id="users" role="tabpanel" aria-labelledby="users-tab">
-              <form class="form-inline my-2 my-lg-0">
-                <input id="userSearch" class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-              </form>
-              <table class="table table-str table-striped table-dark str-component rounded">
-                <thead>
-                  <tr>
-                    <th scope="col">Username</th>
-                    <th scope="col">Role</th>
-                  </tr>
-                </thead>
-                <tbody id="usrTblBody">
-              </table>
-            </div>
-            <div class="tab-pane fade" id="rooms" role="tabpanel" aria-labelledby="rooms-tab">
-              <form class="form-inline my-2 my-lg-0">
-                <input id="userSearch" class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-              </form>
-              <table class="table table-str table-striped table-dark str-component rounded">
-                <thead>
-                  <tr>
-                    <th scope="col">Room</th>
-                    <th scope="col">Forename</th>
-                    <th scope="col">Surname</th>
-                  </tr>
-                </thead>
-                <tbody id="roomTblBody">
-              </table>
-            </div>
-            <div class="tab-pane fade" id="residents" role="tabpanel" aria-labelledby="residents-tab">
-              <form class="form-inline my-2 my-lg-0">
-                <input id="userSearch" class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-              </form>
-              <table class="table table-str table-striped table-dark str-component rounded">
-                <thead>
-                  <tr>
-                    <th scope="col">Room</th>
-                    <th scope="col">Forename</th>
-                    <th scope="col">Surname</th>
-                  </tr>
-                </thead>
-                <tbody id="resTblBody">
-              </table>
-            </div>
-          </div>
-        </div>`);
-
       this.updateUsers(json.users);
       this.adminPg = document.getElementById('adminPg');
 
       document.getElementById('userSearch').addEventListener('input', (event) => {
-        this.usrSearchChange();
+        this.searchChange();
       });
 
       //Passes username from response to navbar
@@ -844,7 +850,7 @@ class Admin {
     else if (status === 500) {
       clearError();
       //Notify the user that there has been an error.
-      document.body.insertAdjacentHTML('beforeend', `<div id="errorAlert" class="alert alert-warning" role="alert">There was an error. Please try again later.
+      document.getElementById('users').insertAdjacentHTML('afterBegin', `<div id="errorAlert" class="alert alert-warning" role="alert">There was an error. Please try again later.
       </div>`);
     }
   }
@@ -886,14 +892,14 @@ class Admin {
     }
   }
 
-  usrSearchChange() {
+  searchChange() {
     //Reset timeout for retrieving users from server. Wait another 500ms, to avoid sending too many requests to the server.
     //Should allow time to finish typing for most people, without appearing unresponsive
     clearTimeout(this.timeout);
-    this.timeout = setTimeout(this.usrDoneTyping.bind(this), 500);
+    this.timeout = setTimeout(this.doneTyping.bind(this), 500);
   }
 
-  async usrDoneTyping() {
+  async doneTyping() {
     //If hidden (implying the user was forced to login on the last attempt) will show table again.
     if(this.hidden) {
       this.show();
@@ -910,7 +916,7 @@ class Admin {
     else if(status === 401) {
       //Forcelogin uses retry from 'this' upon successful login.
       this.hide();
-      this.retry = this.usrDoneTyping.bind(this);
+      this.retry = this.doneTyping.bind(this);
       forceLogin.bind(this)();
     }
     else if(status === 403) {
