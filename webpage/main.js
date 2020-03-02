@@ -310,7 +310,7 @@ class Resident {
     main.insertAdjacentHTML('beforeend', `
       <div id="resOptions" class="ml-1 mr-1">
         <button id="backBtn" type="button" class="btn btn-lg btn-outline-secondary">&#8249;</button>
-        <div class="card str-component" style="max-width: 30rem;">
+        <div class="card str-component formcard">
           <div class="card-body">
             <h5 class="card-title">${this.forename + ' ' + this.surname}</h5>
             <h6 class="card-subtitle mb-2 text-muted">${this.roomName}</h6>
@@ -519,7 +519,7 @@ class Contact {
     const html = `
       <div id="dispContact" class="ml-1 mr-1">
         <button id="closeContact" type="button" class="btn btn-lg btn-outline-secondary">&#8249;</button>
-        <div class="card str-component" style="max-width: 30rem;">
+        <div class="card str-component formcard">
           <div class="card-body">
             <form>
               <label>Time entered: ${this.contactDate + ' ' + this.contactTime}</label>

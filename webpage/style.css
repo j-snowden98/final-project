@@ -47,3 +47,7 @@
 .material-icons {
   vertical-align: text-bottom !important;
 }
+
+.formcard {
+  max-width: 30rem !important;
+}
