@@ -2,6 +2,7 @@
 const url = document.location.origin;
 let navbar = false;
 let resTbl;
+let main;
 
 
 window.onload = function() {
@@ -18,6 +19,7 @@ document.addEventListener("keydown", event => {
 
 function init() {
   //This code is called when the page is loaded. Creates a table of residents and loads from it.
+  main = document.getElementsByTagName('main')[0];
   resTbl = new ResTable();
 }
 
@@ -33,7 +35,7 @@ function forceLogin() {
       <button id="btnLogin" type="button" class="btn btn-lg btn-primary btn-block">Sign in</button>
     </form>`;
 
-  document.body.insertAdjacentHTML('beforeend', loginPg);
+  main.insertAdjacentHTML('beforeend', loginPg);
   document.getElementById('btnLogin').addEventListener('click', loginServer.bind(this));
 }
 
@@ -164,7 +166,7 @@ class ResTable {
     console.log(status);
     if(status === 200) {
       const json = await response.json();
-      document.body.insertAdjacentHTML('beforeend', `
+      main.insertAdjacentHTML('beforeend', `
         <div id="residents" class="ml-1 mr-1 str-component">
           <form class="form-inline my-2 my-lg-0">
             <input id="searchbar" class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
@@ -200,7 +202,7 @@ class ResTable {
     else if (status === 500) {
       clearError();
       //Notify the user that there has been an error.
-      document.body.insertAdjacentHTML('beforeend', `<div id="errorAlert" class="alert alert-warning" role="alert">There was an error. Please try again later.
+      main.insertAdjacentHTML('beforeend', `<div id="errorAlert" class="alert alert-warning" role="alert">There was an error. Please try again later.
       </div>`);
     }
   }
@@ -305,7 +307,7 @@ class Resident {
   openResMenu() {
     //Hide table of residents
     resTbl.hide();
-    document.body.insertAdjacentHTML('beforeend', `
+    main.insertAdjacentHTML('beforeend', `
       <div id="resOptions" class="ml-1 mr-1">
         <button id="backBtn" type="button" class="btn btn-lg btn-outline-secondary">&#8249;</button>
         <div class="card str-component" style="max-width: 30rem;">
@@ -385,7 +387,7 @@ class ContactTable {
       }
       else if(status === 500) {
         //Notify the user that there has been an error
-        document.body.insertAdjacentHTML('beforeend', `<div id="errorAlert" class="alert alert-warning" role="alert">There was an error. Please try again later.
+        main.insertAdjacentHTML('beforeend', `<div id="errorAlert" class="alert alert-warning" role="alert">There was an error. Please try again later.
         </div>`);
         //Waits 1 second to notify user then returns to previous screen
         setTimeout(function(){
@@ -399,7 +401,7 @@ class ContactTable {
       const contact = json.contact;
 
       //Now add the contact table
-      document.body.insertAdjacentHTML('beforeend', `
+      main.insertAdjacentHTML('beforeend', `
         <div id="contact" class="ml-1 mr-1">
           <button id="backBtn" type="button" class="btn btn-lg btn-outline-secondary">&#8249;</button>
           <button id="addBtn" type="button" class="btn btn-lg btn-outline-primary">&#43;</button>
@@ -544,7 +546,7 @@ class Contact {
           </div>
         </div>
       </div>`
-    document.body.insertAdjacentHTML('beforeend', html);
+    main.insertAdjacentHTML('beforeend', html);
     this.container = document.getElementById('dispContact');
 
     //Back button goes back to contact table
@@ -565,9 +567,9 @@ class AddContact {
     //added function to be called once entry has been successfully saved
     this.resID = resID;
     this.onCancel = onCancel;
-    this.added = added
-    document.body.insertAdjacentHTML('beforeend', `
-      <div id="addContact" class="card str-component ml-1 mr-1" style="max-width: 30rem;">
+    this.added = added;
+    main.insertAdjacentHTML('beforeend', `
+      <div id="addContact" class="card str-component ml-1 mr-1 formcard">
         <div class="card-body">
           <form>
             <div class="form-check">
@@ -700,8 +702,6 @@ class AddContact {
         else if(status === 403) {
           //Notify the user that they are not authorised. Go back to previous state
           window.alert(await response.text());
-          //Hide form before showing login form
-          this.hide();
           this.onCancel();
         }
         else if (status === 500) {
@@ -742,8 +742,8 @@ class AddFoodFluid {
 
 class Admin {
   constructor() {
-    document.getElementById('residents').outerHTML = '';
-    document.body.insertAdjacentHTML('beforeend', `
+    main.innerHTML = '';
+    main.insertAdjacentHTML('beforeend', `
       <div id="adminPg" class="ml-1 mr-1 str-component">
         <ul class="nav nav-tabs" id="myTab" role="tablist">
           <li class="nav-item">
