@@ -20,10 +20,25 @@ router.get('/search', async (req, res) => {
   }
 });
 
+router.get('/permissions', async (req, res) => {
+  const userID = req.query.userID;
+
+  try {
+    const permissions = await data.getPermissions(userID);
+    console.log(permissions);
+    return res.status(200).json({ permissions: permissions });
+  }
+  catch (e) {
+    console.log(e);
+    return res.status(500).send('Server error!');
+  }
+});
+
 router.post('/register', async (req, res) => {
   const username = req.body.username;
   const password = req.body.password;
   const role = req.body.role;
+  const permissions = req.body.permissions;
 
   try {
     //Creates hashed password to be stored in DB
@@ -42,6 +57,30 @@ router.post('/register', async (req, res) => {
     console.log(e);
     return res.status(500).send('Server error!');
   }
+});
+
+router.post('/edit', async (req, res) => {
+  const userID = req.body.userID;
+  const username = req.body.username;
+  const role = req.body.role;
+  const permissions = req.body.permissions;
+
+  try {
+    const users = await data.editUser(userID, username, role);
+    if (await users) {
+      const pmsnSet = await data.setPermissions(userID, permissions);
+      if (await pmsnSet) {
+        res.status(200).json({ users: users });
+      }
+    }
+
+  }
+  catch (e) {
+    console.log(e);
+    return res.status(500).send('Server error!');
+  }
+});
+
 
 });
 module.exports = router;

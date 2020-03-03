@@ -71,8 +71,12 @@ async function getUser(userID) {
 async function editUser(userID, username, role) {
   //Edit a user's username and role
   const sql = await init();
-  const userQuery = sql.format('UPDATE User SET username = ?, role = ? WHERE id = ?;', [username, role, userID]);
-  return await sql.query(userQuery);
+  const query = sql.format('UPDATE User SET username = ?, role = ? WHERE id = ?;', [username, role, userID]);
+
+  const result = await sql.query(query);
+  if (await result) {
+    return await searchUsers('');
+  }
 }
 
 async function setPermissions(userID, permissions) {
