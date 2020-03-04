@@ -1398,6 +1398,119 @@ class ManageUser {
     this.container.setAttribute('style', 'display: flex');
   }
 }
+
+class ResetPassword {
+  constructor(userID, onClose) {
+    this.userID = userID;
+    this.onClose = onClose;
+    main.insertAdjacentHTML('beforeend', `
+      <div id="passReset" class="card str-component ml-1 mr-1 formcard">
+        <div class="card-body">
+          <form>
+            <div class="form-group">
+              <label for="password">Password</label>
+              <input id="password" type="password" class="form-control">
+            </div>
+
+            <div class="form-group">
+              <label for="verPassword">Verify Password</label>
+              <input id="verPassword" type="password" class="form-control">
+            </div>
+          </form>
+          <div class="str-btn">
+            <button id="btnCancelPass" type="button" class="btn btn-danger btn">Cancel</button>
+            <button id="btnSavePass" type="button" class="btn btn-success btn">Save</button>
+          </div>
+        </div>
+      </div>
+    `);
+    this.container = document.getElementById('passReset');
+    this.pass = document.getElementById('password');
+    this.verPass = document.getElementById('verPassword');
+
+    document.getElementById('btnCancelPass').addEventListener('click', this.close.bind(this));
+    document.getElementById('btnSavePass').addEventListener('click', this.save.bind(this));
+  }
+
+  async save() {
+    if (this.validateInputs()) {
+      try {
+        //Attempt to post data to the server
+        let data = {
+          userID: this.userID,
+          password: this.pass.value
+        }
+        const response = await fetch(url + '/api/admin/user/password', {
+          method: 'POST',
+          body: JSON.stringify(data),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        const status = await response.status;
+
+        if(status === 200) {
+          this.close();
+        }
+        else if(status === 401) {
+          //Hide form before showing login form
+          this.hide();
+
+          //Forcelogin uses retry from 'this' upon successful login.
+          this.retry = this.save.bind(this);
+          forceLogin.bind(this)();
+        }
+        else if(status === 403) {
+          //Notify the user that they are not authorised. Go back to previous state
+          window.alert(await response.text());
+          this.close();
+        }
+        else if (status === 500) {
+          clearError();
+          //Need to show form in case the user was forced to log in again which would have hidden it.
+          this.show();
+
+          //Notify user there has been an error. Leaves the form as it is in case they want to try again and keep the data.
+          //User can also click cancel at this point
+          this.container.insertAdjacentHTML('afterBegin', `<div id="errorAlert" class="alert alert-warning" role="alert">There was an error. Please try again later.
+          </div>`);
+        }
+      }
+      catch(error) {
+        console.error(error);
+      }
+    }
+  }
+
+  validateInputs() {
+    clearError();
+    if (this.pass.value === '') {
+      this.container.insertAdjacentHTML('afterBegin', `<div id="errorAlert" class="alert alert-danger" role="alert">Please enter a password.</div>`);
+    }
+    else if (this.verPass === '') {
+      this.container.insertAdjacentHTML('afterBegin', `<div id="errorAlert" class="alert alert-danger" role="alert">Please type the password again.</div>`);
+    }
+    else if (this.pass.value !== this.verPass.value) {
+      this.container.insertAdjacentHTML('afterBegin', `<div id="errorAlert" class="alert alert-danger" role="alert">The passwords do not match.</div>`);
+    }
+    else {
+      return true;
+    }
+  }
+
+  close() {
+    this.container.outerHTML = '';
+    this.onClose();
+  }
+
+  hide() {
+    this.container.setAttribute('style', 'display: none');
+  }
+
+  show() {
+    this.container.setAttribute('style', 'display: flex');
+  }
+}
   }
 }
 

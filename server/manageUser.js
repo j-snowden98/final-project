@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const bcrypt = require('bcryptjs');
 const data = require('./db/admin_model_mysql.js');
 
 const router = express.Router();
@@ -81,6 +82,25 @@ router.post('/edit', async (req, res) => {
   }
 });
 
+router.post('/password', async (req, res) => {
+  const userID = req.body.userID;
+  const password = req.body.password;
 
+  try {
+    //Creates hashed password to be stored in DB
+    bcrypt.genSalt(10, function(err, salt) {
+      bcrypt.hash(password, salt, async function(err, hash) {
+        if(!err) {
+          //If password has hashed successfully, update the password in the database
+          await data.resetPassword(userID, hash);
+          res.status(200).json({ success: true });
+        }
+      });
+    });
+  }
+  catch (e) {
+    console.log(e);
+    return res.status(500).send('Server error!');
+  }
 });
 module.exports = router;
