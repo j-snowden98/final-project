@@ -169,7 +169,7 @@ class ResTable {
       main.insertAdjacentHTML('beforeend', `
         <div id="residents" class="ml-1 mr-1 str-component">
           <form class="form-inline my-2 my-lg-0">
-            <input id="searchbar" class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+            <input id="searchbar" class="form-control" type="search" placeholder="Search" aria-label="Search">
           </form>
           <table class="table table-str table-striped table-dark str-component rounded">
             <thead>
@@ -743,6 +743,8 @@ class AddFoodFluid {
 class Admin {
   constructor() {
     main.innerHTML = '';
+    //Insert the HTML for the admin page, consisting of separate tabs for users, residents and rooms.
+    //Each respective tab has its own table which will be populated later by their respective classes
     main.insertAdjacentHTML('beforeend', `
       <div id="adminPg" class="ml-1 mr-1 str-component">
         <ul class="nav nav-tabs" id="myTab" role="tablist">
@@ -759,7 +761,8 @@ class Admin {
         <div class="tab-content" id="myTabContent">
           <div class="tab-pane fade show active" id="users" role="tabpanel" aria-labelledby="users-tab">
             <form class="form-inline my-2 my-lg-0">
-              <input id="userSearch" class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+              <input id="userSearch" class="form-control mr-1 adminSearch" type="search" placeholder="Search" aria-label="Search">
+              <button id="addUserBtn" title="Add new user" type="button" class="btn btn-outline-primary">&#43;</button>
             </form>
             <table class="table table-str table-striped table-dark str-component rounded">
               <thead>
@@ -773,7 +776,8 @@ class Admin {
           </div>
           <div class="tab-pane fade" id="rooms" role="tabpanel" aria-labelledby="rooms-tab">
             <form class="form-inline my-2 my-lg-0">
-              <input id="roomSearch" class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+              <input id="roomSearch" class="form-control mr-1 adminSearch" type="search" placeholder="Search" aria-label="Search">
+              <button id="addRoomBtn" title="Add new room" type="button" class="btn btn-outline-primary">&#43;</button>
             </form>
             <table class="table table-str table-striped table-dark str-component rounded">
               <thead>
@@ -787,7 +791,8 @@ class Admin {
           </div>
           <div class="tab-pane fade" id="residents" role="tabpanel" aria-labelledby="residents-tab">
             <form class="form-inline my-2 my-lg-0">
-              <input id="resSearch" class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+              <input id="resSearch" class="form-control mr-1 adminSearch" type="search" placeholder="Search" aria-label="Search">
+              <button id="addResBtn" title="Add new resident" type="button" class="btn btn-outline-primary">&#43;</button>
             </form>
             <table class="table table-str table-striped table-dark str-component rounded">
               <thead>
@@ -836,6 +841,12 @@ class AdminUsrTbl {
       document.getElementById('userSearch').addEventListener('input', (event) => {
         this.searchChange();
       });
+
+      //Loads form to add new user. Passes the show function so table is reloaded when a user is successfully saved.
+      document.getElementById('addUserBtn').addEventListener('click', function() {
+        this.hide();
+        const addNew = new AddUser(this.show.bind(this));
+      }.bind(this));
     }
 
     else if (status === 401) {
@@ -845,10 +856,12 @@ class AdminUsrTbl {
       forceLogin.bind(this)();
     }
     else if (status === 403) {
+      //Notify the user that they do not have the admin permission. Return to non admin view by reloading.
       window.alert(await response.text());
       location.reload();
     }
     else if (status === 500) {
+      //Clear the current error if this is another failed attempt to avoid duplicate errors
       clearError();
       //Notify the user that there has been an error.
       document.getElementById('users').insertAdjacentHTML('afterBegin', `<div id="errorAlert" class="alert alert-warning" role="alert">There was an error. Please try again later.
@@ -914,6 +927,7 @@ class AdminUsrTbl {
     const status = await response.status;
 
     if(status === 200) {
+      //Remove error message from a previously failed attempt
       clearError();
       const json = await response.json();
       this.updateUsers(json.users);
@@ -929,6 +943,7 @@ class AdminUsrTbl {
       location.reload();
     }
     else if (status === 500) {
+      //Clear the current error if this is another failed attempt to avoid duplicate errors
       clearError();
       //Notify the user that there has been an error
       document.getElementById('users').insertAdjacentHTML('afterBegin', `<div id="errorAlert" class="alert alert-warning" role="alert">There was an error. Please try again later.
@@ -962,7 +977,10 @@ class AdminRoomTbl {
     const response = await this.searchRooms();
     const status = await response.status;
     if(status === 200) {
+      //Remove the error message if there is one
       clearError();
+
+      //Populate the rooms table with retrieved data
       const json = await response.json();
       this.updateRooms(json.rooms);
 
@@ -1219,7 +1237,6 @@ class ManageUser {
     if(status === 200) {
       clearError();
       const json = await response.json();
-      //Draw form here now with necessary info
       main.insertAdjacentHTML('beforeend', `
         <div id="manageUser" class="card str-component ml-1 mr-1 formcard">
           <div class="card-body">
@@ -1308,17 +1325,16 @@ class ManageUser {
   }
 
   validateInputs() {
-    /*clearError();
-    if (this.desc.value === '') {
-      this.container.insertAdjacentHTML('afterBegin', `<div id="errorAlert" class="alert alert-danger" role="alert">Please fill in the Care and Contact section.</div>`);
+    clearError();
+    if (this.inputUsername.value === '') {
+      this.container.insertAdjacentHTML('afterBegin', `<div id="errorAlert" class="alert alert-danger" role="alert">Please enter a username.</div>`);
     }
-    else if (this.moodSelect.value === 'Other' && this.mood.value === '') {
-      this.container.insertAdjacentHTML('afterBegin', `<div id="errorAlert" class="alert alert-danger" role="alert">Please fill in the Mood section.</div>`);
+    else if (this.inputRole.value === '') {
+      this.container.insertAdjacentHTML('afterBegin', `<div id="errorAlert" class="alert alert-danger" role="alert">Please enter the user's role.</div>`);
     }
     else {
       return true;
-    }*/
-    return true;
+    }
   }
 
   async save() {
@@ -1511,6 +1527,212 @@ class ResetPassword {
     this.container.setAttribute('style', 'display: flex');
   }
 }
+
+class AddUser {
+  constructor(onClose) {
+    this.onClose = onClose;
+    this.openAdd();
+  }
+
+  async openAdd() {
+    const response = await this.loadUserPermissions();
+    const status = await response.status;
+    console.log(response);
+    if(status === 200) {
+      clearError();
+      const json = await response.json();
+      main.insertAdjacentHTML('beforeend', `
+        <div id="registerUser" class="card str-component ml-1 mr-1 formcard">
+          <div class="card-body">
+            <form id="registerUserForm">
+              <div class="form-group">
+                <label for="username">Username</label>
+                <input id="username" type="text" class="form-control">
+              </div>
+
+              <div class="form-group">
+                <label for="role">Role</label>
+                <input id="role" type="text" class="form-control">
+              </div>
+
+              <div class="form-group">
+                <label for="password">Password</label>
+                <input id="password" type="password" class="form-control">
+              </div>
+
+              <div class="form-group">
+                <label for="verPassword">Verify Password</label>
+                <input id="verPassword" type="password" class="form-control">
+              </div>
+            </form>
+
+            <div class="str-btn">
+              <button id="btnCancel" type="button" class="btn btn-danger">Cancel</button>
+              <button id="btnSave" type="button" class="btn btn-success">Save</button>
+            </div>
+          </div>
+        </div>
+      `);
+      this.container = document.getElementById('registerUser');
+      this.form = document.getElementById('registerUserForm');
+
+      this.inputUsername = document.getElementById('username');
+      this.inputRole = document.getElementById('role');
+      this.inputPass = document.getElementById('password');
+      this.inputVerPass = document.getElementById('verPassword');
+
+      document.getElementById('btnCancel').addEventListener('click', function() { this.close(); }.bind(this));
+      document.getElementById('btnSave').addEventListener('click', this.save.bind(this));
+
+
+      for(let p of json.permissions) {
+        this.form.insertAdjacentHTML('beforeend', `
+        <div class="form-check">
+          <input class="form-check-input permissionCheck" type="checkbox" ${ p.userID === null? '' : 'checked' } value="" id="p${p.type}" data-pid="${p.id}">
+          <label class="form-check-label" for="p${p.type}">
+            ${p.name}
+          </label>
+        </div>`);
+      }
+    }
+
+    else if (status === 401) {
+      //Forcelogin calls init function again upon successful login.
+      this.hide();
+      this.retry = this.openAdd.bind(this);
+      forceLogin.bind(this)();
+    }
+    else if (status === 403) {
+      window.alert(await response.text());
+      location.reload();
+    }
+    else if (status === 500) {
+      clearError();
+      //Notify the user that there has been an error.
+      container.insertAdjacentHTML('afterBegin', `<div id="errorAlert" class="alert alert-warning" role="alert">There was an error. Please try again later.
+      </div>`);
+    }
+  }
+
+  async loadUserPermissions() {
+    try {
+      //Get user permissions from server. Does not send a userID, therefore all permissions will come back with null for userID.
+      //The purpose is to load all of the permissions available on the system
+      const response = await fetch(url + `/api/admin/user/permissions`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'same-origin'
+      });
+      //Returns whole response object, allowing caller to inspect status code to respond accordingly
+      return response;
+
+    } catch(error) {
+      console.error('Error:', error);
+    }
+  }
+
+  validateInputs() {
+    clearError();
+    if (this.inputUsername.value === '') {
+      this.container.insertAdjacentHTML('afterBegin', `<div id="errorAlert" class="alert alert-danger" role="alert">Please enter a username.</div>`);
+    }
+    else if (this.inputRole.value === '') {
+      this.container.insertAdjacentHTML('afterBegin', `<div id="errorAlert" class="alert alert-danger" role="alert">Please enter the user's role.</div>`);
+    }
+    else if (this.inputPass.value === '') {
+      this.container.insertAdjacentHTML('afterBegin', `<div id="errorAlert" class="alert alert-danger" role="alert">Please enter a password.</div>`);
+    }
+    else if (this.inputVerPass.value === '') {
+      this.container.insertAdjacentHTML('afterBegin', `<div id="errorAlert" class="alert alert-danger" role="alert">Please type the password again.</div>`);
+    }
+    else if (this.inputPass.value !== this.inputVerPass.value) {
+      this.container.insertAdjacentHTML('afterBegin', `<div id="errorAlert" class="alert alert-danger" role="alert">The passwords do not match.</div>`);
+    }
+    else {
+      return true;
+    }
+  }
+
+  async save() {
+    //Will not save the data unless all fields are successfully validated
+    if (this.validateInputs()) {
+      try {
+        //Find which permissions have been selected, using the permission id stored in the data attribute of the respective checkboxes
+        const pmsnChecks = document.getElementsByClassName('permissionCheck');
+        const grantedIds = [];
+
+        for(let p of pmsnChecks) {
+          if(p.checked)
+            grantedIds.push(p.dataset.pid);
+        }
+        console.log(grantedIds);
+
+        //Create a JSON object with all data fields to be stored
+        let data = {
+          username: this.inputUsername.value,
+          role: this.inputRole.value,
+          password: this.inputPass.value,
+          permissions: grantedIds
+        }
+
+        //Attempt to post the data to the server
+        const response = await fetch(url + '/api/admin/user/register', {
+          method: 'POST',
+          body: JSON.stringify(data),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        const status = await response.status;
+
+        if(status === 200) {
+          const json = await response.json();
+          this.close(await json.users);
+        }
+        else if(status === 401) {
+          //Hide form before showing login form
+          this.hide();
+
+          //Forcelogin calls save again upon successful login.
+          this.retry = this.save.bind(this);
+          forceLogin.bind(this)();
+        }
+        else if(status === 403) {
+          //Notify the user that they do not have admin permissions. Page is reloaded to display only what the user is authorised to do on the system
+          window.alert(await response.text());
+          location.reload();
+        }
+        else if (status === 500) {
+          clearError();
+          //Need to show form in case the user was forced to log in again which would have hidden it
+          this.show();
+
+          //Notify user there has been an error. Leaves the form as it is in case they want to try again and keep the data.
+          //User can also click cancel at this point
+          this.container.insertAdjacentHTML('afterBegin', `<div id="errorAlert" class="alert alert-warning" role="alert">There was an error. Please try again later.
+          </div>`);
+        }
+      }
+      catch(error) {
+        console.error(error);
+      }
+    }
+  }
+
+  close(json) {
+    //Remove will call the given function with json as a parameter. This goes back to contact table and updates with new row from json parameter.
+    this.container.outerHTML = '';
+    this.onClose(json);
+  }
+
+  hide() {
+    this.container.setAttribute('style', 'display: none');
+  }
+
+  show() {
+    this.container.setAttribute('style', 'display: flex');
   }
 }
 

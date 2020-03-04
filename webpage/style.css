@@ -51,3 +51,7 @@
 .formcard {
   max-width: 30rem !important;
 }
+
+.adminSearch {
+  width: auto !important;
+}

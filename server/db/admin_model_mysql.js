@@ -49,7 +49,7 @@ async function addUser(username, password, role, permissions) {
   const permissionsSet = await setPermissions(userID, permissions);
   //Once their permissions have been set, return the new user to be shown in the webpage.
   if (await permissionsSet) {
-    return await getUser(userID);
+    return await searchUsers('');
   }
 }
 
@@ -59,13 +59,6 @@ async function searchUsers(search) {
   const query = sql.format('SELECT id, username, role FROM User WHERE username LIKE ? OR role LIKE ? ORDER BY username ASC', [filter, filter]);
   const [rows] = await sql.query(query);
   return rows;
-}
-
-async function getUser(userID) {
-  const sql = await init();
-  const query = sql.format('SELECT id, username, role FROM User WHERE id = ?', [userID]);
-  const [rows] = await sql.query(query);
-  return (rows)[0];
 }
 
 async function editUser(userID, username, role) {
@@ -261,7 +254,6 @@ module.exports = {
   addUser: addUser,
   searchUsers: searchUsers,
   editUser: editUser,
-  getUser: getUser,
   getPermissions: getPermissions,
   setPermissions: setPermissions,
   resetPassword: resetPassword,

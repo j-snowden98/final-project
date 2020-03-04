@@ -48,8 +48,8 @@ router.post('/register', async (req, res) => {
         if(!err) {
           console.log(hash);
           //Uses DB model to save user with credentials and role to DB
-          await data.addUser(username, hash, role);
-          res.status(200).send({ 'user': username });
+          const users = await data.addUser(username, hash, role, permissions);
+          res.status(200).json({ users: users });
         }
       });
     });
