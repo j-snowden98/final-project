@@ -56,7 +56,7 @@ async function addUser(username, password, role, permissions) {
 async function searchUsers(search) {
   const sql = await init();
   const filter = '%' + search + '%';
-  const query = sql.format('SELECT id, username, role FROM User WHERE username LIKE ? OR role LIKE ? ORDER BY username ASC', [filter, filter]);
+  const query = sql.format('SELECT id, username, role FROM User WHERE active = 1 AND (username LIKE ? OR role LIKE ?) ORDER BY username ASC', [filter, filter]);
   const [rows] = await sql.query(query);
   return rows;
 }
@@ -99,10 +99,13 @@ async function resetPassword(userID, newPassword) {
   return await sql.query(userQuery);
 }
 
-async function deactivate(userID) {
+async function deactivateUser(userID) {
   const sql = await init();
   const query = sql.format('UPDATE User SET active = 0 WHERE id = ?;', [userID]);
-  return await sql.query(query);
+  const result = await sql.query(query);
+  if (await result) {
+    return await searchUsers('');
+  }
 }
 
 
@@ -257,7 +260,7 @@ module.exports = {
   getPermissions: getPermissions,
   setPermissions: setPermissions,
   resetPassword: resetPassword,
-  deactivate: deactivate,
+  deactivateUser: deactivateUser,
   searchRooms: searchRooms,
   loadRoomResidents: loadRoomResidents,
   addRoom: addRoom,

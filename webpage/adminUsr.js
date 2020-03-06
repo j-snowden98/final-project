@@ -28,8 +28,9 @@ class ManageUser {
                 <input id="role" type="text" class="form-control" value="${this.role}">
               </div>
 
-              <div class="form-group">
+              <div class="form-group form-inline">
                 <button id="btnPass" type="button" class="btn btn-secondary">Reset Password</button>
+                <button id="btnDeactivate" type="button" class="btn btn-danger ml-1">Deactivate User</button>
               </div>
 
             </form>
@@ -47,6 +48,7 @@ class ManageUser {
         this.hide();
         const resetPass = new ResetPassword(this.userID, this.show.bind(this));
       }.bind(this));
+      document.getElementById('btnDeactivate').addEventListener('click', this.clickDeactivate.bind(this));
       this.inputUsername = document.getElementById('username');
       this.inputRole = document.getElementById('role');
 
@@ -156,7 +158,7 @@ class ManageUser {
           forceLogin.bind(this)();
         }
         else if(status === 403) {
-          //Notify the user that they are not authorised. Go back to previous state
+          //Notify the user that they are not authorised. Reloads the page as they should not be on the admin page
           window.alert(await response.text());
           location.reload();
         }
@@ -174,6 +176,57 @@ class ManageUser {
       catch(error) {
         console.error(error);
       }
+    }
+  }
+
+  clickDeactivate() {
+    //Ask the user if they are sure about deactivating an account. Allows them to cancel if they clicked the button by mistake
+    if(confirm('Are you sure you want to deactivate this user?')) {
+      this.deactivateUser();
+    }
+  }
+
+  async deactivateUser() {
+    try {
+      const response = await fetch(url + '/api/admin/user/deactivate', {
+        method: 'POST',
+        body: JSON.stringify({ userID: this.userID }),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      const status = await response.status;
+
+      if(status === 200) {
+        //If account has been deactivated, return to admin page and refresh users
+        const json = await response.json();
+        this.close(await json.users);
+      }
+      else if(status === 401) {
+        //Hide form before asking user to log in again
+        this.hide();
+
+        //Forcelogin then calls this function again upon successful login
+        this.retry = this.deactivateUser.bind(this);
+        forceLogin.bind(this)();
+      }
+      else if(status === 403) {
+        //Notify the user that they are not authorised. Reloads the page as they should not be on the admin page
+        window.alert(await response.text());
+        location.reload();
+      }
+      else if (status === 500) {
+        clearError();
+        //Need to show form in case the user was forced to log in again which would have hidden it.
+        this.show();
+
+        //Notify user there has been an error. Leaves the form as it is in case they want to try again and keep the data.
+        this.container.insertAdjacentHTML('afterBegin', `<div id="errorAlert" class="alert alert-warning" role="alert">There was an error. Please try again later.
+        </div>`);
+      }
+    }
+    catch(error) {
+      console.error(error);
     }
   }
 
@@ -254,7 +307,7 @@ class ResetPassword {
           forceLogin.bind(this)();
         }
         else if(status === 403) {
-          //Notify the user that they are not authorised. Go back to previous state
+          //Notify the user that they are not authorised. Reloads the page as they should not be on the admin page
           window.alert(await response.text());
           this.close();
         }

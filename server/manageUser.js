@@ -47,7 +47,7 @@ router.post('/register', async (req, res) => {
       bcrypt.hash(password, salt, async function(err, hash) {
         if(!err) {
           console.log(hash);
-          //Uses DB model to save user with credentials and role to DB
+          //Uses DB model to save user with credentials, role and permissions to the database
           const users = await data.addUser(username, hash, role, permissions);
           res.status(200).json({ users: users });
         }
@@ -103,4 +103,17 @@ router.post('/password', async (req, res) => {
     return res.status(500).send('Server error!');
   }
 });
+
+router.post('/deactivate', async (req, res) => {
+  const userID = req.body.userID;
+  try {
+    users = await data.deactivateUser(userID);
+    res.status(200).json({ users: users });
+  }
+  catch (e) {
+    console.log(e);
+    return res.status(500).send('Server error!');
+  }
+});
+
 module.exports = router;
