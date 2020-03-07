@@ -100,8 +100,9 @@ class AdminUsrTbl {
         this.searchChange();
       });
 
-      //Loads form to add new user. Passes the show function so table is reloaded when a user is successfully saved.
+
       document.getElementById('addUserBtn').addEventListener('click', function() {
+        //Loads form to add new user. Passes the show function so table is reloaded when a user is successfully saved.
         this.hide();
         const addNew = new AddUser(this.show.bind(this));
       }.bind(this));
@@ -369,6 +370,12 @@ class AdminResTbl {
       document.getElementById('resSearch').addEventListener('input', (event) => {
         this.searchChange();
       });
+
+      document.getElementById('addResBtn').addEventListener('click', function() {
+        //Loads form to add new resident when add button is clicked. Passes the show function so table is reloaded when a resident is successfully saved.
+        this.hide();
+        const addNew = new AddResident(this.show.bind(this));
+      }.bind(this));
     }
 
     else if (status === 401) {
