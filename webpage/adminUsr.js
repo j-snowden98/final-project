@@ -182,11 +182,11 @@ class ManageUser {
   clickDeactivate() {
     //Ask the user if they are sure about deactivating an account. Allows them to cancel if they clicked the button by mistake
     if(confirm('Are you sure you want to deactivate this user?')) {
-      this.deactivateUser();
+      this.deactivate();
     }
   }
 
-  async deactivateUser() {
+  async deactivate() {
     try {
       const response = await fetch(url + '/api/admin/user/deactivate', {
         method: 'POST',
@@ -207,7 +207,7 @@ class ManageUser {
         this.hide();
 
         //Forcelogin then calls this function again upon successful login
-        this.retry = this.deactivateUser.bind(this);
+        this.retry = this.deactivate.bind(this);
         forceLogin.bind(this)();
       }
       else if(status === 403) {

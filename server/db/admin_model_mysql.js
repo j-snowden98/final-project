@@ -249,7 +249,7 @@ async function editResident(resID, forename, surname, dietReq, allergies, thicke
 
   //Once query has been executed, will refresh the search of rooms
   if (await result) {
-    return await searchResidents();
+    return await searchResidents('');
   }
 }
 

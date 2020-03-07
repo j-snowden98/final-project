@@ -739,19 +739,3 @@ class AddFoodFluid {
 
   }
 }
-
-
-
-
-
-class ManageRoom {
-  constructor() {
-
-  }
-}
-
-class ManageResident {
-  constructor() {
-
-  }
-}

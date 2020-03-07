@@ -412,17 +412,20 @@ class AdminResTbl {
     document.getElementById('resTblBody').innerHTML = '';
     //Iterate through array of results. For each create a row with new instance of class ManageResident so they can be clicked to show details
     for(let r of residents) {
-      let newRes = new ManageResident(r);
+      let newRes = new ManageResident(r, this.show.bind(this));
       let row = document.createElement('tr');
       row.insertAdjacentHTML('beforeend', `
         <tr>
           <td>${r.forename}</td>
           <td>${r.surname}</td>
-          <td>${r.active}</td>
+          <td>${ r.active? 'Yes' : 'No' }</td>
         </tr>`);
       document.getElementById('resTblBody').appendChild(row);
       //Clicking on this new row will allow the resident's details to be amended.
-      //row.addEventListener('click', newRes.openResMenu.bind(newRes));
+      row.addEventListener('click', function() {
+        this.hide();
+        newRes.openEdit.bind(newRes)();
+      }.bind(this));
     }
   }
 
@@ -468,9 +471,12 @@ class AdminResTbl {
     }
   }
 
-  show() {
+  show(refreshResidents) {
     this.hidden = false;
     this.adminPg.setAttribute('style', 'display: block');
+    if (refreshResidents) {
+      this.updateResidents(refreshResidents);
+    }
   }
 
   hide() {
