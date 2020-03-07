@@ -227,14 +227,14 @@ async function deactivateResident(resID) {
   const query = sql.format('UPDATE Resident SET active = 0 WHERE id = ?;', [resID]);
   const result = await sql.query(query);
 
-  //Once query has been executed, will refresh the search of rooms
+  //Once query has been executed, will refresh the list of residents
   if (await result) {
-    return true;
+    return await searchResidents('');
   }
 }
 
 async function editResident(resID, forename, surname, dietReq, allergies, thickener, diabetes, dnr) {
-  //Saves amendments to a reisdent's details
+  //Saves amendments to a resident's details
   const sql = await init();
   const query = sql.format('UPDATE Resident SET ? WHERE id = ?;', [{
     forename: forename,

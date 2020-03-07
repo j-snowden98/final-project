@@ -107,6 +107,7 @@ router.post('/password', async (req, res) => {
 router.post('/deactivate', async (req, res) => {
   const userID = req.body.userID;
   try {
+    //Attempt to deactivate the user account. Send back an updated list of users to the client
     users = await data.deactivateUser(userID);
     res.status(200).json({ users: users });
   }

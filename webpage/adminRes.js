@@ -56,6 +56,10 @@ class ManageResident {
             </div>
           </form>
 
+          <div class="form-group">
+            <button id="btnDeactivate" type="button" class="btn btn-danger ml-1">Deactivate Resident</button>
+          </div>
+
           <div class="str-btn">
             <button id="btnCancel" type="button" class="btn btn-danger">Cancel</button>
             <button id="btnSave" type="button" class="btn btn-success">Save</button>
@@ -77,6 +81,7 @@ class ManageResident {
     //Sets the selected option to the resident's diabetes type, 0 if none
     this.selectDiabetes.value = this.diabetes;
 
+    document.getElementById('btnDeactivate').addEventListener('click', this.clickDeactivate.bind(this));
     document.getElementById('btnCancel').addEventListener('click', function() { this.close(); }.bind(this));
     document.getElementById('btnSave').addEventListener('click', this.save.bind(this));
   }
@@ -154,6 +159,56 @@ class ManageResident {
     }
   }
 
+  clickDeactivate() {
+    //Ask the user if they are sure about deactivating a resident. Allows them to cancel if they clicked the button by mistake
+    if(confirm('Are you sure you want to deactivate this resident?')) {
+      this.deactivate();
+    }
+  }
+
+  async deactivate() {
+    try {
+      const response = await fetch(url + '/api/admin/resident/deactivate', {
+        method: 'POST',
+        body: JSON.stringify({ resID: this.resID }),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      const status = await response.status;
+
+      if(status === 200) {
+        //If resident has been deactivated, return to admin page and refresh users
+        const json = await response.json();
+        this.close(await json.residents);
+      }
+      else if(status === 401) {
+        //Hide form before asking user to log in again
+        this.hide();
+
+        //Forcelogin then calls this function again upon successful login
+        this.retry = this.deactivate.bind(this);
+        forceLogin.bind(this)();
+      }
+      else if(status === 403) {
+        //Notify the user that they are not authorised. Reloads the page as they should not be on the admin page
+        window.alert(await response.text());
+        location.reload();
+      }
+      else if (status === 500) {
+        clearError();
+        //Need to show form in case the user was forced to log in again which would have hidden it.
+        this.show();
+
+        //Notify user there has been an error. Leaves the form as it is in case they want to try again and keep the data.
+        this.container.insertAdjacentHTML('afterBegin', `<div id="errorAlert" class="alert alert-warning" role="alert">There was an error. Please try again later.
+        </div>`);
+      }
+    }
+    catch(error) {
+      console.error(error);
+    }
+  }
 
   close(residents) {
     //Closes the form and refreshes the table of residents with the updated list of residents to show the changes

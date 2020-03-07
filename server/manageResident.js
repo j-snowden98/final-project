@@ -62,5 +62,17 @@ router.post('/add', async (req, res) => {
   }
 });
 
+router.post('/deactivate', async (req, res) => {
+  const resID = req.body.resID;
+  try {
+    //Attempt to deactivate the resident. Send an updated list of residents back to the client
+    residents = await data.deactivateResident(resID);
+    res.status(200).json({ residents: residents });
+  }
+  catch (e) {
+    console.log(e);
+    return res.status(500).send('Server error!');
+  }
+});
 
 module.exports = router;
