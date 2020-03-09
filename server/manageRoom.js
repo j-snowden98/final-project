@@ -21,4 +21,35 @@ router.get('/search', async (req, res) => {
   }
 });
 
+router.get('/roomRes', async (req, res) => {
+  const roomID = req.query.roomID;
+
+  try {
+    //Retrieve and send a list of residents that are assigned to this room
+    const residents = await data.loadRoomResidents(roomID);
+    res.status(200).json({ residents: residents });
+  }
+  catch (e) {
+    //Send response with error to client.
+    console.log(e);
+    return res.status(500).send('Server error!');
+  }
+});
+
+router.post('/unassign', async (req, res) => {
+  const roomID = req.body.roomID;
+  const resID = req.body.resID;
+
+  try {
+    //Unassign the resident from the room. Send back an updated list of residents assigned to the room with that id
+    const residents = await data.unassignResident(roomID, resID);
+    res.status(200).json({ residents: residents });
+  }
+  catch (e) {
+    //Send response with error to client.
+    console.log(e);
+    return res.status(500).send('Server error!');
+  }
+});
+
 module.exports = router;
