@@ -69,7 +69,6 @@ class ManageUser {
 
     else if (status === 401) {
       //Forcelogin calls init function again upon successful login.
-      this.hide();
       this.retry = this.openEdit.bind(this);
       forceLogin.bind(this)();
     }
