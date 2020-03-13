@@ -288,7 +288,7 @@ class AdminRoomTbl {
     document.getElementById('roomTblBody').innerHTML = '';
     //Iterate through array of results. For each create a row with new instance of class ManageRoom
     for(let r of rooms) {
-      let newRoom = new ManageRoom(r);
+      let newRoom = new ManageRoom(r, this.show.bind(this));
       let row = document.createElement('tr');
       row.insertAdjacentHTML('beforeend', `
         <tr>
@@ -297,7 +297,10 @@ class AdminRoomTbl {
         </tr>`);
       document.getElementById('roomTblBody').appendChild(row);
       //Clicking on this new row will allow the room's details to be amended.
-      //row.addEventListener('click', newRoom.openResMenu.bind(newRoom));
+      row.addEventListener('click', function() {
+        this.hide();
+        newRoom.openEdit.bind(newRoom)();
+      }.bind(this));
     }
   }
 
@@ -340,9 +343,19 @@ class AdminRoomTbl {
     }
   }
 
-  show() {
+  show(resChanged, refreshRooms) {
     this.hidden = false;
     this.adminPg.setAttribute('style', 'display: block');
+
+    //If the function has been passed an updated list of rooms, it will use this to update the table
+    if (refreshRooms) {
+      this.updateRooms(refreshRooms);
+    }
+    //Otherwise, if the residents were assigned or unassigned to the previously edited room. It will search the rooms again.
+    else if(resChanged) {
+      this.doneTyping();
+    }
+
   }
 
   hide() {
