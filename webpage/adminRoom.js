@@ -60,7 +60,6 @@ class ManageRoom {
 
     else if (status === 401) {
       //Forcelogin calls init function again upon successful login.
-      this.hide();
       this.retry = this.openEdit.bind(this);
       forceLogin.bind(this)();
     }
@@ -227,6 +226,18 @@ class ManageRoom {
       console.error(error);
     }
   }
+
+  clickAssign() {
+    this.hide();
+    let addNew = new AssignResident(this.roomID, this.show.bind(this));
+  }
+
+  close(json) {
+    //Shows admin page again, sends updated list of rooms if changes have been made
+    this.container.outerHTML = '';
+    this.onClose(this.resChanged, json);
+  }
+
   hide() {
     this.container.setAttribute('style', 'display: none');
   }
@@ -234,8 +245,148 @@ class ManageRoom {
   show(residents) {
     this.container.setAttribute('style', 'display: flex');
     if(residents) {
+      this.resChanged = true;
       this.updateResList(residents);
     }
+  }
+}
+
+class AssignResident {
+  constructor(roomID, onClose) {
+    this.roomID = roomID;
+    this.onClose = onClose;
+    this.init();
+  }
+
+  async init() {
+    try {
+      //Send request to server to retrieve all residents not assigned to rooms
+      const response = await fetch(url + `/api/admin/room/availRes`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'same-origin'
+      });
+
+      const status = await response.status;
+      if (status == 200) {
+        const json = await response.json();
+        main.insertAdjacentHTML('beforeend', `
+          <div id="selectResident" class="str-component">
+            <button id="btnBack" type="button" class="btn btn-lg btn-outline-secondary">&#8249;</button>
+            <table class="table table-str table-striped table-dark str-component rounded">
+              <thead>
+                <tr>
+                  <th scope="col">Name</th>
+                </tr>
+              </thead>
+              <tbody id="selectTblBody"></tbody>
+            </table>
+          </div>
+        `);
+        this.container = document.getElementById('selectResident');
+
+        document.getElementById('btnBack').addEventListener('click', function() {
+          this.close();
+        }.bind(this));
+
+        for(let r of await json.residents) {
+          console.log(r);
+          const row = document.createElement('tr');
+          row.insertAdjacentHTML('beforeend', `
+            <tr>
+              <td>${r.resName}</td>
+            </tr>`);
+          document.getElementById('selectTblBody').appendChild(row);
+
+          //Clicking on row will assign the corresponding resident to the room
+          row.setAttribute('data-id', r.id);
+          row.addEventListener('click', this.selected.bind(this));
+        }
+      }
+      else if (status === 401) {
+        //Forcelogin calls init function again upon successful login.
+        this.retry = this.init.bind(this);
+        forceLogin.bind(this)();
+      }
+      else if (status === 403) {
+        window.alert(await response.text());
+        location.reload();
+      }
+      else if (status === 500) {
+        clearError();
+        //Notify the user that there has been an error.
+        document.getElementById('resident').insertAdjacentHTML('afterBegin', `<div id="errorAlert" class="alert alert-warning" role="alert">There was an error. Please try again later.
+        </div>`);
+      }
+
+    } catch(error) {
+      console.error('Error:', error);
+    }
+
+  }
+
+  async selected(event) {
+    try {
+      const resID = parseInt(event.currentTarget.dataset.id);
+      //Attempt to post data to the server
+      let data = {
+        roomID: this.roomID,
+        resID: resID
+      }
+      const response = await fetch(url + '/api/admin/room/assign', {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      const status = await response.status;
+
+      if(status === 200) {
+        const json = await response.json();
+        this.close(await json.residents);
+      }
+      else if(status === 401) {
+        //Hide residents table before showing login form
+        this.hide();
+
+        //Forcelogin executes this function upon successful login.
+        this.retry = this.save.bind(this);
+        forceLogin.bind(this)();
+      }
+      else if(status === 403) {
+        //Notify the user that they are not authorised. Reloads the page as they should not be on the admin page
+        window.alert(await response.text());
+        this.close();
+      }
+      else if (status === 500) {
+        clearError();
+        //The residents table may have been hidden due to the user being forced to log in on the last attempt
+        this.show();
+
+        //Notify user there has been an error. They may click the back button to return to the room form
+        this.container.insertAdjacentHTML('afterBegin', `<div id="errorAlert" class="alert alert-warning" role="alert">There was an error. Please try again later.
+        </div>`);
+      }
+    }
+    catch(error) {
+      console.error(error);
+    }
+  }
+
+  close(roomResidents) {
+    this.container.outerHTML = '';
+    this.onClose(roomResidents);
+  }
+
+  hide() {
+    this.container.setAttribute('style', 'display: none');
+  }
+
+  show() {
+    this.container.setAttribute('style', 'display: flex');
   }
 }
 
