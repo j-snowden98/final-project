@@ -98,4 +98,20 @@ router.post('/edit', async (req, res) => {
   }
 });
 
+router.post('/add', async (req, res) => {
+  const prefix = req.body.roomPrefix;
+  const number = req.body.roomNumber;
+
+  try {
+    //Create a new room in the database, send a response with the updated list of rooms
+    const rooms = await data.addRoom(prefix, number);
+    res.status(200).json({ rooms: rooms });
+  }
+  catch (e) {
+    //Send response with error to client.
+    console.log(e);
+    return res.status(500).send('Server error!');
+  }
+});
+
 module.exports = router;

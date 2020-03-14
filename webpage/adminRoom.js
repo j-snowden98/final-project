@@ -390,3 +390,116 @@ class AssignResident {
   }
 }
 
+class AddRoom {
+  constructor(onClose) {
+    this.onClose = onClose;
+    //Show the add room view
+    main.insertAdjacentHTML('beforeend', `
+      <div id="addRoom" class="card str-component ml-1 mr-1 formcard">
+        <div class="card-body">
+          <form id="roomEditForm">
+            <div class="form-group">
+              <label for="roomPref">Room Prefix</label>
+              <input id="roomPref" type="text" class="form-control">
+            </div>
+
+            <div class="form-group">
+              <label for="roomNum">Room Number</label>
+              <input id="roomNum" type="text" class="form-control">
+            </div>
+          </form>
+
+          <div class="str-btn">
+            <button id="btnCancel" type="button" class="btn btn-danger">Cancel</button>
+            <button id="btnSave" type="button" class="btn btn-success">Save</button>
+          </div>
+        </div>
+      </div>
+    `);
+    this.container = document.getElementById('addRoom');
+    this.inputRoomPref = document.getElementById('roomPref');
+    this.inputRoomNum = document.getElementById('roomNum');
+
+    document.getElementById('btnCancel').addEventListener('click', function() { this.close(); }.bind(this));
+    document.getElementById('btnSave').addEventListener('click', this.save.bind(this));
+  }
+
+  validateInputs() {
+    clearError();
+    if (this.inputRoomPref.value === '') {
+      this.container.insertAdjacentHTML('afterBegin', `<div id="errorAlert" class="alert alert-danger" role="alert">Please enter a prefix for the room.</div>`);
+    }
+    else if (this.inputRoomNum.value === '') {
+      this.container.insertAdjacentHTML('afterBegin', `<div id="errorAlert" class="alert alert-danger" role="alert">Please enter a room number.</div>`);
+    }
+    else {
+      return true;
+    }
+  }
+
+  async save() {
+    if (this.validateInputs()) {
+      try {
+        //Attempt to save details of the new room to the server
+        let data = {
+          roomPrefix: this.inputRoomPref.value,
+          roomNumber: this.inputRoomNum.value,
+        }
+
+        const response = await fetch(url + '/api/admin/room/add', {
+          method: 'POST',
+          body: JSON.stringify(data),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        const status = await response.status;
+
+        if(status === 200) {
+          const json = await response.json();
+          this.close(await json.rooms);
+        }
+        else if(status === 401) {
+          //Hide form before showing login form
+          this.hide();
+
+          //Forcelogin attempts to call this save function again upon successful login
+          this.retry = this.save.bind(this);
+          forceLogin.bind(this)();
+        }
+        else if(status === 403) {
+          //Notify the user that they are not authorised. Reloads the page as they should not be on the admin page
+          window.alert(await response.text());
+          location.reload();
+        }
+        else if (status === 500) {
+          clearError();
+          //The form may have been hidden due to the user being forced to log in on the last attempt
+          this.show();
+
+          //Notify user there has been an error. Leaves the form as it is in case they want to try again and keep the data.
+          //User can also click cancel at this point
+          this.container.insertAdjacentHTML('afterBegin', `<div id="errorAlert" class="alert alert-warning" role="alert">There was an error. Please try again later.
+          </div>`);
+        }
+      }
+      catch(error) {
+        console.error(error);
+      }
+    }
+  }
+
+  close(json) {
+    //Returns to room table and passes an updated list of rooms if one has been added
+    this.container.outerHTML = '';
+    this.onClose(false, json);
+  }
+
+  hide() {
+    this.container.setAttribute('style', 'display: none');
+  }
+
+  show() {
+    this.container.setAttribute('style', 'display: flex');
+  }
+}

@@ -246,6 +246,12 @@ class AdminRoomTbl {
       document.getElementById('roomSearch').addEventListener('input', (event) => {
         this.searchChange();
       });
+
+      document.getElementById('addRoomBtn').addEventListener('click', function() {
+        //Loads form to add new room. Passes the show function so room table is reloaded when a room is successfully added
+        this.hide();
+        const addNew = new AddRoom(this.show.bind(this));
+      }.bind(this));
     }
     else if (status === 401) {
       //Forcelogin calls init function again upon successful login.
