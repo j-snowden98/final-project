@@ -299,7 +299,7 @@ class AdminRoomTbl {
       row.insertAdjacentHTML('beforeend', `
         <tr>
           <td>${r.roomPrefix + r.roomNumber}</td>
-          <td>${r.names}</td>
+          <td>${r.names !== null? r.names : ''}</td>
         </tr>`);
       document.getElementById('roomTblBody').appendChild(row);
       //Clicking on this new row will allow the room's details to be amended.
