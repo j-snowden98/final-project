@@ -1,6 +1,5 @@
 class ManageResident {
-  constructor(resObj, onClose) {
-    this.onClose = onClose;
+  constructor(resObj, onClose, currentSearch) {
     this.resID = resObj.id;
     this.forename = resObj.forename;
     this.surname = resObj.surname;
@@ -9,6 +8,10 @@ class ManageResident {
     this.thickener = resObj.thickener;
     this.diabetes = resObj.diabetes;
     this.dnr = resObj.dnr;
+
+    this.onClose = onClose;
+    //Retains user's search for residents for updating the list upon saving this resident
+    this.currentSearch = currentSearch;
   }
 
   async openEdit() {
@@ -113,7 +116,8 @@ class ManageResident {
           allergies: this.inputAllergies.value,
           thickener: this.inputThickener.checked,
           diabetes: parseInt(this.selectDiabetes.value),
-          dnr: this.inputDnr.checked
+          dnr: this.inputDnr.checked,
+          currentSearch: this.currentSearch
         }
 
         const response = await fetch(url + '/api/admin/resident/edit', {

@@ -30,9 +30,10 @@ router.post('/edit', async (req, res) => {
   const thickener = req.body.thickener;
   const diabetes = req.body.diabetes;
   const dnr = req.body.dnr;
+  const currentSearch = req.body.currentSearch;
 
   try {
-    const residents = await data.editResident(resID, forename, surname, dietReq, allergies, thickener, diabetes, dnr);
+    const residents = await data.editResident(resID, forename, surname, dietReq, allergies, thickener, diabetes, dnr, currentSearch);
     //Send updated list of residents back to client to display changes
     res.status(200).json({ residents: residents });
   }

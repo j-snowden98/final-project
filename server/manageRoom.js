@@ -85,10 +85,11 @@ router.post('/edit', async (req, res) => {
   const roomID = req.body.roomID;
   const prefix = req.body.roomPrefix;
   const number = req.body.roomNumber;
+  const currentSearch = req.body.currentSearch;
 
   try {
     //Update the room's data in the database, send a response with the updated list of rooms
-    const rooms = await data.editRoom(roomID, prefix, number);
+    const rooms = await data.editRoom(roomID, prefix, number, currentSearch);
     res.status(200).json({ rooms: rooms });
   }
   catch (e) {

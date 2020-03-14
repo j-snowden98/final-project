@@ -152,7 +152,7 @@ class AdminUsrTbl {
 
     //Iterate through array of results. For each create a row with new instance of class user so they can be clicked to show details
     for(let u of users) {
-      let newUsr = new ManageUser(u, this.show.bind(this));
+      let newUsr = new ManageUser(u, this.show.bind(this), document.getElementById('userSearch').value);
       let row = document.createElement('tr');
       row.insertAdjacentHTML('beforeend', `
         <tr>
@@ -294,7 +294,7 @@ class AdminRoomTbl {
     document.getElementById('roomTblBody').innerHTML = '';
     //Iterate through array of results. For each create a row with new instance of class ManageRoom
     for(let r of rooms) {
-      let newRoom = new ManageRoom(r, this.show.bind(this));
+      let newRoom = new ManageRoom(r, this.show.bind(this), document.getElementById('roomSearch').value);
       let row = document.createElement('tr');
       row.insertAdjacentHTML('beforeend', `
         <tr>
@@ -438,7 +438,7 @@ class AdminResTbl {
     document.getElementById('resTblBody').innerHTML = '';
     //Iterate through array of results. For each create a row with new instance of class ManageResident so they can be clicked to show details
     for(let r of residents) {
-      let newRes = new ManageResident(r, this.show.bind(this));
+      let newRes = new ManageResident(r, this.show.bind(this), document.getElementById('resSearch').value);
       let row = document.createElement('tr');
       row.insertAdjacentHTML('beforeend', `
         <tr>

@@ -65,9 +65,10 @@ router.post('/edit', async (req, res) => {
   const username = req.body.username;
   const role = req.body.role;
   const permissions = req.body.permissions;
+  const currentSearch = req.body.currentSearch;
 
   try {
-    const users = await data.editUser(userID, username, role);
+    const users = await data.editUser(userID, username, role, currentSearch);
     if (await users) {
       const pmsnSet = await data.setPermissions(userID, permissions);
       if (await pmsnSet) {

@@ -61,14 +61,14 @@ async function searchUsers(search) {
   return rows;
 }
 
-async function editUser(userID, username, role) {
+async function editUser(userID, username, role, currentSearch) {
   //Edit a user's username and role
   const sql = await init();
   const query = sql.format('UPDATE User SET username = ?, role = ? WHERE id = ?;', [username, role, userID]);
 
   const result = await sql.query(query);
   if (await result) {
-    return await searchUsers('');
+    return await searchUsers(currentSearch);
   }
 }
 
@@ -143,7 +143,7 @@ async function addRoom(prefix, number) {
   }
 }
 
-async function editRoom(roomID, prefix, number) {
+async function editRoom(roomID, prefix, number, currentSearch) {
   //Edit a room's prefix and number
   const sql = await init();
   const query = sql.format('UPDATE Room SET roomPrefix = ?, roomNumber = ? WHERE id = ?;', [prefix, number, roomID]);
@@ -151,7 +151,7 @@ async function editRoom(roomID, prefix, number) {
 
   //Once query has been executed, will refresh the search of rooms
   if (await result) {
-    return await searchRooms('');
+    return await searchRooms(currentSearch);
   }
 }
 
@@ -233,7 +233,7 @@ async function deactivateResident(resID) {
   }
 }
 
-async function editResident(resID, forename, surname, dietReq, allergies, thickener, diabetes, dnr) {
+async function editResident(resID, forename, surname, dietReq, allergies, thickener, diabetes, dnr, currentSearch) {
   //Saves amendments to a resident's details
   const sql = await init();
   const query = sql.format('UPDATE Resident SET ? WHERE id = ?;', [{
@@ -249,7 +249,7 @@ async function editResident(resID, forename, surname, dietReq, allergies, thicke
 
   //Once query has been executed, will refresh the search of rooms
   if (await result) {
-    return await searchResidents('');
+    return await searchResidents(currentSearch);
   }
 }
 

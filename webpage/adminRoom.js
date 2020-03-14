@@ -1,9 +1,11 @@
 class ManageRoom {
-  constructor(roomObj, onClose) {
+  constructor(roomObj, onClose, currentSearch) {
     this.roomID = roomObj.id;
     this.roomPrefix = roomObj.roomPrefix;
     this.roomNumber = roomObj.roomNumber;
     this.onClose = onClose;
+    //Retains the user's search for rooms for updating the list upon saving this room
+    this.currentSearch = currentSearch;
     this.resChanged = false;
   }
 
@@ -120,6 +122,7 @@ class ManageRoom {
           roomID: this.roomID,
           roomPrefix: this.inputRoomPref.value,
           roomNumber: this.inputRoomNum.value,
+          currentSearch: this.currentSearch
         }
 
         const response = await fetch(url + '/api/admin/room/edit', {

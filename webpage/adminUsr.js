@@ -1,9 +1,11 @@
 class ManageUser {
-  constructor(userObj, onClose) {
+  constructor(userObj, onClose, currentSearch) {
     this.userID = userObj.id;
     this.username = userObj.username;
     this.role = userObj.role;
     this.onClose = onClose;
+    //Retains the user's search for users for updating the list upon saving this user
+    this.currentSearch = currentSearch;
   }
 
   async openEdit() {
@@ -132,7 +134,8 @@ class ManageUser {
           userID: this.userID,
           username: this.inputUsername.value,
           role: this.inputRole.value,
-          permissions: grantedIds
+          permissions: grantedIds,
+          currentSearch: this.currentSearch
         }
 
         const response = await fetch(url + '/api/admin/user/edit', {
