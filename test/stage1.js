@@ -1,8 +1,7 @@
 const should = require('chai').should();
 const dataModel = require('../server/db/model_mysql.js');
-const adminModel = require('../server/db/admin_model_mysql.js');
 
-/*describe('Data model tests', () => {
+describe('Data model tests', () => {
   describe('Residents', () => {
     describe('Get all residents', () => {
       it('it should return all the residents', async() => {
@@ -700,124 +699,6 @@ const adminModel = require('../server/db/admin_model_mysql.js');
 
         let auth = await dataModel.isAuthorised(userID, 3);
         auth.should.deep.equal(false);
-      });
-    });
-  });
-});*/
-
-describe('Admin data model tests', () => {
-  describe('Manage Users', () => {
-    describe('Get permissions', () => {
-      it('Get permissions for user with ID 8', async() => {
-        let permissions = adminModel.getPermissions(8);
-        console.log(await permissions);
-      });
-
-      it('Get permissions', async() => {
-        let permissions = adminModel.getPermissions(9);
-        console.log(await permissions);
-      });
-
-      it('Get permissions', async() => {
-        let permissions = adminModel.getPermissions(10);
-        console.log(await permissions);
-      });
-
-      it('Get permissions', async() => {
-        let permissions = adminModel.getPermissions(11);
-        console.log(await permissions);
-      });
-    });
-
-    describe('Get user by ID', () => {
-      it('Search with no filter, should return all users', async() => {
-        let user = adminModel.getUser(9);
-        console.log(await user);
-      });
-    });
-
-    describe('Add various users', () => {
-      it('Should add a new user with username carer01', async() => {
-        let newUser = await adminModel.addUser('testCarer01', 'securepassword', 'Carer', [1, 2, 3, 4]);
-        console.log(await newUser);
-      });
-
-      it('Should add a new user with username carer02', async() => {
-        let newUser = await adminModel.addUser('testCarer02', 'securepassword', 'Carer', [1]);
-        console.log(await newUser);
-      });
-
-      it('Should add a new user with username carer03', async() => {
-        let newUser = await adminModel.addUser('testCarer03', 'securepassword', 'Carer', [2, 3]);
-        console.log(await newUser);
-      });
-
-      it('Should add a new user with username carer04', async() => {
-        let newUser = await adminModel.addUser('testCarer04', 'securepassword', 'Carer', [1, 4]);
-        console.log(await newUser);
-      });
-    });
-
-    /*describe('Search Users', () => {
-      it('Search with no filter, should return all users', async() => {
-        let users = adminModel.searchUsers('');
-        console.log(await users);
-      });
-    });*/
-
-    /*describe('Set permissions', () => {
-      it('Get permissions', async() => {
-        let permissions = adminModel.setPermissions(8, [1, 2, 3, 4]);
-        console.log(await permissions);
-      });
-
-      it('Get permissions', async() => {
-        let permissions = adminModel.setPermissions(9, [2, 3, 4]);
-        console.log(await permissions);
-      });
-    });*/
-
-    describe('Reset password', () => {
-      it('Reset password for testCarer01', async() => {
-        let user = await adminModel.searchUsers('testCarer01');
-        let passwordChanged = await adminModel.resetPassword(await user[0].id, 'newcarer01password');
-        if (passwordChanged) {
-          let result = await dataModel.getHash('testCarer01');
-          let password = await result.password;
-          console.log(password);
-          password.should.deep.equal('newcarer01password');
-        }
-      });
-
-      it('Reset password for testCarer03', async() => {
-        let user = await adminModel.searchUsers('testCarer03');
-        let passwordChanged = await adminModel.resetPassword(await user[0].id, 'newcarer03password');
-        if (passwordChanged) {
-          let result = await dataModel.getHash('testCarer03');
-          let password = await result.password;
-          console.log(password);
-          password.should.deep.equal('newcarer03password');
-        }
-      });
-    });
-
-    describe('Deactivate user', () => {
-      it('Deactivate testCarer02', async() => {
-        let user = await adminModel.searchUsers('testCarer02');
-        let deactivated = await adminModel.deactivate(await user[0].id);
-        if (deactivated) {
-          let result = await dataModel.getHash('testCarer02');
-          result.should.deep.equal(false);
-        }
-      });
-
-      it('Deactivate testCarer04', async() => {
-        let user = await adminModel.searchUsers('testCarer04');
-        let deactivated = await adminModel.deactivate(await user[0].id);
-        if (deactivated) {
-          let result = await dataModel.getHash('testCarer04');
-          result.should.deep.equal(false);
-        }
       });
     });
   });
