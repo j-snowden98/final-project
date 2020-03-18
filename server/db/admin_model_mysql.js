@@ -124,10 +124,6 @@ async function searchRooms(search) {
 async function loadRoomResidents(roomID) {
   const sql = await init();
   const query = sql.format('SELECT id, CONCAT(CONCAT(forename, " "), surname) AS resName FROM Resident WHERE roomID = ? ORDER BY forename, surname ASC', [roomID]);
-
-  /*'SELECT Y.id, CONCAT(CONCAT(Y.forename, " "), Y.surname) AS resName FROM ResidentRoom X INNER JOIN Resident Y ON X.resID = Y.id WHERE X.roomID = ? ORDER BY Y.forename, Y.surname ASC'*/
-
-
   const [rows] = await sql.query(query);
   return rows;
 }
