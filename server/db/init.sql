@@ -30,20 +30,15 @@ CREATE TABLE IF NOT EXISTS st_ronans_care.Resident (
   thickener TINYINT(1) NOT NULL,
   diabetes TINYINT(1) NOT NULL,
   dnr TINYINT(1) NOT NULL,
-  active TINYINT(1) NOT NULL DEFAULT 1
+  active TINYINT(1) NOT NULL DEFAULT 1,
+  roomID INT,
+  FOREIGN KEY (roomID) REFERENCES Room(id)
 );
 
 CREATE TABLE IF NOT EXISTS st_ronans_care.Room (
   id INT PRIMARY KEY AUTO_INCREMENT,
   roomPrefix VARCHAR(4) NOT NULL,
   roomNumber INT NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS st_ronans_care.ResidentRoom (
-  resID INT NOT NULL,
-  roomID INT NOT NULL,
-  FOREIGN KEY (resID) REFERENCES Resident(id),
-  FOREIGN KEY (roomID) REFERENCES Room(id)
 );
 
 CREATE TABLE IF NOT EXISTS st_ronans_care.Contact (

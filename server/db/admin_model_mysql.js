@@ -116,14 +116,18 @@ async function deactivateUser(userID) {
 async function searchRooms(search) {
   const filter = '%' + search + '%';
   const sql = await init();
-  const query = sql.format('SELECT RM.id, RM.roomPrefix, RM.roomNumber, RE.names FROM Room RM LEFT JOIN (SELECT GROUP_CONCAT(DISTINCT Y.Forename ORDER BY Y.Forename ASC SEPARATOR \', \') AS names, X.roomID FROM ResidentRoom X INNER JOIN Resident Y ON X.resID = Y.id GROUP BY X.roomID) RE ON RE.roomID = RM.id WHERE RM.roomNumber LIKE ? OR RM.roomPrefix LIKE ? OR CONCAT(RM.roomPrefix, RM.roomNumber) LIKE ? ORDER BY RM.roomPrefix, RM.roomNumber ASC', [filter, filter, filter]);
+  const query = sql.format('SELECT RM.id, RM.roomPrefix, RM.roomNumber, RE.names FROM Room RM LEFT JOIN (SELECT GROUP_CONCAT(DISTINCT Forename ORDER BY Forename ASC SEPARATOR \', \') AS names, roomID FROM Resident GROUP BY roomID) RE ON RE.roomID = RM.id WHERE RM.roomNumber LIKE ? OR RM.roomPrefix LIKE ? OR CONCAT(RM.roomPrefix, RM.roomNumber) LIKE ? ORDER BY RM.roomPrefix, RM.roomNumber ASC', [filter, filter, filter]);
   const [rows] = await sql.query(query);
   return rows;
 }
 
 async function loadRoomResidents(roomID) {
   const sql = await init();
-  const query = sql.format('SELECT Y.id, CONCAT(CONCAT(Y.forename, " "), Y.surname) AS resName FROM ResidentRoom X INNER JOIN Resident Y ON X.resID = Y.id WHERE X.roomID = ? ORDER BY Y.forename, Y.surname ASC', [roomID]);
+  const query = sql.format('SELECT id, CONCAT(CONCAT(forename, " "), surname) AS resName FROM Resident WHERE roomID = ? ORDER BY forename, surname ASC', [roomID]);
+
+  /*'SELECT Y.id, CONCAT(CONCAT(Y.forename, " "), Y.surname) AS resName FROM ResidentRoom X INNER JOIN Resident Y ON X.resID = Y.id WHERE X.roomID = ? ORDER BY Y.forename, Y.surname ASC'*/
+
+
   const [rows] = await sql.query(query);
   return rows;
 }
@@ -157,7 +161,7 @@ async function editRoom(roomID, prefix, number, currentSearch) {
 
 async function unassignResident(roomID, resID) {
   const sql = await init();
-  const query = sql.format('DELETE FROM ResidentRoom WHERE roomID = ? AND resID = ?;', [roomID, resID]);
+  const query = sql.format('UPDATE Resident SET roomID = NULL WHERE id = ?;', [resID]);
   const result = await sql.query(query);
 
   //Refreshes the list of residents in that room once the resident has been removed
@@ -169,17 +173,14 @@ async function unassignResident(roomID, resID) {
 async function availableResidents() {
   //Return all residents not assigned to rooms in alphabetical order of their names.
   const sql = await init();
-  const query = sql.format('SELECT X.id, CONCAT(CONCAT(X.forename, " "), X.surname) AS resName FROM Resident X LEFT JOIN ResidentRoom Y ON Y.resID = X.id WHERE Y.roomID IS NULL AND X.active = 1 ORDER BY X.forename, X.surname ASC');
+  const query = sql.format('SELECT id, CONCAT(CONCAT(forename, " "), surname) AS resName FROM Resident WHERE roomID IS NULL AND active = 1 ORDER BY forename, surname ASC');
   const [rows] = await sql.query(query);
   return rows;
 }
 
 async function assignResident(roomID, resID) {
   const sql = await init();
-  const query = sql.format('INSERT INTO ResidentRoom SET ? ;', {
-    roomID: roomID,
-    resID: resID
-  });
+  const query = sql.format('UPDATE Resident SET roomID = ? WHERE id = ?;', [roomID, resID]);
   const result = await sql.query(query);
   if(await result) {
     return await loadRoomResidents(roomID);

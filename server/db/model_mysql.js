@@ -39,7 +39,7 @@ async function getHash(username) {
 async function getResidents(search) {
   const filter = '%' + search + '%';
   const sql = await init();
-  const query = sql.format('SELECT X.id, X.forename, X.surname, X.dietReq, X.allergies, X.thickener, X.diabetes, X.dnr, CONCAT(Z.roomPrefix, Z.roomNumber) AS roomName FROM Resident X JOIN ResidentRoom Y ON X.id = Y.resID JOIN Room Z ON Y.roomID = Z.id WHERE X.active = 1 AND (X.forename LIKE ? OR X.surname LIKE ? OR CONCAT(CONCAT(X.forename, " "), X.surname) LIKE ? OR Z.roomNumber LIKE ? OR Z.roomPrefix LIKE ? OR CONCAT(Z.roomPrefix, Z.roomNumber) LIKE ?) ORDER BY Z.roomPrefix, Z.roomNumber ASC', [filter, filter, filter, filter, filter, filter]);
+  const query = sql.format('SELECT X.id, X.forename, X.surname, X.dietReq, X.allergies, X.thickener, X.diabetes, X.dnr, CONCAT(Y.roomPrefix, Y.roomNumber) AS roomName FROM Resident X JOIN Room Y ON Y.id = X.roomID WHERE X.active = 1 AND (X.forename LIKE ? OR X.surname LIKE ? OR CONCAT(CONCAT(X.forename, " "), X.surname) LIKE ? OR Y.roomNumber LIKE ? OR Y.roomPrefix LIKE ? OR CONCAT(Y.roomPrefix, Y.roomNumber) LIKE ?) ORDER BY Y.roomPrefix, Y.roomNumber ASC', [filter, filter, filter, filter, filter, filter]);
   const [rows] = await sql.query(query);
   return (rows);
 }
