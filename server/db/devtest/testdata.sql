@@ -1,17 +1,8 @@
-INSERT INTO st_ronans_care.Resident (forename, surname, dietReq, allergies, thickener, diabetes, dnr)
-VALUES
-  ('Lionel', 'Lundstrom', '', '', true, 2, true),
-  ('Del', 'Devine', '', '', false, 0, true),
-  ('Hollis', 'Happ', '', '', false, 1, false),
-  ('Odell', 'Longshore', '', '', true, 2, false),
-  ('Royce', 'Oberman', '', '', true, 0, false),
-  ('Refugio', 'Chausse', '', '', false, 2, true),
-  ('Sylvester', 'Reynoso', '', '', false, 2, true),
-  ('Curtis', 'Calcagno', '', '', false, 1, true),
-  ('Buck', 'Brunet', '', '', true, 2, true),
-  ('Ulysses', 'Umstead', '', '', false, 1, true),
-  ('Carmine', 'Christianson', '', '', false, 0, true),
-  ('Ivan', 'Ippolito', '', '', true, 0, true);
+DELETE FROM st_ronans_care.Contact WHERE id > 0;
+DELETE FROM st_ronans_care.UserPermissions WHERE userID > 1;
+DELETE FROM st_ronans_care.User WHERE id > 1;
+DELETE FROM st_ronans_care.Resident WHERE id > 0;
+DELETE FROM st_ronans_care.Room WHERE ID > 0;
 
 INSERT INTO st_ronans_care.Room (roomPrefix, roomNumber)
 VALUES
@@ -29,17 +20,31 @@ VALUES
   ('C', 3),
   ('C', 200);
 
-INSERT INTO st_ronans_care.ResidentRoom (resID, roomID)
+INSERT INTO st_ronans_care.Resident (forename, surname, dietReq, allergies, thickener, diabetes, dnr, roomID)
 VALUES
-  ((SELECT id FROM st_ronans_care.Resident WHERE surname = 'Lundstrom'), (SELECT id FROM st_ronans_care.Room WHERE CONCAT(roomPrefix, roomNumber) = 'A4')),
-  ((SELECT id FROM st_ronans_care.Resident WHERE surname = 'Devine'), (SELECT id FROM st_ronans_care.Room WHERE CONCAT(roomPrefix, roomNumber) = 'B2')),
-  ((SELECT id FROM st_ronans_care.Resident WHERE surname = 'Happ'), (SELECT id FROM st_ronans_care.Room WHERE CONCAT(roomPrefix, roomNumber) = 'A1')),
-  ((SELECT id FROM st_ronans_care.Resident WHERE surname = 'Longshore'), (SELECT id FROM st_ronans_care.Room WHERE CONCAT(roomPrefix, roomNumber) = 'B3')),
-  ((SELECT id FROM st_ronans_care.Resident WHERE surname = 'Oberman'), (SELECT id FROM st_ronans_care.Room WHERE CONCAT(roomPrefix, roomNumber) = 'C200')),
-  ((SELECT id FROM st_ronans_care.Resident WHERE surname = 'Chausse'), (SELECT id FROM st_ronans_care.Room WHERE CONCAT(roomPrefix, roomNumber) = 'A201')),
-  ((SELECT id FROM st_ronans_care.Resident WHERE surname = 'Reynoso'), (SELECT id FROM st_ronans_care.Room WHERE CONCAT(roomPrefix, roomNumber) = 'A2')),
-  ((SELECT id FROM st_ronans_care.Resident WHERE surname = 'Calcagno'), (SELECT id FROM st_ronans_care.Room WHERE CONCAT(roomPrefix, roomNumber) = 'A3')),
-  ((SELECT id FROM st_ronans_care.Resident WHERE surname = 'Brunet'), (SELECT id FROM st_ronans_care.Room WHERE CONCAT(roomPrefix, roomNumber) = 'B1')),
-  ((SELECT id FROM st_ronans_care.Resident WHERE surname = 'Umstead'), (SELECT id FROM st_ronans_care.Room WHERE CONCAT(roomPrefix, roomNumber) = 'B21')),
-  ((SELECT id FROM st_ronans_care.Resident WHERE surname = 'Christianson'), (SELECT id FROM st_ronans_care.Room WHERE CONCAT(roomPrefix, roomNumber) = 'B5')),
-  ((SELECT id FROM st_ronans_care.Resident WHERE surname = 'Ippolito'), (SELECT id FROM st_ronans_care.Room WHERE CONCAT(roomPrefix, roomNumber) = 'C1'));
+  ('Lionel', 'Lundstrom', '', '', true, 2, true, (SELECT id FROM st_ronans_care.Room WHERE CONCAT(roomPrefix, roomNumber) = 'A4')),
+  ('Del', 'Devine', '', '', false, 0, true, (SELECT id FROM st_ronans_care.Room WHERE CONCAT(roomPrefix, roomNumber) = 'B2')),
+  ('Hollis', 'Happ', '', '', false, 1, false, (SELECT id FROM st_ronans_care.Room WHERE CONCAT(roomPrefix, roomNumber) = 'A1')),
+  ('Odell', 'Longshore', '', '', true, 2, false, (SELECT id FROM st_ronans_care.Room WHERE CONCAT(roomPrefix, roomNumber) = 'B3')),
+  ('Royce', 'Oberman', '', '', true, 0, false, (SELECT id FROM st_ronans_care.Room WHERE CONCAT(roomPrefix, roomNumber) = 'C200')),
+  ('Refugio', 'Chausse', '', '', false, 2, true, (SELECT id FROM st_ronans_care.Room WHERE CONCAT(roomPrefix, roomNumber) = 'A201')),
+  ('Sylvester', 'Reynoso', '', '', false, 2, true, (SELECT id FROM st_ronans_care.Room WHERE CONCAT(roomPrefix, roomNumber) = 'A2')),
+  ('Curtis', 'Calcagno', '', '', false, 1, true, (SELECT id FROM st_ronans_care.Room WHERE CONCAT(roomPrefix, roomNumber) = 'A3')),
+  ('Buck', 'Brunet', '', '', true, 2, true, (SELECT id FROM st_ronans_care.Room WHERE CONCAT(roomPrefix, roomNumber) = 'B1')),
+  ('Ulysses', 'Umstead', '', '', false, 1, true, (SELECT id FROM st_ronans_care.Room WHERE CONCAT(roomPrefix, roomNumber) = 'B21')),
+  ('Carmine', 'Christianson', '', '', false, 0, true, (SELECT id FROM st_ronans_care.Room WHERE CONCAT(roomPrefix, roomNumber) = 'B5')),
+  ('Ivan', 'Ippolito', '', '', true, 0, true, (SELECT id FROM st_ronans_care.Room WHERE CONCAT(roomPrefix, roomNumber) = 'C1'));
+
+INSERT INTO st_ronans_care.User (username, password, role)
+VALUES
+	('test1', 'test1', 'Carer'),
+  ('test2', 'test2', 'Carer'),
+  ('test3', 'test3', 'Carer'),
+  ('test4', 'test4', 'Carer');
+
+INSERT INTO st_ronans_care.UserPermissions (userID, pmsnID)
+VALUES
+	((SELECT id FROM st_ronans_care.User WHERE username = 'test1'), 1),
+  ((SELECT id FROM st_ronans_care.User WHERE username = 'test1'), 3),
+  ((SELECT id FROM st_ronans_care.User WHERE username = 'test2'), 1),
+  ((SELECT id FROM st_ronans_care.User WHERE username = 'test3'), 3);
