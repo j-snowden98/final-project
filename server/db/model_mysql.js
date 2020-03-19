@@ -57,7 +57,6 @@ async function getNewContact(resID) {
   const sql = await init();
   const query = sql.format('SELECT U.username, DATE_FORMAT(DATE(C.contactDate), "%d/%m/%Y") as contactDate, DATE_FORMAT(TIME(C.contactDate), "%H:%i") as contactTime, C.callBell, C.drinkGiven, C.description, C.mood FROM Contact C LEFT JOIN User U ON U.id = C.userID WHERE C.resID = ? ORDER BY C.contactDate DESC, C.id DESC LIMIT 1', [resID]);
   const [rows] = await sql.query(query);
-  console.log(rows);
   return (rows)[0];
 }
 
