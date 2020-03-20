@@ -182,7 +182,6 @@ describe('Admin data model tests', () => {
         if (passwordChanged) {
           result = await dataModel.getHash('carer01');
           let password = await result.password;
-          console.log(password);
           password.should.deep.equal('newcarer01password');
         }
       });
@@ -194,7 +193,6 @@ describe('Admin data model tests', () => {
         if (passwordChanged) {
           result = await dataModel.getHash('carer03');
           let password = await result.password;
-          console.log(password);
           password.should.deep.equal('newcarer03password');
         }
       });
@@ -412,3 +410,193 @@ describe('Admin data model tests', () => {
     });
   });
 
+  describe('Manage Rooms', () => {
+    describe('Search Rooms', () => {
+      it('Search rooms with number including 2', async() => {
+        let rooms = await adminModel.searchRooms('2');
+        rooms.should.have.lengthOf(5);
+        rooms[0].roomPrefix.should.deep.equal('A');
+        rooms[0].roomNumber.should.deep.equal(2);
+        rooms[0].names.should.deep.equal('Sylvester');
+
+        rooms[1].roomPrefix.should.deep.equal('A');
+        rooms[1].roomNumber.should.deep.equal(201);
+        rooms[1].names.should.deep.equal('Refugio');
+
+        rooms[2].roomPrefix.should.deep.equal('B');
+        rooms[2].roomNumber.should.deep.equal(2);
+        rooms[2].names.should.deep.equal('Del');
+
+        rooms[3].roomPrefix.should.deep.equal('B');
+        rooms[3].roomNumber.should.deep.equal(21);
+        rooms[3].names.should.deep.equal('Ulysses');
+
+        rooms[4].roomPrefix.should.deep.equal('C');
+        rooms[4].roomNumber.should.deep.equal(200);
+        rooms[4].names.should.deep.equal('Royce');
+      });
+
+      it('Search all rooms', async() => {
+        let rooms = await adminModel.searchRooms('');
+        rooms.should.have.lengthOf(13);
+      });
+
+      it('Search rooms with prefix including a', async() => {
+        let rooms = await adminModel.searchRooms('a');
+        rooms.should.have.lengthOf(5);
+        rooms[0].roomPrefix.should.deep.equal('A');
+        rooms[0].roomNumber.should.deep.equal(1);
+        rooms[0].names.should.deep.equal('Hollis');
+
+        rooms[1].roomPrefix.should.deep.equal('A');
+        rooms[1].roomNumber.should.deep.equal(2);
+        rooms[1].names.should.deep.equal('Sylvester');
+
+        rooms[2].roomPrefix.should.deep.equal('A');
+        rooms[2].roomNumber.should.deep.equal(3);
+        rooms[2].names.should.deep.equal('Curtis');
+
+        rooms[3].roomPrefix.should.deep.equal('A');
+        rooms[3].roomNumber.should.deep.equal(4);
+        rooms[3].names.should.deep.equal('Lionel');
+
+        rooms[4].roomPrefix.should.deep.equal('A');
+        rooms[4].roomNumber.should.deep.equal(201);
+        rooms[4].names.should.deep.equal('Refugio');
+      });
+    });
+
+    describe('Load residents from room', () => {
+      it('Get residents from A1', async() => {
+        let rooms = await adminModel.searchRooms('A1');
+        let roomID = await rooms[0].id;
+        let residents = await adminModel.loadRoomResidents(roomID);
+        residents.should.have.lengthOf(1);
+        residents[0].resName.should.deep.equal('Hollis Happ');
+      });
+
+      it('Get residents from A2', async() => {
+        let rooms = await adminModel.searchRooms('A2');
+        let roomID = await rooms[0].id;
+        let residents = await adminModel.loadRoomResidents(roomID);
+        residents.should.have.lengthOf(1);
+        residents[0].resName.should.deep.equal('Sylvester Reynoso');
+      });
+
+      it('Get residents from B1', async() => {
+        let rooms = await adminModel.searchRooms('B1');
+        let roomID = await rooms[0].id;
+        let residents = await adminModel.loadRoomResidents(roomID);
+        residents.should.have.lengthOf(1);
+        residents[0].resName.should.deep.equal('Buck Brunet');
+      });
+
+      it('Get residents from B2', async() => {
+        let rooms = await adminModel.searchRooms('B2');
+        let roomID = await rooms[0].id;
+        let residents = await adminModel.loadRoomResidents(roomID);
+        residents.should.have.lengthOf(1);
+        residents[0].resName.should.deep.equal('Del Devine');
+      });
+    });
+
+    describe('Add Room', () => {
+      it('Add new room D1', async() => {
+        let rooms = await adminModel.addRoom('D', 1);
+        rooms.should.have.lengthOf(14);
+        rooms[13].roomPrefix.should.deep.equal('D');
+        rooms[13].roomNumber.should.deep.equal(1);
+      });
+
+      it('Add new room A23', async() => {
+        let rooms = await adminModel.addRoom('A', 23);
+        rooms.should.have.lengthOf(15);
+        rooms[4].roomPrefix.should.deep.equal('A');
+        rooms[4].roomNumber.should.deep.equal(23);
+      });
+    });
+
+    describe('Edit Room', () => {
+      it('Edit D1 to D101, also ensure that current search is returned', async() => {
+        let result = await adminModel.searchRooms('D1');
+        let roomID = await result[0].id;
+
+        let currentSearch = 'd';
+        let rooms = await adminModel.editRoom(roomID, 'D', 2, currentSearch);
+        rooms[0].roomPrefix.should.deep.equal('D');
+        rooms[0].roomNumber.should.deep.equal(2);
+
+        let expectedSearch = await adminModel.searchRooms(currentSearch);
+        rooms.should.deep.equal(expectedSearch);
+      });
+
+      it('Edit A23 to D23, also ensure that current search is returned', async() => {
+        let result = await adminModel.searchRooms('A23');
+        let roomID = await result[0].id;
+
+        let currentSearch = '2';
+        let rooms = await adminModel.editRoom(roomID, 'D', 23, currentSearch);
+        rooms[6].roomPrefix.should.deep.equal('D');
+        rooms[6].roomNumber.should.deep.equal(23);
+
+        let expectedSearch = await adminModel.searchRooms(currentSearch);
+        rooms.should.deep.equal(expectedSearch);
+      });
+    });
+
+    describe('Get residents not in rooms', () => {
+      it('Get residents not in rooms', async() => {
+        let residents = await adminModel.availableResidents();
+        residents.should.have.lengthOf(2);
+        residents[0].resName.should.deep.equal('Mary Wharton');
+        residents[1].resName.should.deep.equal('Rocky Shaw');
+      });
+    });
+
+    describe('Assign resident to room', () => {
+      it('Assign Mary Wharton to D2', async() => {
+        let rooms = await adminModel.searchRooms('D2');
+        let roomID = await rooms[0].id;
+
+        let sRes = await adminModel.availableResidents();
+        let resID = await sRes[0].id;
+        let residents = await adminModel.assignResident(roomID, resID);
+        residents.should.have.lengthOf(1);
+        residents[0].resName.should.deep.equal('Mary Wharton');
+      });
+
+      it('Assign Rocky Shaw to D3', async() => {
+        let rooms = await adminModel.searchRooms('D23');
+        let roomID = await rooms[0].id;
+
+        let sRes = await adminModel.availableResidents();
+        let resID = await sRes[0].id;
+        let residents = await adminModel.assignResident(roomID, resID);
+        residents.should.have.lengthOf(1);
+        residents[0].resName.should.deep.equal('Rocky Shaw');
+      });
+    });
+
+    describe('Unassign residents from room', () => {
+      it('Remove Mary Wharton from D2', async() => {
+        let rooms = await adminModel.searchRooms('D2');
+        let roomID = await rooms[0].id;
+
+        let sRes = await adminModel.loadRoomResidents(roomID);
+        let resID = await sRes[0].id;
+        let residents = await adminModel.unassignResident(roomID, resID);
+        residents.should.have.lengthOf(0);
+      });
+
+      it('Remove Rocky Shaw from D3', async() => {
+        let rooms = await adminModel.searchRooms('D23');
+        let roomID = await rooms[0].id;
+
+        let sRes = await adminModel.loadRoomResidents(roomID);
+        let resID = await sRes[0].id;
+        let residents = await adminModel.unassignResident(roomID, resID);
+        residents.should.have.lengthOf(0);
+      });
+    });
+  });
+});
