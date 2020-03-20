@@ -222,3 +222,193 @@ describe('Admin data model tests', () => {
       });
     });
   });
+
+  describe('Manage Residents', () => {
+    describe('Search Residents', () => {
+      it('Search all residents', async() => {
+        let residents = await adminModel.searchResidents('');
+        residents.should.have.lengthOf(12);
+      });
+
+      it('Should return 1 resident with name Curtis', async() => {
+        let residents = await adminModel.searchResidents('Curtis');
+        residents.should.have.lengthOf(1);
+        residents[0].forename.should.deep.equal('Curtis');
+      });
+
+      it('Should return 1 resident with name Lionel', async() => {
+        let residents = await adminModel.searchResidents('Lionel');
+        residents.should.have.lengthOf(1);
+        residents[0].forename.should.deep.equal('Lionel');
+      });
+
+      it('it should return 1 resident with name Odell Longshore', async() => {
+        let residents = await adminModel.searchResidents('Odell Longshore');
+        residents.should.have.lengthOf(1);
+        residents[0].surname.should.deep.equal('Longshore');
+      });
+
+      it('it should return residents with forename or surname containing substring a', async() => {
+        let residents = await adminModel.searchResidents('a');
+        residents.should.have.lengthOf(7);
+        residents[0].forename.should.deep.equal('Carmine');
+        residents[6].forename.should.deep.equal('Ulysses');
+      });
+
+      it('it should return residents with forename or surname containing substring rm', async() => {
+        let residents = await adminModel.searchResidents('rm');
+        residents.should.have.lengthOf(2);
+        residents[0].forename.should.deep.equal('Carmine');
+        residents[1].forename.should.deep.equal('Royce');
+      });
+    });
+
+    describe('Add residents', () => {
+      it('Add a new resident, Jodie Sharp', async() => {
+        let fname = 'Jodie';
+        let sname = 'Sharp';
+        let dietReq = 'example dietary requirements 1';
+        let allergies = 'allergies 1';
+        let thickener = 0;
+        let diabetes = 0;
+        let dnr = 1;
+        let residents = await adminModel.addResident(fname, sname, dietReq, allergies, thickener, diabetes, dnr);
+        residents.should.have.lengthOf(13);
+        residents[6].forename.should.deep.equal(fname);
+        residents[6].surname.should.deep.equal(sname);
+        residents[6].dietReq.should.deep.equal(dietReq);
+        residents[6].allergies.should.deep.equal(allergies);
+        residents[6].thickener.should.deep.equal(thickener);
+        residents[6].diabetes.should.deep.equal(diabetes);
+        residents[6].dnr.should.deep.equal(dnr);
+      });
+
+      it('Add a new resident, Mary Wharton', async() => {
+        let fname = 'Mary';
+        let sname = 'Wharton';
+        let dietReq = 'example dietary requirements 2';
+        let allergies = 'allergies 2';
+        let thickener = 1;
+        let diabetes = 1;
+        let dnr = 0;
+        let residents = await adminModel.addResident(fname, sname, dietReq, allergies, thickener, diabetes, dnr);
+        residents.should.have.lengthOf(14);
+        residents[8].forename.should.deep.equal(fname);
+        residents[8].surname.should.deep.equal(sname);
+        residents[8].dietReq.should.deep.equal(dietReq);
+        residents[8].allergies.should.deep.equal(allergies);
+        residents[8].thickener.should.deep.equal(thickener);
+        residents[8].diabetes.should.deep.equal(diabetes);
+        residents[8].dnr.should.deep.equal(dnr);
+      });
+
+      it('Add a new resident, Rocky Shaw', async() => {
+        let fname = 'Rocky';
+        let sname = 'Shaw';
+        let dietReq = 'example dietary requirements 3';
+        let allergies = 'allergies 3';
+        let thickener = 0;
+        let diabetes = 2;
+        let dnr = 1;
+        let residents = await adminModel.addResident(fname, sname, dietReq, allergies, thickener, diabetes, dnr);
+        residents.should.have.lengthOf(15);
+        residents[11].forename.should.deep.equal(fname);
+        residents[11].surname.should.deep.equal(sname);
+        residents[11].dietReq.should.deep.equal(dietReq);
+        residents[11].allergies.should.deep.equal(allergies);
+        residents[11].thickener.should.deep.equal(thickener);
+        residents[11].diabetes.should.deep.equal(diabetes);
+        residents[11].dnr.should.deep.equal(dnr);
+      });
+
+      it('Add a new resident, Clive Cobb', async() => {
+        let fname = 'Clive';
+        let sname = 'Cobb';
+        let dietReq = 'example dietary requirements 4';
+        let allergies = 'allergies 4';
+        let thickener = 1;
+        let diabetes = 1;
+        let dnr = 0;
+        let residents = await adminModel.addResident(fname, sname, dietReq, allergies, thickener, diabetes, dnr);
+        residents.should.have.lengthOf(16);
+        residents[2].forename.should.deep.equal(fname);
+        residents[2].surname.should.deep.equal(sname);
+        residents[2].dietReq.should.deep.equal(dietReq);
+        residents[2].allergies.should.deep.equal(allergies);
+        residents[2].thickener.should.deep.equal(thickener);
+        residents[2].diabetes.should.deep.equal(diabetes);
+        residents[2].dnr.should.deep.equal(dnr);
+      });
+    });
+
+    describe('Edit resident', () => {
+      it('Amend the details of Rocky Shaw. Also test that current search is returned again', async() => {
+        let search = await adminModel.searchResidents('Rocky Shaw');
+        let resID = await search[0].id;
+
+        let fname = 'Rocky';
+        let sname = 'Shaw';
+        let dietReq = 'amended dietary requirements';
+        let allergies = 'amended allergies';
+        let thickener = 1;
+        let diabetes = 2;
+        let dnr = 1;
+        let currentSearch = 'sha';
+        let residents = await adminModel.editResident(resID, fname, sname, dietReq, allergies, thickener, diabetes, dnr, currentSearch);
+        residents[1].forename.should.deep.equal(fname);
+        residents[1].surname.should.deep.equal(sname);
+        residents[1].dietReq.should.deep.equal(dietReq);
+        residents[1].allergies.should.deep.equal(allergies);
+        residents[1].thickener.should.deep.equal(thickener);
+        residents[1].diabetes.should.deep.equal(diabetes);
+        residents[1].dnr.should.deep.equal(dnr);
+        let testSearch = await adminModel.searchResidents(currentSearch);
+        residents.should.deep.equal(testSearch);
+      });
+
+      it('Amend the details of Mary Wharton. Also test that current search is returned again', async() => {
+        let search = await adminModel.searchResidents('Mary Wharton');
+        let resID = await search[0].id;
+
+        let fname = 'Mary';
+        let sname = 'Wharton';
+        let dietReq = 'example dietary requirements 2';
+        let allergies = 'allergies 2';
+        let thickener = 1;
+        let diabetes = 1;
+        let dnr = 0;
+        let currentSearch = 'ma';
+        let residents = await adminModel.editResident(resID, fname, sname, dietReq, allergies, thickener, diabetes, dnr, currentSearch);
+        residents[0].forename.should.deep.equal(fname);
+        residents[0].surname.should.deep.equal(sname);
+        residents[0].dietReq.should.deep.equal(dietReq);
+        residents[0].allergies.should.deep.equal(allergies);
+        residents[0].thickener.should.deep.equal(thickener);
+        residents[0].diabetes.should.deep.equal(diabetes);
+        residents[0].dnr.should.deep.equal(dnr);
+        let testSearch = await adminModel.searchResidents(currentSearch);
+        residents.should.deep.equal(testSearch);
+      });
+    });
+
+    describe('Deactivate resident', () => {
+      it('Deactivate a resident, Jodie Sharp. Also ensure that the deactivated residents are sorted last in the list', async() => {
+        let residents = await adminModel.searchResidents('Jodie Sharp');
+        let resID = await residents[0].id;
+        let resDeactivated = await adminModel.deactivateResident(resID);
+        resDeactivated[15].forename.should.deep.equal('Jodie');
+        resDeactivated[15].surname.should.deep.equal('Sharp');
+        resDeactivated[15].active.should.deep.equal(0);
+      });
+
+      it('Deactivate a resident, Clive Cobb. Also ensure that the deactivated residents are sorted last in the list', async() => {
+        let residents = await adminModel.searchResidents('Clive Cobb');
+        let resID = await residents[0].id;
+        let resDeactivated = await adminModel.deactivateResident(resID);
+        resDeactivated[14].forename.should.deep.equal('Clive');
+        resDeactivated[14].surname.should.deep.equal('Cobb');
+        resDeactivated[14].active.should.deep.equal(0);
+      });
+    });
+  });
+
