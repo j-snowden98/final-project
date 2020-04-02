@@ -25,6 +25,8 @@ CREATE TABLE IF NOT EXISTS st_ronans_care.Resident (
   id INT PRIMARY KEY AUTO_INCREMENT,
   forename VARCHAR(100) NOT NULL,
   surname VARCHAR(100) NOT NULL,
+  birthDate DATE NOT NULL,
+  mvHandling VARCHAR(20) NOT NULL,
   dietReq VARCHAR(100) NOT NULL,
   allergies VARCHAR(100) NOT NULL,
   thickener TINYINT(1) NOT NULL,
