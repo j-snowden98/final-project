@@ -296,6 +296,8 @@ class Resident {
     this.id = resObject.id;
     this.forename = resObject.forename;
     this.surname = resObject.surname;
+    this.birthDate = resObject.dob;
+    this.mvHandling = resObject.mvHandling;
     this.dietReq = resObject.dietReq;
     this.allergies = resObject.allergies;
     this.thickener = Boolean(resObject.thickener);
@@ -314,6 +316,8 @@ class Resident {
           <div class="card-body">
             <h5 class="card-title">${this.forename + ' ' + this.surname}</h5>
             <h6 class="card-subtitle mb-2 text-muted">${this.roomName}</h6>
+            <h7 class="card-subtitle mb-2 text-muted">${this.birthDate}</h7>
+            <p class="card-text">Moving & Handling: ${this.mvHandling === ''? 'None' : this.mvHandling}</p>
             <p class="card-text">Dietary Requirements: ${this.dietReq === ''? 'None' : this.dietReq}</p>
             <p class="card-text">Allergies: ${this.allergies === ''? 'None' : this.allergies}</p>
             <p class="card-text">Thickener: ${!this.thickener? 'No' : 'Yes'}</p>
