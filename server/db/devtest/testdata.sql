@@ -1,5 +1,5 @@
 DELETE FROM st_ronans_care.Contact WHERE id > 0;
-DELETE FROM st_ronans_care.UserPermissions WHERE userID > 1;
+DELETE FROM st_ronans_care.UserPermission WHERE userID > 1;
 DELETE FROM st_ronans_care.User WHERE id > 1;
 DELETE FROM st_ronans_care.Resident WHERE id > 0;
 DELETE FROM st_ronans_care.Room WHERE ID > 0;

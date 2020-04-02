@@ -72,8 +72,8 @@ async function insertContact(resID, userID, callBell, drinkGiven, description, m
 async function isAuthorised(userID, type) {
   const sql = await init();
 
-  //Joins permissions and UserPermissions as it needs to check userID from UserPermissions and type from permissions table.
-  const query = sql.format('SELECT Y.type, X.userID FROM UserPermissions X JOIN Permissions Y ON X.pmsnID = Y.id WHERE X.userID = ? AND Y.type = ?', [userID, type]);
+  //Joins permissions and UserPermission as it needs to check userID from UserPermission and type from permissions table.
+  const query = sql.format('SELECT Y.type, X.userID FROM UserPermission X JOIN Permission Y ON X.pmsnID = Y.id WHERE X.userID = ? AND Y.type = ?', [userID, type]);
   const [rows] = await sql.query(query);
   //empty array from query implies user has not been granted the permission, returns false
   //returns true if permission is found for the user

@@ -8,17 +8,17 @@ CREATE TABLE IF NOT EXISTS st_ronans_care.User (
   active TINYINT(1) NOT NULL DEFAULT 1
 );
 
-CREATE TABLE IF NOT EXISTS st_ronans_care.Permissions (
+CREATE TABLE IF NOT EXISTS st_ronans_care.Permission (
   id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
   name VARCHAR(100) NOT NULL,
   type INT NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS st_ronans_care.UserPermissions (
+CREATE TABLE IF NOT EXISTS st_ronans_care.UserPermission (
   userID INT NOT NULL,
   pmsnID INT NOT NULL,
   FOREIGN KEY (userID) REFERENCES User(id),
-  FOREIGN KEY (pmsnID) REFERENCES Permissions(id)
+  FOREIGN KEY (pmsnID) REFERENCES Permission(id)
 );
 
 CREATE TABLE IF NOT EXISTS st_ronans_care.Resident (

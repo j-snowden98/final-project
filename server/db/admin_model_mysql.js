@@ -74,10 +74,10 @@ async function editUser(userID, username, role, currentSearch) {
 
 async function setPermissions(userID, permissions) {
   const sql = await newConnection();
-  let success = await sql.query('DELETE FROM UserPermissions WHERE userID = ?', [userID]);
+  let success = await sql.query('DELETE FROM UserPermission WHERE userID = ?', [userID]);
   if (await success) {
     for(let p of permissions) {
-      await sql.query('INSERT INTO UserPermissions (userID, pmsnID) VALUES (?, ?)', [userID, p]);
+      await sql.query('INSERT INTO UserPermission (userID, pmsnID) VALUES (?, ?)', [userID, p]);
     }
 
     releaseConnection(sql);
@@ -87,7 +87,7 @@ async function setPermissions(userID, permissions) {
 
 async function getPermissions(userID) {
   const sql = await init();
-  const query = sql.format('SELECT P.id, P.name, P.type, U.userID FROM Permissions P LEFT JOIN UserPermissions U ON P.id = U.pmsnID AND U.userID = ? ORDER BY P.type ASC', [userID]);
+  const query = sql.format('SELECT P.id, P.name, P.type, U.userID FROM Permission P LEFT JOIN UserPermission U ON P.id = U.pmsnID AND U.userID = ? ORDER BY P.type ASC', [userID]);
   const [rows] = await sql.query(query);
   return rows;
 }
