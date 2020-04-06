@@ -110,7 +110,7 @@ async function logout() {
 function addNavbar(username, admin) {
   //Creates navbar which displays username and has a logout button
   const html = `<nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="#">FastTrack</a>
+    <a class="navbar-brand" href="#">St Ronans</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
