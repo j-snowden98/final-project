@@ -25,6 +25,8 @@ router.post('/edit', async (req, res) => {
   const resID = req.body.resID;
   const forename = req.body.forename;
   const surname = req.body.surname;
+  const birthDate = req.body.birthDate;
+  const mvHandling = req.body.mvHandling;
   const dietReq = req.body.dietReq;
   const allergies = req.body.allergies;
   const thickener = req.body.thickener;
@@ -33,7 +35,7 @@ router.post('/edit', async (req, res) => {
   const currentSearch = req.body.currentSearch;
 
   try {
-    const residents = await data.editResident(resID, forename, surname, dietReq, allergies, thickener, diabetes, dnr, currentSearch);
+    const residents = await data.editResident(resID, forename, surname, birthDate, mvHandling, dietReq, allergies, thickener, diabetes, dnr, currentSearch);
     //Send updated list of residents back to client to display changes
     res.status(200).json({ residents: residents });
   }
@@ -46,6 +48,8 @@ router.post('/edit', async (req, res) => {
 router.post('/add', async (req, res) => {
   const forename = req.body.forename;
   const surname = req.body.surname;
+  const birthDate = req.body.birthDate;
+  const mvHandling = req.body.mvHandling;
   const dietReq = req.body.dietReq;
   const allergies = req.body.allergies;
   const thickener = req.body.thickener;
@@ -53,7 +57,7 @@ router.post('/add', async (req, res) => {
   const dnr = req.body.dnr;
 
   try {
-    const residents = await data.addResident(forename, surname, dietReq, allergies, thickener, diabetes, dnr);
+    const residents = await data.addResident(forename, surname, birthDate, mvHandling, dietReq, allergies, thickener, diabetes, dnr);
     //Send updated list of residents back to client to display changes
     res.status(200).json({ residents: residents });
   }

@@ -192,18 +192,20 @@ async function searchResidents(search) {
   const sql = await init();
 
   //This returns all residents matching the search, by forename, surname or forname and surname.
-  //Maximun of 60 rows as there will be inactive residents as well which would result a lot of data in the response.
-  const query = sql.format('SELECT X.id, X.forename, X.surname, X.dietReq, X.allergies, X.thickener, X.diabetes, X.dnr, X.active FROM Resident X WHERE X.forename LIKE ? OR X.surname LIKE ? OR CONCAT(CONCAT(X.forename, " "), X.surname) LIKE ? ORDER BY X.active DESC, X.forename, X.surname ASC LIMIT 60', [filter, filter, filter]);
+  //Maximun of 60 rows as there will be inactive residents as well which would result in a lot of data in the response.
+  const query = sql.format('SELECT X.id, X.forename, X.surname, DATE_FORMAT(X.birthDate, "%Y-%m-%d") AS dob, X.mvHandling, X.dietReq, X.allergies, X.thickener, X.diabetes, X.dnr, X.active FROM Resident X WHERE X.forename LIKE ? OR X.surname LIKE ? OR CONCAT(CONCAT(X.forename, " "), X.surname) LIKE ? ORDER BY X.active DESC, X.forename, X.surname ASC LIMIT 60', [filter, filter, filter]);
   const [rows] = await sql.query(query);
   return rows;
 }
 
-async function addResident(forename, surname, dietReq, allergies, thickener, diabetes, dnr) {
+async function addResident(forename, surname, birthDate, mvHandling, dietReq, allergies, thickener, diabetes, dnr) {
   //Add a new resident to the database
   const sql = await init();
   const query = sql.format('INSERT INTO Resident SET ? ;', {
     forename: forename,
     surname: surname,
+    birthDate: birthDate,
+    mvHandling: mvHandling,
     dietReq: dietReq,
     allergies: allergies,
     thickener: thickener,
@@ -230,12 +232,14 @@ async function deactivateResident(resID) {
   }
 }
 
-async function editResident(resID, forename, surname, dietReq, allergies, thickener, diabetes, dnr, currentSearch) {
+async function editResident(resID, forename, surname, birthDate, mvHandling, dietReq, allergies, thickener, diabetes, dnr, currentSearch) {
   //Saves amendments to a resident's details
   const sql = await init();
   const query = sql.format('UPDATE Resident SET ? WHERE id = ?;', [{
     forename: forename,
     surname: surname,
+    birthDate: birthDate,
+    mvHandling: mvHandling,
     dietReq: dietReq,
     allergies: allergies,
     thickener: thickener,

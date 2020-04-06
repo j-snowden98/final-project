@@ -3,6 +3,8 @@ class ManageResident {
     this.resID = resObj.id;
     this.forename = resObj.forename;
     this.surname = resObj.surname;
+    this.birthDate = resObj.dob;
+    this.mvHandling = resObj.mvHandling;
     this.dietReq = resObj.dietReq;
     this.allergies = resObj.allergies;
     this.thickener = resObj.thickener;
@@ -27,6 +29,16 @@ class ManageResident {
             <div class="form-group">
               <label for="surname">Surname</label>
               <input id="surname" type="text" class="form-control" value="${this.surname}">
+            </div>
+
+            <div class="form-group">
+              <label for="dob">Date of Birth</label>
+              <input id="dob" type="date" class="form-control" value="${this.birthDate}">
+            </div>
+
+            <div class="form-group">
+              <label for="mvHandling">Moving & Handling</label>
+              <input id="mvHandling" type="text" class="form-control" value="${this.mvHandling}">
             </div>
 
             <div class="form-group">
@@ -75,6 +87,8 @@ class ManageResident {
 
     this.inputForename = document.getElementById('forename');
     this.inputSurname = document.getElementById('surname');
+    this.inputBirth = document.getElementById('dob');
+    this.inputMH = document.getElementById('mvHandling');
     this.inputDiet = document.getElementById('dietReq');
     this.inputAllergies = document.getElementById('allergies');
     this.selectDiabetes = document.getElementById('diabetes');
@@ -112,6 +126,8 @@ class ManageResident {
           resID: this.resID,
           forename: this.inputForename.value,
           surname: this.inputSurname.value,
+          birthDate: this.inputBirth.value,
+          mvHandling: this.inputMH.value,
           dietReq: this.inputDiet.value,
           allergies: this.inputAllergies.value,
           thickener: this.inputThickener.checked,
@@ -248,6 +264,16 @@ class AddResident {
             </div>
 
             <div class="form-group">
+              <label for="dob">Date of Birth</label>
+              <input id="dob" type="date" class="form-control">
+            </div>
+
+            <div class="form-group">
+              <label for="mvHandling">Moving & Handling</label>
+              <input id="mvHandling" type="text" class="form-control">
+            </div>
+
+            <div class="form-group">
               <label for="dietReq">Dietary Requirements</label>
               <input id="dietReq" type="text" class="form-control">
             </div>
@@ -321,6 +347,8 @@ class AddResident {
         let data = {
           forename: this.inputForename.value,
           surname: this.inputSurname.value,
+          birthDate: this.inputBirth.value,
+          mvHandling: this.inputMH.value,
           dietReq: this.inputDiet.value,
           allergies: this.inputAllergies.value,
           thickener: this.inputThickener.checked,
