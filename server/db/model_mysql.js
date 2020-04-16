@@ -27,30 +27,19 @@ async function releaseConnection(connection) {
   await connection.end();
 }
 
-async function addUser(username, password, role) {
-  //insert a new user into the database
-  const sql = await init();
-  const userQuery = sql.format('INSERT INTO User SET ? ;', {
-    username: username,
-    password: password,
-    role: role,
-  });
-  await sql.query(userQuery);
-}
-
 //Retrieve hashed password associated with a username, to later authenticate against entered password during login attempt.
 async function getHash(username) {
   const sql = await init();
-  const query = sql.format('SELECT id, password FROM User WHERE username = ?', [username]);
+  const query = sql.format('SELECT id, password FROM User WHERE username = ? AND active = 1', [username]);
   const [rows] = await sql.query(query);
-  return (rows)[0];
+  return (rows[0] === undefined ? false : rows[0]);
 }
 
 //Retrieve all residents with their information from the database. Filters on name or room number to easily find residents.
 async function getResidents(search) {
   const filter = '%' + search + '%';
   const sql = await init();
-  const query = sql.format('SELECT X.id, X.forename, X.surname, X.dietReq, X.allergies, X.thickener, X.diabetes, X.dnr, CONCAT(Z.roomPrefix, Z.roomNumber) AS roomName FROM Resident X JOIN ResidentRoom Y ON X.id = Y.resID JOIN Room Z ON Y.roomID = Z.id WHERE X.forename LIKE ? OR X.surname LIKE ? OR CONCAT(CONCAT(X.forename, " "), X.surname) LIKE ? OR Z.roomNumber LIKE ? OR Z.roomPrefix LIKE ? OR CONCAT(Z.roomPrefix, Z.roomNumber) LIKE ? ORDER BY Z.roomPrefix, Z.roomNumber ASC', [filter, filter, filter, filter, filter, filter]);
+  const query = sql.format('SELECT X.id, X.forename, X.surname, DATE_FORMAT(X.birthDate, "%d/%m/%Y") AS dob, X.mvHandling, X.dietReq, X.allergies, X.thickener, X.diabetes, X.dnr, CONCAT(Y.roomPrefix, Y.roomNumber) AS roomName FROM Resident X JOIN Room Y ON Y.id = X.roomID WHERE X.active = 1 AND (X.forename LIKE ? OR X.surname LIKE ? OR CONCAT(CONCAT(X.forename, " "), X.surname) LIKE ? OR Y.roomNumber LIKE ? OR Y.roomPrefix LIKE ? OR CONCAT(Y.roomPrefix, Y.roomNumber) LIKE ?) ORDER BY Y.roomPrefix, Y.roomNumber ASC', [filter, filter, filter, filter, filter, filter]);
   const [rows] = await sql.query(query);
   return (rows);
 }
@@ -68,7 +57,6 @@ async function getNewContact(resID) {
   const sql = await init();
   const query = sql.format('SELECT U.username, DATE_FORMAT(DATE(C.contactDate), "%d/%m/%Y") as contactDate, DATE_FORMAT(TIME(C.contactDate), "%H:%i") as contactTime, C.callBell, C.drinkGiven, C.description, C.mood FROM Contact C LEFT JOIN User U ON U.id = C.userID WHERE C.resID = ? ORDER BY C.contactDate DESC, C.id DESC LIMIT 1', [resID]);
   const [rows] = await sql.query(query);
-  console.log(rows);
   return (rows)[0];
 }
 
@@ -84,8 +72,8 @@ async function insertContact(resID, userID, callBell, drinkGiven, description, m
 async function isAuthorised(userID, type) {
   const sql = await init();
 
-  //Joins permissions and UserPermissions as it needs to check userID from UserPermissions and type from permissions table.
-  const query = sql.format('SELECT Y.type, X.userID FROM UserPermissions X JOIN Permissions Y ON X.pmsnID = Y.id WHERE X.userID = ? AND Y.type = ?', [userID, type]);
+  //Joins permissions and UserPermission as it needs to check userID from UserPermission and type from permissions table.
+  const query = sql.format('SELECT Y.type, X.userID FROM UserPermission X JOIN Permission Y ON X.pmsnID = Y.id WHERE X.userID = ? AND Y.type = ?', [userID, type]);
   const [rows] = await sql.query(query);
   //empty array from query implies user has not been granted the permission, returns false
   //returns true if permission is found for the user
@@ -93,7 +81,6 @@ async function isAuthorised(userID, type) {
 }
 
 module.exports = {
-  addUser: addUser,
   getHash: getHash,
   getResidents: getResidents,
   searchContact: searchContact,

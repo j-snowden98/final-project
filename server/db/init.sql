@@ -1,56 +1,55 @@
-CREATE DATABASE IF NOT EXISTS st_ronans_care_test;
+CREATE DATABASE IF NOT EXISTS st_ronans_care;
 
-CREATE TABLE IF NOT EXISTS st_ronans_care_test.User (
+CREATE TABLE IF NOT EXISTS st_ronans_care.User (
   id INT PRIMARY KEY AUTO_INCREMENT,
   username VARCHAR(100),
   password VARCHAR(100),
-  role VARCHAR(100)
+  role VARCHAR(100),
+  active TINYINT(1) NOT NULL DEFAULT 1
 );
 
-CREATE TABLE IF NOT EXISTS st_ronans_care_test.Permissions (
+CREATE TABLE IF NOT EXISTS st_ronans_care.Permission (
   id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
   name VARCHAR(100) NOT NULL,
   type INT NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS st_ronans_care_test.UserPermissions (
+CREATE TABLE IF NOT EXISTS st_ronans_care.UserPermission (
   userID INT NOT NULL,
   pmsnID INT NOT NULL,
   FOREIGN KEY (userID) REFERENCES User(id),
-  FOREIGN KEY (pmsnID) REFERENCES Permissions(id)
+  FOREIGN KEY (pmsnID) REFERENCES Permission(id)
 );
 
-CREATE TABLE IF NOT EXISTS st_ronans_care_test.Resident (
+CREATE TABLE IF NOT EXISTS st_ronans_care.Resident (
   id INT PRIMARY KEY AUTO_INCREMENT,
   forename VARCHAR(100) NOT NULL,
   surname VARCHAR(100) NOT NULL,
+  birthDate DATE NOT NULL,
+  mvHandling VARCHAR(20) NOT NULL,
   dietReq VARCHAR(100) NOT NULL,
   allergies VARCHAR(100) NOT NULL,
-  thickener BOOLEAN NOT NULL,
+  thickener TINYINT(1) NOT NULL,
   diabetes TINYINT(1) NOT NULL,
-  dnr BOOLEAN NOT NULL
+  dnr TINYINT(1) NOT NULL,
+  active TINYINT(1) NOT NULL DEFAULT 1,
+  roomID INT,
+  FOREIGN KEY (roomID) REFERENCES Room(id)
 );
 
-CREATE TABLE IF NOT EXISTS st_ronans_care_test.Room (
+CREATE TABLE IF NOT EXISTS st_ronans_care.Room (
   id INT PRIMARY KEY AUTO_INCREMENT,
   roomPrefix VARCHAR(4) NOT NULL,
   roomNumber INT NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS st_ronans_care_test.ResidentRoom (
-  resID INT NOT NULL,
-  roomID INT NOT NULL,
-  FOREIGN KEY (resID) REFERENCES Resident(id),
-  FOREIGN KEY (roomID) REFERENCES Room(id)
-);
-
-CREATE TABLE IF NOT EXISTS st_ronans_care_test.Contact (
+CREATE TABLE IF NOT EXISTS st_ronans_care.Contact (
   id INT PRIMARY KEY AUTO_INCREMENT,
   resID INT NOT NULL,
   userID INT NOT NULL,
   contactDate DATETIME NOT NULL,
-  callBell BOOLEAN NOT NULL,
-  drinkGiven BOOLEAN NOT NULL,
+  callBell TINYINT(1) NOT NULL,
+  drinkGiven TINYINT(1) NOT NULL,
   description TEXT NOT NULL,
   mood TEXT NOT NULL,
   FOREIGN KEY (resID) REFERENCES Resident(id),

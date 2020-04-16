@@ -1,9 +1,10 @@
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
-const user = require('./user.js');
+const account = require('./account.js');
 const getResidents = require('./searchResidents.js');
 const contact = require('./contact.js');
+const admin = require('./admin.js');
 const SECRET_KEY = "secretkey23456";
 
 //Create express server
@@ -18,7 +19,7 @@ protectedApp.use((req, res, next) => {
   const token = req.cookies.accessToken;
   if (token) {
     //Check the token to see if it's valid. If not, return 401. If token validates, forward request to next route
-    jwt.verify(token, SECRET_KEY, (err, decoded) =>{
+    jwt.verify(token, SECRET_KEY, (err, decoded) => {
       if (err) {
         return res.status(401).json({ success: false, message: 'invalid token' });
       }
@@ -38,7 +39,7 @@ protectedApp.use((req, res, next) => {
 });
 
 //This is the only route not requiring a token, to log a user in.
-app.use('/user', user);
+app.use('/account', account);
 
 //All api routes will used the protectedApp middleware first
 app.use('/api', protectedApp);
@@ -46,5 +47,6 @@ app.use('/api', protectedApp);
 //Here are the other routers, to separate functionality into different APIs
 protectedApp.use('/resident/search', getResidents);
 protectedApp.use('/resident/contact', contact);
+protectedApp.use('/admin', admin);
 app.use('/', express.static('webpage', { extensions: ['html'] }));
 app.listen(8080);

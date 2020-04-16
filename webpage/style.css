@@ -43,3 +43,15 @@
   color: red;
   font-weight: bold;
 }
+
+.material-icons {
+  vertical-align: text-bottom !important;
+}
+
+.formcard {
+  max-width: 30rem !important;
+}
+
+.adminSearch {
+  width: auto !important;
+}
