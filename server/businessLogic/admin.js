@@ -2,7 +2,7 @@ const express = require('express');
 const manageResident = require('./manageResident.js');
 const manageUser = require('./manageUser.js');
 const manageRoom = require('./manageRoom.js');
-const data = require('./persistence/persist_main.js');
+const data = require('../persistence/persist_main.js');
 
 const adminApp = express.Router();
 

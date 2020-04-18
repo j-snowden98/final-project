@@ -1,6 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const data = require('./persistence/persist_main.js');
+const data = require('../persistence/persist_main.js');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const SECRET_KEY = "secretkey23456";

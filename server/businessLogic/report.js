@@ -1,6 +1,6 @@
 const express = require('express');
-const data = require('./persistence/persist_main.js');
-const reportData = require('./persistence/persist_report.js');
+const data = require('../persistence/persist_main.js');
+const reportData = require('../persistence/persist_report.js');
 
 const reportApp = express.Router();
 

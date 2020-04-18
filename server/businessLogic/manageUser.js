@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcryptjs');
-const data = require('./persistence/persist_admin.js');
+const data = require('../persistence/persist_admin.js');
 
 const router = express.Router();
 router.use(bodyParser.urlencoded({ extended: false }));
