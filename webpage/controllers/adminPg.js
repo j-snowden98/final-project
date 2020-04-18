@@ -16,7 +16,7 @@ class Admin {
             <a class="nav-link" id="residents-tab" data-toggle="tab" href="#residents" role="tab" aria-controls="residents" aria-selected="false">Residents</a>
           </li>
         </ul>
-        <div class="tab-content" id="myTabContent">
+        <div class="tab-content" id="adminTabs">
           <div class="tab-pane fade show active" id="users" role="tabpanel" aria-labelledby="users-tab">
             <form class="form-inline my-2 my-lg-0 str-component">
               <input id="userSearch" class="form-control mr-1 adminSearch" type="search" placeholder="Search" aria-label="Search">
@@ -74,9 +74,11 @@ class Admin {
     //Show that the admin page is now selected
     document.getElementById('homeBtn').classList.remove('active');
     document.getElementById('adminBtn').classList.add('active');
+    document.getElementById('reportBtn').classList.remove('active');
 
     //Prevents the user clicking on the admin page while it is selected
     document.getElementById('adminBtn').removeEventListener('click', loadAdmin);
+    document.getElementById('reportBtn').addEventListener('click', loadReport);
   }
 }
 

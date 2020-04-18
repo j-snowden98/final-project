@@ -77,7 +77,7 @@ async function loginServer() {
       //Adds the navbar if it's not already there; user is now authorised
       //passes username from response to the navbar
       if(!navbar)
-        addNavbar(json.username, json.admin);
+        addNavbar(json.username, json.admin, json.report);
 
       //Calls retry function of class bound to this.
       //Allows user to pick up where they left off after logging in again.
@@ -107,7 +107,7 @@ async function logout() {
   }
 }
 
-function addNavbar(username, admin) {
+function addNavbar(username, admin, report) {
   //Creates navbar which displays username and has a logout button
   const html = `<nav class="navbar navbar-expand-lg navbar-light bg-light">
     <a class="navbar-brand" href="#">St Ronans</a>
@@ -122,6 +122,8 @@ function addNavbar(username, admin) {
         </li>
 
         ${ admin? '<li id="adminBtn" class="nav-item"><a class="nav-link" href="#">Admin</a></li>' : '' }
+
+        ${ report? '<li id="reportBtn" class="nav-item"><a class="nav-link" href="#">Report</a></li>' : '' }
       </ul>
       <span class="navbar-text mr-1">${username}</span>
       <button id="logout" class="btn btn-outline-secondary my-2 my-sm-0" type="btn">Logout</button>
@@ -134,12 +136,20 @@ function addNavbar(username, admin) {
     document.getElementById('adminBtn').addEventListener('click', loadAdmin);
   }
 
+  if(report) {
+    document.getElementById('reportBtn').addEventListener('click', loadReport);
+  }
+
   //Sets global navbar to true to ensure it is not added again.
   navbar = true;
 }
 
 function loadAdmin() {
   let adminPg = new Admin();
+}
+
+function loadReport() {
+  let reportPh = new Report();
 }
 
 function clearError() {
@@ -192,7 +202,7 @@ class ResTable {
 
       //Passes username from response to navbar
       if(!navbar)
-        addNavbar(json.username, json.admin);
+        addNavbar(json.username, json.admin, json.report);
     }
     else if(status === 401) {
       //Forcelogin uses retry from 'this' upon successful login.
