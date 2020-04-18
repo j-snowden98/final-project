@@ -22,21 +22,44 @@ async function newConnection() {
   return sql;
 }
 
-//Retrieves all contact sheet entries from the last 24hrs for a given resident.
-async function getReport(user, resident, afterDate, beforeDate, drinkGiven, mood) {
-  let queryString = 'SELECT U.username, DATE_FORMAT(DATE(C.contactDate), "%d/%m/%Y") as contactDate, DATE_FORMAT(TIME(C.contactDate), "%H:%i") as contactTime, C.callBell, C.drinkGiven, C.description, C.mood FROM Contact C LEFT JOIN User U ON U.id = C.userID';
-  let values = [];
-  let filterAdded = false;
+//Retrieves all contact sheet entries meeting the search criteria, building a customised query based on the user's chosen filters
+async function getContact(userFilter, resFilter, afterDate, afterTime, beforeDate, beforeTime, drinkGiven, moodFilter, orderBy) {
+  //main part of SQL query is written here
+  let queryString = 'SELECT U.username, DATE_FORMAT(DATE(C.contactDate), "%d/%m/%Y") as contactDate, DATE_FORMAT(TIME(C.contactDate), "%H:%i") as contactTime, C.callBell, C.drinkGiven, C.description, C.mood, R.forename, R.surname FROM Contact C INNER JOIN User U ON U.id = C.userID INNER JOIN Resident R ON R.id = C.resID';
+  
 
-  if(user !== null && user !== ''){
-    user = '%' + user + '%';
-    queryString += `${!filterAdded ? ' WHERE' : ' AND'} U.username LIKE ?`;
-    values.push(user);
-    filterAdded = true;
+  //Filters by username of user who added the entry. If not provided, returns contact from all users
+  userFilter = '%' + userFilter + '%';
+  queryString += ' WHERE U.username LIKE ?';
+
+  //Filters by resident's forename, surname or forname and surname together, based on string entered in report search
+  resFilter = '%' + resFilter + '%';
+  queryString += ' AND (R.forename LIKE ? OR R.surname LIKE ? OR CONCAT(CONCAT(R.forename, " "), R.surname) LIKE ?)';
+
+  //Filter contact sheets whose dates fall between the given start and end dates from the report search.
+  //Dates and times are combined to in format which can be queried as DateTime values
+  let startDatetime = afterDate + ' ' + afterTime;
+  let endDatetime = beforeDate + ' ' + beforeTime;
+  queryString += ' AND (C.contactDate BETWEEN ? AND ?)';
+
+  //Filters by mood recorded in the contact entry. If not provided, will return contact with any values for the mood field.
+  moodFilter = '%' + moodFilter + '%';
+  queryString += ' AND C.mood LIKE ?';
+
+  //Filters for contact search are added to an array in order, to replace the ?s when the query is prepared
+  let values = [userfilter, resFilter, resFilter, resFilter, startDatetime, endDatetime, moodFilter];
+
+  if(drinkGiven) {
+    queryString += ' AND C.drinkGiven = 1';
   }
 
+  //Add selected ordering and semicolon to end of created SQL statement
+  orderStrings = ['C.contactDate ASC', 'C.contactDate DESC', 'R.forename, R.surname ASC', 'R.forename, R.surname DESC'];
+  queryString += ' ORDER BY ' + orderStrings[orderBy] + ';';
+
   const sql = await init();
-  const query = sql.format(queryString, [resID]);
+  //The query is formatted and prepared with the search values, to prevent SQL injection
+  const query = sql.format(queryString, values);
   const [rows] = await sql.query(query);
   return (rows);
 }
