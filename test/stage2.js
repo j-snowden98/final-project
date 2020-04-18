@@ -1,6 +1,6 @@
 const should = require('chai').should();
-const dataModel = require('../server/db/model_mysql.js');
-const adminModel = require('../server/db/admin_model_mysql.js');
+const dataModel = require('../server/persistence/persist_main.js');
+const adminModel = require('../server/persistence/persist_admin.js');
 
 describe('Admin data model tests', () => {
   describe('Manage Users', () => {

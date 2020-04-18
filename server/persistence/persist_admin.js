@@ -1,6 +1,6 @@
 'use strict';
 const mysql = require('mysql2/promise');
-const config = require('./../../admin_config.json');
+const config = require('../../admin_config.json');
 
 let sqlPromise = null;
 async function init() {

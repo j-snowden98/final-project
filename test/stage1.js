@@ -1,5 +1,5 @@
 const should = require('chai').should();
-const dataModel = require('../server/db/model_mysql.js');
+const dataModel = require('../server/persistence/persist_main.js');
 
 describe('Data model tests', () => {
   describe('Residents', () => {

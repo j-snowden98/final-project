@@ -1,6 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const data = require('./db/model_mysql.js');
+const data = require('./persistence/persist_main.js');
 
 const router = express.Router();
 router.use(bodyParser.urlencoded({ extended: false }));
