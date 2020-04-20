@@ -735,21 +735,3 @@ class AddContact {
     }
   }
 }
-
-class FoodFluidTable {
-  constructor() {
-
-  }
-}
-
-class FoodFluid {
-  constructor() {
-
-  }
-}
-
-class AddFoodFluid {
-  constructor() {
-
-  }
-}
