@@ -19,7 +19,7 @@ class Admin {
         <div class="tab-content" id="adminTabs">
           <div class="tab-pane fade show active" id="users" role="tabpanel" aria-labelledby="users-tab">
             <form class="form-inline my-2 my-lg-0 str-component">
-              <input id="userSearch" class="form-control mr-1 adminSearch" type="search" placeholder="Search" aria-label="Search">
+              <input id="userSearch" class="form-control mr-1 admin-search" type="search" placeholder="Search" aria-label="Search">
               <button id="addUserBtn" title="Add new user" type="button" class="btn btn-outline-primary">&#43;</button>
             </form>
             <table class="table table-str table-striped table-dark str-component rounded">
@@ -34,7 +34,7 @@ class Admin {
           </div>
           <div class="tab-pane fade" id="rooms" role="tabpanel" aria-labelledby="rooms-tab">
             <form class="form-inline my-2 my-lg-0 str-component">
-              <input id="roomSearch" class="form-control mr-1 adminSearch" type="search" placeholder="Search" aria-label="Search">
+              <input id="roomSearch" class="form-control mr-1 admin-search" type="search" placeholder="Search" aria-label="Search">
               <button id="addRoomBtn" title="Add new room" type="button" class="btn btn-outline-primary">&#43;</button>
             </form>
             <table class="table table-str table-striped table-dark str-component rounded">
@@ -49,7 +49,7 @@ class Admin {
           </div>
           <div class="tab-pane fade" id="residents" role="tabpanel" aria-labelledby="residents-tab">
             <form class="form-inline my-2 my-lg-0 str-component">
-              <input id="resSearch" class="form-control mr-1 adminSearch" type="search" placeholder="Search" aria-label="Search">
+              <input id="resSearch" class="form-control mr-1 admin-search" type="search" placeholder="Search" aria-label="Search">
               <button id="addResBtn" title="Add new resident" type="button" class="btn btn-outline-primary">&#43;</button>
             </form>
             <table class="table table-str table-striped table-dark str-component rounded">
