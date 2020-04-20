@@ -66,4 +66,4 @@ async function getContact(userFilter, resFilter, afterDate, afterTime, beforeDat
 
 
 
-module.exports.getReport = getReport;
+module.exports.getContact = getContact;
