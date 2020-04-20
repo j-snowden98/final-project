@@ -47,19 +47,21 @@ async function getContact(userFilter, resFilter, afterDate, afterTime, beforeDat
   queryString += ' AND C.mood LIKE ?';
 
   //Filters for contact search are added to an array in order, to replace the ?s when the query is prepared
-  let values = [userfilter, resFilter, resFilter, resFilter, startDatetime, endDatetime, moodFilter];
+  let values = [userFilter, resFilter, resFilter, resFilter, startDatetime, endDatetime, moodFilter];
 
   if(drinkGiven) {
     queryString += ' AND C.drinkGiven = 1';
   }
 
   //Add selected ordering and semicolon to end of created SQL statement
-  orderStrings = ['C.contactDate ASC', 'C.contactDate DESC', 'R.forename, R.surname ASC', 'R.forename, R.surname DESC'];
+  let orderStrings = ['C.contactDate ASC', 'C.contactDate DESC', 'R.forename, R.surname ASC', 'R.forename, R.surname DESC'];
   queryString += ' ORDER BY ' + orderStrings[orderBy] + ';';
 
   const sql = await init();
   //The query is formatted and prepared with the search values, to prevent SQL injection
   const query = sql.format(queryString, values);
+  console.log(query);
+  
   const [rows] = await sql.query(query);
   return (rows);
 }

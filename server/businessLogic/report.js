@@ -21,15 +21,15 @@ reportApp.use(async (req, res, next) => {
 //Retrieves contact sheets from persistence. Filters the contact sheets by criteria entered by the user.
 reportApp.get('/contact', async (req, res) => {
   //Search criteria is taken from the request
-  const userFilter = req.body.userFilter;
-  const resFilter = req.body.resFilter;
-  const afterDate = req.body.afterDate;
-  const afterTime = req.body.afterTime;
-  const beforeDate = req.body.beforeDate;
-  const beforeTime = req.body.beforeTime;
-  const drinkGiven = req.body.drinkGiven;
-  const moodFilter = req.body.moodFilter;
-  const orderBy = req.body.orderBy;
+  const userFilter = req.query.userFilter;
+  const resFilter = req.query.resFilter;
+  const afterDate = req.query.afterDate;
+  const afterTime = req.query.afterTime;
+  const beforeDate = req.query.beforeDate;
+  const beforeTime = req.query.beforeTime;
+  const drinkGiven = req.query.drinkGiven;
+  const moodFilter = req.query.moodFilter;
+  const orderBy = req.query.orderBy;
 
   try {
     const contact = await reportData.getContact(userFilter, resFilter, afterDate, afterTime, beforeDate, beforeTime, drinkGiven, moodFilter, orderBy);
