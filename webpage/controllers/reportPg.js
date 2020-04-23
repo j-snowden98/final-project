@@ -18,7 +18,7 @@ class Report {
           </select>
         </form>
         <div class="collapse" id="collapseFilters">
-          <div class="card card-body">
+          <div class="card card-body str-component">
             <form class="my-lg-0 str-component">
               <div class="form-group form-inline">
                 <label for="userFilter" class="field-label">Username</label>
@@ -62,12 +62,13 @@ class Report {
         <table class="table table-str table-striped table-dark str-component rounded">
           <thead>
             <tr>
-              <th scope="col">${ window.screen.availWidth >= 800 ? 'Date' : '<i class="material-icons">calendar_today</i>' }</th>
-              <th scope="col">${ window.screen.availWidth >= 800 ? 'Time' : '<i class="material-icons">access_time</i>' }</th>
-              <th scope="col">${ window.screen.availWidth >= 800 ? 'Drink Given' : '<i class="material-icons">local_cafe</i>' }</th>
-              <th scope="col">${ window.screen.availWidth >= 800 ? 'Descripion' : '<i class="material-icons">create</i>' }</th>
-              <th scope="col">${ window.screen.availWidth >= 800 ? 'Mood' : '<i class="material-icons">sentiment_satisfied</i>' }</th>
-              <th scope="col">${ window.screen.availWidth >= 800 ? 'User' : '<i class="material-icons">account_circle</i>' }</th>
+              <th scope="col">${ window.screen.availWidth >= 1000 ? 'Date' : '<i class="material-icons">calendar_today</i>' }</th>
+              <th scope="col">${ window.screen.availWidth >= 1000 ? 'Time' : '<i class="material-icons">access_time</i>' }</th>
+              <th scope="col">${ window.screen.availWidth >= 1000 ? 'Resident' : '<i class="material-icons">access_time</i>' }</th>
+              <th scope="col">${ window.screen.availWidth >= 1000 ? 'Drink Given' : '<i class="material-icons">local_cafe</i>' }</th>
+              <th scope="col">${ window.screen.availWidth >= 1000 ? 'Description' : '<i class="material-icons">create</i>' }</th>
+              <th scope="col">${ window.screen.availWidth >= 1000 ? 'Mood' : '<i class="material-icons">sentiment_satisfied</i>' }</th>
+              <th scope="col">${ window.screen.availWidth >= 1000 ? 'User' : '<i class="material-icons">account_circle</i>' }</th>
             </tr>
           </thead>
           <tbody id="reportContactBody"></tbody>
