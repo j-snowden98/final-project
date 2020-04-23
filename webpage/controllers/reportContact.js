@@ -113,8 +113,30 @@ class ReportContact {
   }
 
   validate() {
-    if() {
-      
+    clearError();
+    const dateFormat = /^\d{4}\-(0[1-9]|1[012])\-(0[1-9]|[12][0-9]|3[01])$/;
+    const timeFormat = /^\d{2}\:\d{2}$/;
+    //Ensure that start date is given in the correct format
+    if (!dateFormat.test(this.inputStDate.value)) {
+      this.reportPg.insertAdjacentHTML('afterBegin', `<div id="errorAlert" class="alert alert-danger" role="alert">Start date's format is invalid</div>`);
+    }
+    //Ensure that start time is given in the correct format
+    else if (!timeFormat.test(this.inputStTime.value)) {
+      this.reportPg.insertAdjacentHTML('afterBegin', `<div id="errorAlert" class="alert alert-danger" role="alert">Start time's format is invalid</div>`);
+    }
+
+    //Ensure that end date is given in the correct format
+    else if (!dateFormat.test(this.inputEnDate.value)) {
+      this.reportPg.insertAdjacentHTML('afterBegin', `<div id="errorAlert" class="alert alert-danger" role="alert">End date's format is invalid</div>`);
+    }
+
+    //Ensure that end time is given in the correct format
+    else if (!timeFormat.test(this.inputEnTime.value)) {
+      this.reportPg.insertAdjacentHTML('afterBegin', `<div id="errorAlert" class="alert alert-danger" role="alert">End time's format is invalid</div>`);
+    }
+
+    else {
+      return true;
     }
   }
 
