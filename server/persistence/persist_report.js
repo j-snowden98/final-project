@@ -25,7 +25,7 @@ async function newConnection() {
 //Retrieves all contact sheet entries meeting the search criteria, building a customised query based on the user's chosen filters
 async function getContact(userFilter, resFilter, afterDate, afterTime, beforeDate, beforeTime, drinkGiven, moodFilter, orderBy) {
   //main part of SQL query is written here
-  let queryString = 'SELECT U.username, DATE_FORMAT(DATE(C.contactDate), "%d/%m/%Y") as contactDate, DATE_FORMAT(TIME(C.contactDate), "%H:%i") as contactTime, C.callBell, C.drinkGiven, C.description, C.mood, R.forename, R.surname FROM Contact C INNER JOIN User U ON U.id = C.userID INNER JOIN Resident R ON R.id = C.resID';
+  let queryString = 'SELECT U.username, DATE_FORMAT(DATE(C.contactDate), "%d/%m/%Y") as contactDate, DATE_FORMAT(TIME(C.contactDate), "%H:%i") as contactTime, C.callBell, C.drinkGiven, C.description, C.mood, CONCAT(CONCAT(R.forename, " "), R.surname) AS resName FROM Contact C INNER JOIN User U ON U.id = C.userID INNER JOIN Resident R ON R.id = C.resID';
   
 
   //Filters by username of user who added the entry. If not provided, returns contact from all users
@@ -54,7 +54,7 @@ async function getContact(userFilter, resFilter, afterDate, afterTime, beforeDat
   }
 
   //Add selected ordering and semicolon to end of created SQL statement
-  let orderStrings = ['C.contactDate ASC', 'C.contactDate DESC', 'R.forename, R.surname ASC', 'R.forename, R.surname DESC'];
+  let orderStrings = ['C.contactDate ASC', 'C.contactDate DESC', 'resName ASC', 'resName DESC'];
   queryString += ' ORDER BY ' + orderStrings[orderBy] + ';';
 
   const sql = await init();

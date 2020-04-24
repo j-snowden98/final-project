@@ -151,6 +151,7 @@ class ReportContact {
         <tr>
           <td>${r.contactDate}</td>
           <td>${r.contactTime}</td>
+          <td>${r.resName}</td>
           <td>${Boolean(r.drinkGiven)? 'Yes' : 'No'}</td>
           <td>${r.description}</td>
           <td>${r.mood}</td>
