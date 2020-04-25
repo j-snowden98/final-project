@@ -33,13 +33,13 @@ class Report {
               </div>
 
               <div class="form-group form-inline">
-                <label for="stDate" class="field-label">Starting</label>
+                <label for="stDate" class="field-label">Start Date</label>
                 <input id="stDate" class="form-control" type="date" aria-label="Starting">
                 <input id="stTime" class="form-control ml-1" type="time" aria-label="Starting">
               </div>
 
               <div class="form-group form-inline">
-                <label for="enDate" class="field-label">Ending</label>
+                <label for="enDate" class="field-label">End Date</label>
                 <input id="enDate" class="form-control" type="date" aria-label="Ending">
                 <input id="enTime" class="form-control ml-1" type="time" aria-label="Ending">
               </div>
@@ -66,7 +66,7 @@ class Report {
             <tr>
               <th scope="col">${ window.screen.availWidth >= 1000 ? 'Date' : '<i class="material-icons">calendar_today</i>' }</th>
               <th scope="col">${ window.screen.availWidth >= 1000 ? 'Time' : '<i class="material-icons">access_time</i>' }</th>
-              <th scope="col">${ window.screen.availWidth >= 1000 ? 'Resident' : '<i class="material-icons">access_time</i>' }</th>
+              <th scope="col">${ window.screen.availWidth >= 1000 ? 'Resident' : '<i class="material-icons">face</i>' }</th>
               <th scope="col">${ window.screen.availWidth >= 1000 ? 'Drink Given' : '<i class="material-icons">local_cafe</i>' }</th>
               <th scope="col">${ window.screen.availWidth >= 1000 ? 'Description' : '<i class="material-icons">create</i>' }</th>
               <th scope="col">${ window.screen.availWidth >= 1000 ? 'Mood' : '<i class="material-icons">sentiment_satisfied</i>' }</th>
