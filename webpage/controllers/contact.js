@@ -20,7 +20,7 @@ class Contact {
         <div class="card str-component formcard">
           <div class="card-body">
             <form>
-              <label>${this.resName}</label>
+            <h5 class="card-title">${this.resName}</h5>
               <label>Time entered: ${this.contactDate + ' ' + this.contactTime}</label>
               <label>Entered by: ${this.username}</label>
               <div class="form-check">
