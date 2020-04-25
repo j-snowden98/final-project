@@ -49,7 +49,7 @@ async function getContact(userFilter, resFilter, afterDate, afterTime, beforeDat
   //Filters for contact search are added to an array in order, to replace the ?s when the query is prepared
   let values = [userFilter, resFilter, resFilter, resFilter, startDatetime, endDatetime, moodFilter];
 
-  if(drinkGiven) {
+  if(drinkGiven === 'true') {
     queryString += ' AND C.drinkGiven = 1';
   }
 

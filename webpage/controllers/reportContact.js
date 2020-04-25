@@ -56,6 +56,7 @@ class ReportContact {
   }
 
   async getContact() {
+    this.show();
     if(this.validate()) {
       try {
         //Send request to server to search for residents with a given filter
