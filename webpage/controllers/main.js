@@ -6,7 +6,7 @@ let main;
 
 
 window.onload = function() {
-  //Calls init function when site is loaded/refreshed
+  //Prepare the initial residents list view upon loading the page
   init();
 };
 
@@ -18,7 +18,7 @@ document.addEventListener("keydown", event => {
 });
 
 function init() {
-  //This code is called when the page is loaded. Creates a table of residents and loads from it.
+  //This code is called when the page is loaded. Creates a new instance of resTbl, which will display the residents list view.
   main = document.getElementsByTagName('main')[0];
   resTbl = new ResTable();
 }
@@ -37,6 +37,15 @@ function forceLogin() {
 
   main.insertAdjacentHTML('beforeend', loginPg);
   document.getElementById('btnLogin').addEventListener('click', loginServer.bind(this));
+
+  //Disables the admin and report buttons, if they exist
+  const adminBtn = document.getElementById('adminBtn');
+  const reportBtn = document.getElementById('reportBtn');
+  if(adminBtn !== null)
+    adminBtn.removeEventListener('click', loadAdmin);
+  
+  if(reportBtn !== null)
+    reportBtn.removeEventListener('click', loadReport);
 }
 
 async function loginServer() {
@@ -69,15 +78,23 @@ async function loginServer() {
     }
     else {
       const json = await response.json();
-
-      //Get report and admin permissions add to navbar!
-
       document.getElementById('signin').outerHTML = '';
 
-      //Adds the navbar if it's not already there; user is now authorised
-      //passes username from response to the navbar
+      //Adds the navbar if it's not already there; user is now authenticated
+      //passes username from response to the navbar as well as their report and admin permission
       if(!navbar)
         addNavbar(json.username, json.admin, json.report);
+      else {
+        //Allows the admin and report buttons to be clicked again, if they exist
+        const adminBtn = document.getElementById('adminBtn');
+        const reportBtn = document.getElementById('reportBtn');
+        if(adminBtn !== null)
+          adminBtn.addEventListener('click', loadAdmin);
+        
+        if(reportBtn !== null)
+          reportBtn.addEventListener('click', loadReport);
+      }
+
 
       //Calls retry function of class bound to this.
       //Allows user to pick up where they left off after logging in again.
