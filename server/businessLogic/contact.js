@@ -22,7 +22,7 @@ router.post('/add', async (req, res) => {
 
         //Use db model to save new record into database
         const result = await data.insertContact(resID, userID, callBell, drinkGiven, description, mood);
-
+        
         //Retrieve the newly added contact entry to be sent back to user
         //Gives feedback to show the user that they have successfully added an entry
         let newEntry = await data.getNewContact(resID);
@@ -30,8 +30,8 @@ router.post('/add', async (req, res) => {
       }
       catch (e) {
         //Notifies user of an error with the server
-        return res.status(500).send('Server error!');
         console.log(e);
+        return res.status(500).send('Server error!');
       }
     }
     else {
@@ -41,8 +41,8 @@ router.post('/add', async (req, res) => {
   }
   catch (e) {
     //Notifies user of an error with the server
-    return res.status(500).send('Server error!');
     console.log(e);
+    return res.status(500).send('Server error!');
   }
 });
 

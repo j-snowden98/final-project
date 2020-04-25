@@ -2,6 +2,7 @@ class Contact {
   constructor(object, goBack) {
     //Sets attributes to the same as contact entry object (from DB)
     this.contactDate = object.contactDate;
+    this.resName = object.resName;
     this.contactTime = object.contactTime;
     this.callBell = object.callBell;
     this.drinkGiven = object.drinkGiven;
@@ -19,6 +20,7 @@ class Contact {
         <div class="card str-component formcard">
           <div class="card-body">
             <form>
+              <label>${this.resName}</label>
               <label>Time entered: ${this.contactDate + ' ' + this.contactTime}</label>
               <label>Entered by: ${this.username}</label>
               <div class="form-check">

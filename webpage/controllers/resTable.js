@@ -62,9 +62,8 @@ class ResTable {
 
   async doneTyping() {
     //If hidden (implying the user was forced to login on the last attempt) will show table again.
-    if(this.hidden) {
-      this.show();
-    }
+    this.show();
+    
     //Get response from search function making request to server
     const response = await this.searchResidents(document.getElementById('searchbar').value);
     const status = await response.status;
@@ -121,7 +120,7 @@ class ResTable {
         </tr>`);
       document.getElementById('resTblBody').appendChild(row);
       //Clicking on this new row will display the menu for this instance of class resident.
-      row.addEventListener('click', newRes.openResMenu.bind(newRes));
+      row.addEventListener('click', newRes.openResDetails.bind(newRes));
     }
   }
 

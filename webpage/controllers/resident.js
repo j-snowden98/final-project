@@ -14,12 +14,12 @@ class Resident {
     this.roomName = resObject.roomName;
   }
 
-  openResMenu() {
+  openResDetails() {
     //Hide table of residents
     resTbl.hide();
     main.insertAdjacentHTML('beforeend', `
-      <div id="resOptions" class="ml-1 mr-1">
-        <button id="backBtn" type="button" class="btn btn-lg btn-outline-secondary">&#8249;</button>
+      <div id="resDetails" class="ml-1 mr-1">
+        <button id="resBackBtn" type="button" class="btn btn-lg btn-outline-secondary">&#8249;</button>
         <div class="card str-component formcard">
           <div class="card-body">
             <h5 class="card-title">${this.forename + ' ' + this.surname}</h5>
@@ -35,25 +35,31 @@ class Resident {
           </div>
         </div>
       </div>`);
-    document.getElementById('backBtn').addEventListener('click', this.prevClick.bind(this));
+    document.getElementById('resBackBtn').addEventListener('click', this.prevClick.bind(this));
 
     //Open contact table for this resident when button is clicked
     document.getElementById('btnContact').addEventListener('click', this.showContact.bind(this));
 
-    //Open food & fluid table for this resident when button is clicked
-    document.getElementById('btnFood').addEventListener('click', this.showFoodFl.bind(this));
-    this.resOptions = document.getElementById('resOptions');
+    this.resDetails = document.getElementById('resDetails');
   }
 
   prevClick(){
-    //Clears resident menu, goes back to table of residents.
-    this.resOptions.outerHTML = '';
+    //Clears resident details view, returns to residents list view.
+    this.resDetails.outerHTML = '';
     resTbl.show();
   }
 
   showContact() {
     //Opens contact table for this resident
-    this.resOptions.outerHTML = '';
-    const ct = new ContactTable(this.id, this.openResMenu.bind(this));
+    this.hide();
+    const ct = new ContactTable(this.id, this.show.bind(this));
+  }
+
+  show() {
+    this.resDetails.setAttribute('style', 'display: block');
+  }
+
+  hide() {
+    this.resDetails.setAttribute('style', 'display: none');
   }
 }
