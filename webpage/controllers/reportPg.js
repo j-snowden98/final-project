@@ -15,6 +15,8 @@ class Report {
             <option value="1">Date (Descending)</option>
             <option value="2">Resident name (Ascending)</option>
             <option value="3">Resident name (Descending)</option>
+            <option value="4">Username (Ascending)</option>
+            <option value="5">Username (Descending)</option>
           </select>
         </form>
         <div class="collapse" id="collapseFilters">

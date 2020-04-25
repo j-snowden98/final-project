@@ -54,7 +54,7 @@ async function getContact(userFilter, resFilter, afterDate, afterTime, beforeDat
   }
 
   //Add selected ordering and semicolon to end of created SQL statement
-  let orderStrings = ['C.contactDate ASC', 'C.contactDate DESC', 'resName ASC', 'resName DESC'];
+  let orderStrings = ['C.contactDate ASC', 'C.contactDate DESC', 'resName ASC', 'resName DESC', 'U.username ASC', 'U.username DESC'];
   queryString += ' ORDER BY ' + orderStrings[orderBy] + ';';
 
   const sql = await init();
