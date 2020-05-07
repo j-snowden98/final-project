@@ -47,7 +47,7 @@ class ReportContact {
     month = (month < 10 ? "0" : "") + month;
     day = (day < 10 ? "0" : "") + day;
 
-    //Start date is yeaterday by default, so contact sheets from the last 24 hours is displayed upon opening the report page
+    //Start date is yesterday by default, so contact sheets from the last 24 hours are displayed upon opening the report page
     let yesterdayDate = year + "-" + month + "-" + day;
     this.inputStDate.value = yesterdayDate;
     this.inputStTime.value = nowTime;
@@ -59,7 +59,7 @@ class ReportContact {
     this.show();
     if(this.validate()) {
       try {
-        //Send request to server to search for residents with a given filter
+        //Send request to server to search for contact sheets with a given filter
         let userFilter = this.InputUserFilter.value;
         let resFilter = this.inputResFilter.value;
         let afterDate = this.inputStDate.value;

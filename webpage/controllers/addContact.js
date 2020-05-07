@@ -140,6 +140,7 @@ class AddContact {
         else if(status === 403) {
           //Notify the user that they are not authorised. Go back to previous state
           window.alert(await response.text());
+          this.container.outerHTML = '';
           this.onCancel();
         }
         else if (status === 500) {
