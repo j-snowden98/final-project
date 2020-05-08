@@ -60,7 +60,6 @@ async function getContact(userFilter, resFilter, afterDate, afterTime, beforeDat
   const sql = await init();
   //The query is formatted and prepared with the search values, to prevent SQL injection
   const query = sql.format(queryString, values);
-  console.log(query);
   
   const [rows] = await sql.query(query);
   return (rows);

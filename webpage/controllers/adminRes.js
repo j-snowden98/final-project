@@ -315,6 +315,8 @@ class AddResident {
 
     this.inputForename = document.getElementById('forename');
     this.inputSurname = document.getElementById('surname');
+    this.inputBirth = document.getElementById('dob');
+    this.inputMH = document.getElementById('mvHandling');
     this.inputDiet = document.getElementById('dietReq');
     this.inputAllergies = document.getElementById('allergies');
     this.selectDiabetes = document.getElementById('diabetes');
