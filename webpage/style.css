@@ -13,9 +13,6 @@
 .table-str > tbody > tr {
   cursor: pointer;
 }
-
-
-
 .table-str > tbody > tr > td {
   white-space: nowrap;
   overflow: hidden;
@@ -52,6 +49,10 @@
   max-width: 30rem !important;
 }
 
-.adminSearch {
+.admin-search {
   width: auto !important;
+}
+
+.field-label {
+  margin-right: 0.5rem;
 }

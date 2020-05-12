@@ -1,6 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const data = require('./db/admin_model_mysql.js');
+const data = require('../persistence/persist_admin.js');
 
 const router = express.Router();
 router.use(bodyParser.urlencoded({ extended: false }));

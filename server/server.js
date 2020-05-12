@@ -1,10 +1,11 @@
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
-const account = require('./account.js');
-const getResidents = require('./searchResidents.js');
-const contact = require('./contact.js');
-const admin = require('./admin.js');
+const account = require('./businessLogic/account.js');
+const getResidents = require('./businessLogic/searchResidents.js');
+const contact = require('./businessLogic/contact.js');
+const admin = require('./businessLogic/admin.js');
+const report = require('./businessLogic/report.js');
 const SECRET_KEY = "secretkey23456";
 
 //Create express server
@@ -48,5 +49,6 @@ app.use('/api', protectedApp);
 protectedApp.use('/resident/search', getResidents);
 protectedApp.use('/resident/contact', contact);
 protectedApp.use('/admin', admin);
+protectedApp.use('/report', report);
 app.use('/', express.static('webpage', { extensions: ['html'] }));
 app.listen(8080);

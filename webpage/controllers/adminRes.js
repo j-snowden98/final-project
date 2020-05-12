@@ -165,7 +165,7 @@ class ManageResident {
         }
         else if (status === 500) {
           clearError();
-          //The form may have been hidden due to the user being forced to log in on the last attempt
+          //The view may have been hidden due to the user being forced to log in on the last attempt
           this.show();
 
           //Notify user there has been an error. Leaves the form as it is in case they want to try again and keep the data
@@ -217,7 +217,7 @@ class ManageResident {
       }
       else if (status === 500) {
         clearError();
-        //The form may have been hidden due to the user being forced to log in on the last attempt
+        //The view may have been hidden due to the user being forced to log in on the last attempt
         this.show();
 
         //Notify user there has been an error. Leaves the form as it is in case they want to try again and keep the data.
@@ -315,6 +315,8 @@ class AddResident {
 
     this.inputForename = document.getElementById('forename');
     this.inputSurname = document.getElementById('surname');
+    this.inputBirth = document.getElementById('dob');
+    this.inputMH = document.getElementById('mvHandling');
     this.inputDiet = document.getElementById('dietReq');
     this.inputAllergies = document.getElementById('allergies');
     this.selectDiabetes = document.getElementById('diabetes');
@@ -385,7 +387,7 @@ class AddResident {
         }
         else if (status === 500) {
           clearError();
-          //The form may have been hidden due to the user being forced to log in on the last attempt
+          //The view may have been hidden due to the user being forced to log in on the last attempt
           this.show();
 
           //Notify user there has been an error. Leaves the form as it is in case they want to try again and keep the data
