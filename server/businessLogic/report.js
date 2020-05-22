@@ -9,7 +9,7 @@ reportApp.use(async (req, res, next) => {
   const userID = req.decoded.id;
   const auth = await data.isAuthorised(userID, 6);
 
-  //If the user is authrised, fulfil their request. Otherwise notify the user that they are not permitted.
+  //If the user is authorised, fulfil their request. Otherwise notify the user that they are not permitted.
   if(auth) {
     next();
   }
