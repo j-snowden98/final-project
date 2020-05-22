@@ -10,7 +10,8 @@ adminApp.use(async (req, res, next) => {
   try {
     const userID = req.decoded.id;
     const auth = await data.isAuthorised(userID, 5);
-
+    
+    //If the user has permission for adminstrator actions, allows them to perform the action. Otherwise notify them that they do not have permission
     if(auth) {
       next();
     }
